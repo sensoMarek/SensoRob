@@ -3,7 +3,7 @@
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
     <!-- Import sensorob urdf file -->
-    <xacro:include filename="$(find sensorob_description)/urdf/sensorob.xacro" />
+    <xacro:include filename="$(find sensorob_description)/urdf/sensorob.urdf.xacro" />
 
     <!-- Import control_xacro -->
     <xacro:include filename="sensorob.ros2_control.xacro" />
