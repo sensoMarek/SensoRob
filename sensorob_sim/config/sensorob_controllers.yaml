@@ -1,0 +1,98 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+    use_time_sim: true
+
+    position_controller:
+      type: position_controllers/JointGroupPositionController
+
+    effort_controller:
+      type: effort_controllers/JointGroupEffortController
+
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+position_controller:
+  ros__parameters:
+    update_rate: 200  # Hz
+
+    joints:
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
+    gains: # Required because we're controlling an effort interface
+      joint_1: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+      joint_2: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+      joint_3: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+      joint_4: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+      joint_5: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+      joint_6: { p: 0.1,   d: 0.005, i: 0.01, i_clamp: 1 }
+
+effort_controller:
+  ros__parameters:
+    joints:
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
+
+    constraints:
+      goal_time: 0.5                   # Override default
+      stopped_velocity_tolerance: 0.02 # Override default
+      joint_1:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      joint_2:
+        trajectory: 0.05
+        goal: 0.02
+      joint_3:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02
+      joint_4:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02
+      joint_5:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                        # Not enforced if unspecified
+      joint_6:
+        goal: 0.01                     # Not enforced if unspecified
+
+    gains: # Required because we're controlling an effort interface
+      joint_1: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+      joint_2: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+      joint_3: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+      joint_4: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+      joint_5: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+      joint_6: {p: 100,   d: 10, i: 0.01, i_clamp: 1}
+
+    state_publish_rate:  400            # Override default
+    action_monitor_rate: 30            # Override default
+    stop_trajectory_duration: 0        # Override default
+
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+      - joint_6
+
+    allow_nonzero_velocity_at_trajectory_end: false
+
+    interface_name: position
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+
