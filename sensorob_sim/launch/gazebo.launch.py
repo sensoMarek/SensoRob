@@ -4,18 +4,11 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 
 
 def generate_launch_description():
-
-    package_name = 'sensorob_sim'
-
-    rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory(package_name), 'launch', 'rsp.launch.py'
-        )]), launch_arguments={'use_sim_time': 'true'}.items()
-    )
-
     gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
@@ -26,38 +19,26 @@ def generate_launch_description():
                                    '-entity', 'sensorob'],
                         output='screen')
 
-    # Static TF:
-    static_tf = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="static_transform_publisher",
-        output="log",
-        arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "base_link"],
-    )
-
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
         name="joint_state_broadcaster_node",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-        # remappings=[
-        #     ('/joint_states', '/sensorob/joint_states')
-        # ]
     )
 
-    position_controller = Node(
-        package="controller_manager",
-        executable="spawner",
-        name="position_controller_node",
-        arguments=["position_controller", "-c", "/controller_manager"],
-    )
-
-    effort_controller = Node(
-        package="controller_manager",
-        executable="spawner",
-        name="effort_controller_node",
-        arguments=["effort_controller", "-c", "/controller_manager"],
-    )
+    # position_controller = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     name="position_controller_node",
+    #     arguments=["position_controller", "-c", "/controller_manager"],
+    # )
+    #
+    # effort_controller = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     name="effort_controller_node",
+    #     arguments=["effort_controller", "-c", "/controller_manager"],
+    # )
 
     joint_trajectory_controller = Node(
         package="controller_manager",
@@ -66,15 +47,24 @@ def generate_launch_description():
         arguments=["sensorob_group_controller", "-c", "/controller_manager"],
     )
 
+    # Delayed controllers section
+    delayed_joint_trajectory_controller = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_entity,
+            on_exit=[joint_trajectory_controller],
+        )
+    )
+
+    delayed_joint_state_broadcaster = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_entity,
+            on_exit=[joint_state_broadcaster],
+        )
+    )
+
     return LaunchDescription([
-        rsp,
         gazebo,
         spawn_entity,
-        static_tf,
-        joint_state_broadcaster,
-
-        # effort_controller,
-        # position_controller,
-        joint_trajectory_controller,
-
+        delayed_joint_state_broadcaster,
+        delayed_joint_trajectory_controller
     ])
