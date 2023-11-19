@@ -22,12 +22,12 @@
         <joint name="joint_6" value="0"/>
     </group_state>
     <group_state name="work" group="sensorob_group">
-        <joint name="joint_1" value="-1.0327"/>
-        <joint name="joint_2" value="0.5212"/>
-        <joint name="joint_3" value="-1.2256"/>
-        <joint name="joint_4" value="1.9869"/>
-        <joint name="joint_5" value="1.1966"/>
-        <joint name="joint_6" value="1.267"/>
+        <joint name="joint_1" value="0"/>
+        <joint name="joint_2" value="-0.1885"/>
+        <joint name="joint_3" value="-1.1943"/>
+        <joint name="joint_4" value="-0.713"/>
+        <joint name="joint_5" value="0.9016"/>
+        <joint name="joint_6" value="1.8918"/>
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="link_1" reason="Adjacent"/>
