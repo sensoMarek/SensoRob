@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: sensorob_description
+    relative_path: urdf/sensorob.urdf.xacro
+  srdf:
+    relative_path: config/sensorob.srdf
+  package_settings:
+    author_name: Jakub Ivan
+    author_email: xivan@stuba.sk
+    generated_timestamp: 1699872372
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
