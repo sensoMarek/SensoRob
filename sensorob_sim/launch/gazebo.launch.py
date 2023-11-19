@@ -26,11 +26,23 @@ def generate_launch_description():
                                    '-entity', 'sensorob'],
                         output='screen')
 
+    # Static TF:
+    static_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="static_transform_publisher",
+        output="log",
+        arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "base_link"],
+    )
+
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
         name="joint_state_broadcaster_node",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        # remappings=[
+        #     ('/joint_states', '/sensorob/joint_states')
+        # ]
     )
 
     position_controller = Node(
@@ -51,13 +63,14 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         name="joint_trajectory_controller_node",
-        arguments=["joint_trajectory_controller", "-c", "/controller_manager"],
+        arguments=["sensorob_group_controller", "-c", "/controller_manager"],
     )
 
     return LaunchDescription([
         rsp,
         gazebo,
         spawn_entity,
+        static_tf,
         joint_state_broadcaster,
 
         # effort_controller,

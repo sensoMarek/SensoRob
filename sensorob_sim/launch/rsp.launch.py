@@ -15,7 +15,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
 
     # Process the URDF file
-    pkg_path = os.path.join(get_package_share_directory('sensorob_moveit_config'))
+    pkg_path = os.path.join(get_package_share_directory('sensorob_description'))
     robot_description_file = os.path.join(pkg_path, 'urdf', 'sensorob.urdf.xacro')
     # robot_description_semantic_file = os.path.join(pkg_path, 'urdf', 'sensorob.urdf.xacro')
     robot_description_config = xacro.process_file(robot_description_file)
@@ -26,7 +26,9 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
-        parameters=[params]
+        parameters=[params],
+        # remappings=[
+        #     ('/joint_states', '/sensorob/joint_states')]
     )
 
     # Launch!
