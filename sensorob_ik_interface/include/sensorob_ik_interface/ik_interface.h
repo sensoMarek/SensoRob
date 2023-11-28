@@ -9,6 +9,7 @@
 #include <string.h>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 std::vector<double> interpolate(double start, double end, int n);
 
