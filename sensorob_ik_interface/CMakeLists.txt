@@ -14,6 +14,8 @@ find_package(moveit_ros_planning REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
+find_package(geometry_msgs)
+find_package(diagnostic_msgs)
 
 
 include_directories(
@@ -23,7 +25,8 @@ include_directories(
 
 add_executable(ik_interface
         src/ik_interface.cpp
-        src/fk.cpp)
+        src/fk.cpp
+        src/ik.cpp)
 target_include_directories(ik_interface PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)

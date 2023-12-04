@@ -2,8 +2,8 @@
 // Created by jakub on 4.12.2023.
 //
 
-#ifndef SENSOROB_IK_INTERFACE_FK_H
-#define SENSOROB_IK_INTERFACE_FK_H
+#ifndef SENSOROB_IK_INTERFACE_IK_H
+#define SENSOROB_IK_INTERFACE_IK_H
 
 #define ERROR "ERROR"
 #define WARN "WARN"
@@ -16,14 +16,16 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-namespace fk {
-    int computeAndLogFK(const std::string& planning_group,
+
+namespace ik {
+    int computeAndLogIK(const std::string& planning_group,
                         const moveit::core::JointModelGroup* joint_model_group,
                         const moveit::core::RobotStatePtr& cur_state,
-                        int num_of_joint_samples,
-                        std::string file_name);
-    std::vector<double> interpolate(double start, double end, int n);
+                        int num_provided_samples,
+                        std::string file_pos_name,
+                        std::string file_time_name);
     void clog(const std::string&, std::string log_level = "INFO");
 
 }
-#endif //SENSOROB_IK_INTERFACE_FK_H
+
+#endif //SENSOROB_IK_INTERFACE_IK_H
