@@ -21,13 +21,15 @@ include_directories(
   /opt/ros/humble/include/moveit_msgs
 )
 
-add_executable(ik_interface src/ik_interface.cpp)
+add_executable(ik_interface
+        src/ik_interface.cpp
+        src/fk.cpp)
 target_include_directories(ik_interface PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_compile_features(ik_interface PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 ament_target_dependencies(
-  ik_interface
+  "ik_interface"
   "rclcpp"
   "moveit_core"
   "moveit_ros_planning_interface"
