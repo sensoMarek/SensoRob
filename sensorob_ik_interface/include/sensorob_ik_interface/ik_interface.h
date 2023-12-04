@@ -11,6 +11,6 @@
 #include <vector>
 #include <fstream>
 
-std::vector<double> interpolate(double start, double end, int n);
+
 
 #endif //SENSOROB_IK_INTERFACE_IK_INTERFACE_H
