@@ -9,15 +9,15 @@
 
 #include <moveit_visual_tools/moveit_visual_tools.h>
 #include <Eigen/Dense>
+#include <geometry_msgs/geometry_msgs/msg/pose_stamped.h>
+#include <rclcpp/clock.hpp>
+
 
 #include "sensorob_ik_interface/ik_interface.h"
 #include "sensorob_ik_interface/fk.h"
+#include "sensorob_ik_interface/ik.h"
 
-
-// All source files that use ROS logging should define a file-specific
-// static const rclcpp::Logger named LOGGER, located at the top of the file
-// and inside the namespace with the narrowest scope (if there is one)
-static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik");
+static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik_interface");
 
 int main(int argc, char** argv)
 {
@@ -57,59 +57,24 @@ int main(int argc, char** argv)
 
     visual_tools.trigger();
 
-    RCLCPP_INFO(LOGGER, "Planning frame: %s", move_group.getPlanningFrame().c_str());
-
-    RCLCPP_INFO(LOGGER, "End effector link: %s", move_group.getEndEffectorLink().c_str());
-
-    // TODO - nic sa nevypisuje
-    RCLCPP_INFO(LOGGER, "Available Planning Groups:");
-    std::copy(move_group.getJointModelGroupNames().begin(), move_group.getJointModelGroupNames().end(),
-              std::ostream_iterator<std::string>(std::cout, ", "));
-
+    clog("Planning frame: " + move_group.getPlanningFrame());
+    clog("End effector link: " + move_group.getEndEffectorLink());
+    
+    
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
-
     moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
+    int num_of_joint_samples = 3;
+    std::string file_pos_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/position.csv";
+    std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
 
-    fk::computeAndLogFK(PLANNING_GROUP, joint_model_group, cur_state);
+    // compute and log translation and orientation (FK) of the end effector for a joint values seed
+    fk::computeAndLogFK(PLANNING_GROUP, joint_model_group, cur_state, num_of_joint_samples, file_pos_name);
+    // compute and log IK accurance and duration
+    ik::computeAndLogIK(PLANNING_GROUP, joint_model_group, cur_state, std::pow(num_of_joint_samples,6), file_pos_name, file_time_name);
 
-
-
-
-
-
-    // Planning to a joint-space goal
-    moveit::core::RobotStatePtr current_state = move_group.getCurrentState(10);
-    //
-    // Next get the current set of joint values for the group.
-    std::vector<double> joint_group_positions;
-    current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
-
-    // Now, let's modify one of the joints, plan to the new joint space goal, and visualize the plan.
-    joint_group_positions[0] = -0.5;  // radians
-    joint_group_positions[1] -= 0.2;
-
-    bool within_bounds = move_group.setJointValueTarget(joint_group_positions);
-    if (!within_bounds)
-    {
-        RCLCPP_WARN(LOGGER, "Target joint position(s) were outside of limits, but we will plan and clamp to the limits ");
-    }
-
-    // We lower the allowed maximum velocity and acceleration to 5% of their maximum.
-    // The default values are 10% (0.1).
-    // Set your preferred defaults in the joint_limits.yaml file of your robot's moveit_config
-    // or set explicit factors in your code if you need your robot to move faster.
-    move_group.setMaxVelocityScalingFactor(0.5);
-    move_group.setMaxAccelerationScalingFactor(0.5);
-
-    bool success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
-    RCLCPP_INFO(LOGGER, "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
-
-    // Visualize the plan in RViz:
-    visual_tools.deleteAllMarkers();
-    visual_tools.publishText(text_pose, "Joint_Space_Goal", rvt::WHITE, rvt::XLARGE);
-    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
+    
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
 
@@ -119,6 +84,16 @@ int main(int argc, char** argv)
 
     rclcpp::shutdown();
     return 0;
+}
+
+void clog(const std::string& data, std::string log_level) {
+    if (log_level == "WARN") {
+        RCLCPP_WARN(LOGGER, "%s", data.c_str());
+    } else if (log_level == "ERROR") {
+        RCLCPP_ERROR(LOGGER,"%s", data.c_str());
+    } else {
+        RCLCPP_INFO(LOGGER, "%s", data.c_str());
+    }
 }
 
 
