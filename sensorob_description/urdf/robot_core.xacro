@@ -17,140 +17,140 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_1">
     <inertial>
-      <origin xyz="-0.017391128474433415 -0.007793862548282313 0.09170345730211693" rpy="0 0 0"/>
+      <origin xyz="-0.019055565879578885 0.000286070591079963 0.09170345730211701" rpy="0 0 0"/>
       <mass value="2.1673778446055563"/>
-      <inertia ixx="0.006827" iyy="0.00695" izz="0.005681" ixy="-0.000182" iyz="0.00035" ixz="0.000778"/>
+      <inertia ixx="0.006709" iyy="0.007067" izz="0.005681" ixy="-7e-05" iyz="-1.2e-05" ixz="0.000853"/>
     </inertial>
     <visual>
       <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_2">
     <inertial>
-      <origin xyz="-0.03597352078588314 -0.017962304231270702 0.2436907782754546" rpy="0 0 0"/>
+      <origin xyz="-0.04019415358244168 -0.0010759815082936714 0.2436907782754546" rpy="0 0 0"/>
       <mass value="3.7950516594171546"/>
-      <inertia ixx="0.123994" iyy="0.117506" izz="0.018463" ixy="0.003737" iyz="-0.000547" ixz="-0.00102"/>
+      <inertia ixx="0.125698" iyy="0.115802" izz="0.018463" ixy="-8.3e-05" iyz="-6.5e-05" ixz="-0.001156"/>
     </inertial>
     <visual>
-      <origin xyz="0.023626 0.041765 -0.187444" rpy="0 0 0"/>
+      <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
-      <origin xyz="0.023626 0.041765 -0.187444" rpy="0 0 0"/>
+      <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_3">
     <inertial>
-      <origin xyz="0.03341663223535368 0.015743461072743326 0.13201293251123314" rpy="0 0 0"/>
+      <origin xyz="0.03693926470328392 0.0001460307076859913 0.13201293251123314" rpy="0 0 0"/>
       <mass value="1.1351525716942115"/>
-      <inertia ixx="0.007184" iyy="0.007038" izz="0.001398" ixy="9.8e-05" iyz="-2.7e-05" ixz="-7.1e-05"/>
+      <inertia ixx="0.007232" iyy="0.006989" izz="0.001398" ixy="7e-06" iyz="6e-06" ixz="-7.5e-05"/>
     </inertial>
     <visual>
-      <origin xyz="-0.004978 0.028427 -0.612445" rpy="0 0 0"/>
+      <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
-      <origin xyz="-0.004978 0.028427 -0.612445" rpy="0 0 0"/>
+      <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_4">
     <inertial>
-      <origin xyz="0.03362129286277545 0.015876430068886876 0.11081132606474609" rpy="0 0 0"/>
+      <origin xyz="0.03718105834409844 0.00018008050762574395 0.11081132606474409" rpy="0 0 0"/>
       <mass value="1.2025016995467235"/>
-      <inertia ixx="0.004179" iyy="0.004517" izz="0.002169" ixy="-0.000203" iyz="-0.000281" ixz="-0.000573"/>
+      <inertia ixx="0.004084" iyy="0.004612" izz="0.002169" ixy="-1e-06" iyz="-1.3e-05" ixz="-0.000638"/>
     </inertial>
     <visual>
-      <origin xyz="-0.038874 0.012621 -0.86107" rpy="0 0 0"/>
+      <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
-      <origin xyz="-0.038874 0.012621 -0.86107" rpy="0 0 0"/>
+      <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_5">
     <inertial>
-      <origin xyz="-0.013801299868957234 -0.00696463747478801 0.11721977365765945" rpy="0 0 0"/>
+      <origin xyz="-0.01545179087098288 -0.0004790673243868698 0.11721977365765723" rpy="0 0 0"/>
       <mass value="1.10970553090912"/>
-      <inertia ixx="0.006017" iyy="0.005981" izz="0.001491" ixy="3.4e-05" iyz="-0.000165" ixz="-0.000366"/>
+      <inertia ixx="0.006037" iyy="0.005961" izz="0.001491" ixy="9e-06" iyz="5e-06" ixz="-0.000401"/>
     </inertial>
     <visual>
-      <origin xyz="-0.013787 0.024319 -1.004695" rpy="0 0 0"/>
+      <origin xyz="-0.008154 -0.001091 -1.004695" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
-      <origin xyz="-0.013787 0.024319 -1.004695" rpy="0 0 0"/>
+      <origin xyz="-0.008154 -0.001091 -1.004695" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
 
   <link name="link_6">
     <inertial>
-      <origin xyz="-3.4959433121376643e-07 -1.774095831907907e-07 0.005353824436649113" rpy="0 0 0"/>
+      <origin xyz="-3.087896676863544e-07 -8.620905638662135e-13 0.005353824436647114" rpy="0 0 0"/>
       <mass value="0.04766984698965481"/>
-      <inertia ixx="9e-06" iyy="9e-06" izz="1.7e-05" ixy="0.0" iyz="-0.0" ixz="0.0"/>
+      <inertia ixx="9e-06" iyy="9e-06" izz="1.7e-05" ixy="-0.0" iyz="-0.0" ixz="0.0"/>
     </inertial>
     <visual>
-      <origin xyz="-0.003818 0.028968 -1.226445" rpy="0 0 0"/>
+      <origin xyz="0.002846 -0.001091 -1.226445" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
-      <origin xyz="-0.003818 0.028968 -1.226445" rpy="0 0 0"/>
+      <origin xyz="0.002846 -0.001091 -1.226445" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
+       <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -165,49 +165,48 @@
     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="link_1"/>
-    <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="2.181662" lower="-2.96706" effort="5" velocity="2"/>
-  <!--   <dynamics damping="100" friction="100"/>-->
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit upper="2.181662" lower="-2.96706" effort="100" velocity="100"/>
   </joint>
 
   <joint name="joint_2" type="revolute">
-    <origin xyz="-0.091906 -0.042856 0.117" rpy="0 0 0"/>
+    <origin xyz="-0.101407 0.0 0.117" rpy="0 0 0"/>
     <parent link="link_1"/>
     <child link="link_2"/>
-    <axis xyz="-0.906308 -0.422618 0.0"/>
-    <limit upper="2.007129" lower="-2.007129" effort="5" velocity="2"/>
+    <axis xyz="-1.0 -0.0 0.0"/>
+    <limit upper="2.007129" lower="-2.007129" effort="100" velocity="100"/>
   </joint>
 
   <joint name="joint_3" type="revolute">
-    <origin xyz="0.028604 0.013338 0.425001" rpy="0 0 0"/>
+    <origin xyz="0.031561 0.0 0.425001" rpy="0 0 0"/>
     <parent link="link_2"/>
     <child link="link_3"/>
-    <axis xyz="0.906308 0.422618 -0.0"/>
-    <limit upper="2.879793" lower="-2.792527" effort="5" velocity="2"/>
+    <axis xyz="1.0 0.0 -0.0"/>
+    <limit upper="2.879793" lower="-2.792527" effort="100" velocity="100"/>
   </joint>
 
   <joint name="joint_4" type="revolute">
-    <origin xyz="0.033896 0.015806 0.248625" rpy="0 0 0"/>
+    <origin xyz="0.0374 0.0 0.248625" rpy="0 0 0"/>
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="4.45059" lower="-1.658063" effort="5" velocity="2"/>
+    <limit upper="4.45059" lower="-1.658063" effort="100" velocity="100"/>
   </joint>
 
   <joint name="joint_5" type="revolute">
-    <origin xyz="-0.025087 -0.011698 0.143625" rpy="0 0 0"/>
+    <origin xyz="-0.02768 0.0 0.143625" rpy="0 0 0"/>
     <parent link="link_4"/>
     <child link="link_5"/>
-    <axis xyz="-0.906308 -0.422618 -0.0"/>
-    <limit upper="2.96706" lower="-2.96706" effort="5" velocity="2"/>
+    <axis xyz="-1.0 -0.0 -0.0"/>
+    <limit upper="2.96706" lower="-2.96706" effort="100" velocity="100"/>
   </joint>
 
   <joint name="joint_6" type="revolute">
-    <origin xyz="-0.009969 -0.004649 0.22175" rpy="0 0 0"/>
+    <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="-0.0 -0.0 1.0"/>
-    <limit upper="3.141593" lower="-3.141593" effort="5" velocity="2"/>
+    <axis xyz="-0.0 0.0 1.0"/>
+    <limit upper="3.141593" lower="-3.141593" effort="100" velocity="100"/>
   </joint>
 
 </robot>
