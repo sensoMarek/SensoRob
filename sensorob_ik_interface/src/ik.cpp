@@ -20,7 +20,7 @@ namespace ik {
         std::vector<double> joint_values_ik;
         int num_processed_samples = 0;
         int num_success = 0;
-        int timeout = 0.6; // t[s]
+        int timeout = 0.1; // t[s]
 
 
         // open file for reading (with translation and orientation data of end effector)
@@ -87,13 +87,13 @@ namespace ik {
                 cur_state->setJointGroupPositions(planning_group, joint_values_ik);
                 const Eigen::Affine3d &pose_found = cur_state->getGlobalLinkTransform("link_6");
 
-                double accurancy = sqrt(abs(pose_desired.pose.position.x - pose_found.translation().x()) +
-                                        abs(pose_desired.pose.position.y - pose_found.translation().y()) +
-                                        abs(pose_desired.pose.position.z - pose_found.translation().z()));
+                double accurancy = sqrt(pow(pose_desired.pose.position.x - pose_found.translation().x(), 2) +
+                                        pow(pose_desired.pose.position.y - pose_found.translation().y(), 2) +
+                                        pow(pose_desired.pose.position.z - pose_found.translation().z(), 2));
                 file_time << accurancy << " " << duration.seconds() << std::endl;
             } else {
 //                clog("Did not find IK solution", ERROR);
-                file_time << 0 << " " << 0 << std::endl;
+                file_time << -1 << " " << -1 << std::endl;
             }
         }
 
