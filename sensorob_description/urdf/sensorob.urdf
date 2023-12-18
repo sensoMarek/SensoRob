@@ -57,7 +57,7 @@
   </link>
   <link name="base_link">
     <inertial>
-      <origin rpy="0 0 0" xyz="0.06842933950869011 0.0009438578686686358 -0.026799613448182"/>
+      <origin rpy="0 0 0" xyz="0.0684293395086911 0.0009438578686822592 -0.026799613448182283"/>
       <mass value="1.855542034998811"/>
       <inertia ixx="0.00951" ixy="1e-05" ixz="2.3e-05" iyy="0.008318" iyz="-2.2e-05" izz="0.007035"/>
     </inertial>
@@ -77,7 +77,7 @@
   </link>
   <link name="link_1">
     <inertial>
-      <origin rpy="0 0 0" xyz="-0.019055565879578885 0.000286070591079963 0.09170345730211701"/>
+      <origin rpy="0 0 0" xyz="-0.019055565879577983 0.00028607059109358383 0.0917034573021166"/>
       <mass value="2.1673778446055563"/>
       <inertia ixx="0.006709" ixy="-7e-05" ixz="0.000853" iyy="0.007067" iyz="-1.2e-05" izz="0.005681"/>
     </inertial>
@@ -97,7 +97,7 @@
   </link>
   <link name="link_2">
     <inertial>
-      <origin rpy="0 0 0" xyz="-0.04019415358244168 -0.0010759815082936714 0.2436907782754546"/>
+      <origin rpy="0 0 0" xyz="-0.04019415358244136 -0.0010759815082800456 0.24369077827545405"/>
       <mass value="3.7950516594171546"/>
       <inertia ixx="0.125698" ixy="-8.3e-05" ixz="-0.001156" iyy="0.115802" iyz="-6.5e-05" izz="0.018463"/>
     </inertial>
@@ -137,7 +137,7 @@
   </link>
   <link name="link_4">
     <inertial>
-      <origin rpy="0 0 0" xyz="0.03718105834409844 0.00018008050762574395 0.11081132606474409"/>
+      <origin rpy="0 0 0" xyz="0.037181058344095096 0.0001800805076532456 0.11081132606474708"/>
       <mass value="1.2025016995467235"/>
       <inertia ixx="0.004084" ixy="-1e-06" ixz="-0.000638" iyy="0.004612" iyz="-1.3e-05" izz="0.002169"/>
     </inertial>
@@ -157,7 +157,7 @@
   </link>
   <link name="link_5">
     <inertial>
-      <origin rpy="0 0 0" xyz="-0.01545179087098288 -0.0004790673243868698 0.11721977365765723"/>
+      <origin rpy="0 0 0" xyz="-0.015451790870986186 -0.0004790673243593754 0.11721977365766034"/>
       <mass value="1.10970553090912"/>
       <inertia ixx="0.006037" ixy="9e-06" ixz="-0.000401" iyy="0.005961" iyz="5e-06" izz="0.001491"/>
     </inertial>
@@ -177,16 +177,16 @@
   </link>
   <link name="link_6">
     <inertial>
-      <origin rpy="0 0 0" xyz="-3.0879003850084463e-07 9.529287081644355e-13 0.005353824436650445"/>
+      <origin rpy="0 0 0" xyz="-3.0878998574747005e-07 -8.994784084226382e-13 0.005353824436650445"/>
       <mass value="0.04766984698965481"/>
-      <inertia ixx="9e-06" ixy="-0.0" ixz="-0.0" iyy="9e-06" iyz="0.0" izz="1.7e-05"/>
+      <inertia ixx="9e-06" ixy="-0.0" ixz="0.0" iyy="9e-06" iyz="-0.0" izz="1.7e-05"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0.002846 -0.001091 -1.226445"/>
       <geometry>
         <mesh filename="file:///home/jakub/ros2_ws/install/sensorob_description/share/sensorob_description/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-      <material name="silver"/>
+      <material name="white"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.002846 -0.001091 -1.226445"/>
@@ -204,21 +204,21 @@
     <origin rpy="0 0 0" xyz="0.06828 0.001091 0.070444"/>
     <parent link="base_link"/>
     <child link="link_1"/>
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="0.0 -0.0 1.0"/>
     <limit effort="100" lower="-2.96706" upper="2.181662" velocity="100"/>
   </joint>
   <joint name="joint_2" type="revolute">
     <origin rpy="0 0 0" xyz="-0.101407 0.0 0.117"/>
     <parent link="link_1"/>
     <child link="link_2"/>
-    <axis xyz="-1.0 -0.0 0.0"/>
+    <axis xyz="-1.0 0.0 -0.0"/>
     <limit effort="100" lower="-2.007129" upper="2.007129" velocity="100"/>
   </joint>
   <joint name="joint_3" type="revolute">
     <origin rpy="0 0 0" xyz="0.031561 0.0 0.425001"/>
     <parent link="link_2"/>
     <child link="link_3"/>
-    <axis xyz="1.0 0.0 -0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
     <limit effort="100" lower="-2.792527" upper="2.879793" velocity="100"/>
   </joint>
   <joint name="joint_4" type="revolute">
@@ -232,15 +232,15 @@
     <origin rpy="0 0 0" xyz="-0.02768 0.0 0.143625"/>
     <parent link="link_4"/>
     <child link="link_5"/>
-    <axis xyz="-1.0 -0.0 -0.0"/>
+    <axis xyz="-1.0 -0.0 0.0"/>
     <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
   </joint>
   <joint name="joint_6" type="revolute">
     <origin rpy="0 0 0" xyz="-0.011 0.0 0.22175"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="-0.0 0.0 1.0"/>
-    <limit effort="100" lower="-3.141593" upper="3.141593" velocity="100"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit effort="100" lower="-2.792527" upper="2.792527" velocity="100"/>
   </joint>
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
