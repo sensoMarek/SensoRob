@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: Jakub Ivan
     author_email: xivan@stuba.sk
-    generated_timestamp: 1699872372
+    generated_timestamp: 1702916057
   control_xacro:
     command:
       - position
