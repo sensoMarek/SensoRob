@@ -1,14 +1,8 @@
-<?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="sensorob">
-    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+<?xml version="1.0" ?>
+<robot name="sensorob" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- Import sensorob urdf file -->
-    <xacro:include filename="$(find sensorob_description)/urdf/sensorob.urdf.xacro" />
+  <xacro:include filename="robot_core.xacro" />
 
-    <!-- Import control_xacro -->
-    <xacro:include filename="sensorob.ros2_control.xacro" />
-
-
-    <xacro:sensorob_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+  <xacro:include filename="$(find sensorob_description)/urdf/ros2_control.xacro" />
 
 </robot>
