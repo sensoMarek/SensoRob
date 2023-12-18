@@ -177,16 +177,16 @@
   </link>
   <link name="link_6">
     <inertial>
-      <origin rpy="0 0 0" xyz="-3.087896676863544e-07 -8.620905638662135e-13 0.005353824436647114"/>
+      <origin rpy="0 0 0" xyz="-3.0879003850084463e-07 9.529287081644355e-13 0.005353824436650445"/>
       <mass value="0.04766984698965481"/>
-      <inertia ixx="9e-06" ixy="-0.0" ixz="0.0" iyy="9e-06" iyz="-0.0" izz="1.7e-05"/>
+      <inertia ixx="9e-06" ixy="-0.0" ixz="-0.0" iyy="9e-06" iyz="0.0" izz="1.7e-05"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0.002846 -0.001091 -1.226445"/>
       <geometry>
         <mesh filename="file:///home/jakub/ros2_ws/install/sensorob_description/share/sensorob_description/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-      <material name="white"/>
+      <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.002846 -0.001091 -1.226445"/>
