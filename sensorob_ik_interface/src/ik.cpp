@@ -20,7 +20,7 @@ namespace ik {
         std::vector<double> joint_values_ik;
         int num_processed_samples = 0;
         int num_success = 0;
-        int timeout = 0.1; // t[s]
+        double timeout = 0.1; // t[s]
 
 
         // open file for reading (with translation and orientation data of end effector)
