@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
     fk::computeAndLogFK(PLANNING_GROUP, joint_model_group, cur_state, num_of_joint_samples, file_pos_name);
     // compute and log IK accurance and duration
-    ik::computeAndLogIK(PLANNING_GROUP, joint_model_group, cur_state, std::pow(num_of_joint_samples,6), file_pos_name, file_time_name);
+    ik::computeAndLogIK(PLANNING_GROUP, joint_model_group, cur_state, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
 
     
     visual_tools.trigger();
