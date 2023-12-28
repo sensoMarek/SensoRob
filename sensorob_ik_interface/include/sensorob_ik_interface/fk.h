@@ -19,10 +19,8 @@
 #include <fstream>
 namespace fk {
     int computeAndLogFK(const std::shared_ptr<rclcpp::Node>& move_group_node,
+                        const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
-                        const moveit::core::JointModelGroup* joint_model_group,
-                        const moveit::core::RobotStatePtr& cur_state,
-                        const std::vector<std::string>& joint_names,
                         int num_of_joint_samples,
                         std::string file_name);
     std::vector<double> interpolate(double start, double end, int n);

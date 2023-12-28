@@ -9,12 +9,16 @@ namespace fk {
 
 
     int computeAndLogFK(const std::shared_ptr<rclcpp::Node>& move_group_node,
+                        const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
-                        const moveit::core::JointModelGroup* joint_model_group,
-                        const moveit::core::RobotStatePtr& cur_state,
-                        const std::vector<std::string>& joint_names,
                         int num_of_joint_samples,
                         std::string file_name) {
+
+        const moveit::core::JointModelGroup* joint_model_group =
+                move_group.getCurrentState()->getJointModelGroup(planning_group);
+        moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
+        std::vector<std::string> joint_names = move_group.getActiveJoints();
+        int num_processed_samples = 0;
 
         rclcpp::Client<moveit_msgs::srv::GetStateValidity>::SharedPtr validity_client;
         validity_client = move_group_node->create_client<moveit_msgs::srv::GetStateValidity>("check_state_validity");
@@ -45,6 +49,7 @@ namespace fk {
         }
 
         // Create a vector of all robot configurations
+        clog("Creating robot states");
         std::vector<std::vector<double>> joint_samples;
         for (unsigned long i=0; i<6; i++) {
             joint_samples.push_back(interpolate(std::min(joint_limits[i][0],joint_limits[i][1]),
@@ -62,6 +67,7 @@ namespace fk {
         clog("File opened");
 
         // Iterate over all states and check its validity (self-collision point of view)
+        clog("Validating and saving valid robot states");
         for (int i0 = 0; i0 < num_of_joint_samples; i0++) {
             for (int i1 = 0; i1 < num_of_joint_samples; i1++) {
                 for (int i2 = 0; i2 < num_of_joint_samples; i2++) {
@@ -75,15 +81,16 @@ namespace fk {
                                             joint_samples[4][i4],
                                             0.0};
 
-                            // set current join states and send asynchronous service request, then wait for being ready
+                            // Set current join states and send asynchronous service request, then wait for being ready
                             request->robot_state.joint_state.position = joint_states;
                             auto future = validity_client->async_send_request(request);
                             future.wait();
 
-                            // get response
+                            // Get response
                             auto response = future.get();
                             if (response->valid) {
-//                                clog("Joint values are valid!");
+                                /*clog("Joint values are valid!");*/
+
                                 cur_state->setJointGroupPositions(planning_group, joint_states);
                                 const Eigen::Affine3d &end_effector_state = cur_state->getGlobalLinkTransform("link_6");
 
@@ -97,16 +104,20 @@ namespace fk {
                                      << quaternion.z() << " "
                                      << std::endl;
                             }
-//                            else {
-//                                clog("Joint values are not valid!", WARN);
-//                            }
+                            /*else {
+                                clog("Joint values are not valid!", WARN);
+                            }*/
+
+                            num_processed_samples++;
+                            if (num_processed_samples%100==0) clog("Processed " + std::to_string(num_processed_samples) + " samples.");
                         }
                     }
                 }
             }
         }
 
-        // close file
+        // Close file
+        clog("Processed " + std::to_string(num_processed_samples) + " samples.");
         clog("Translation and orientation saved.");
         file.close();
         if (!file.is_open()) {

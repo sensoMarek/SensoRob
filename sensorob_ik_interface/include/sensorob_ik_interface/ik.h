@@ -18,9 +18,8 @@
 #include <fstream>
 
 namespace ik {
-    int computeAndLogIK(const std::string& planning_group,
-                        const moveit::core::JointModelGroup* joint_model_group,
-                        const moveit::core::RobotStatePtr& cur_state,
+    int computeAndLogIK(const moveit::planning_interface::MoveGroupInterface& move_group,
+                        const std::string& planning_group,
                         int num_provided_samples,
                         std::string file_pos_name,
                         std::string file_time_name);
