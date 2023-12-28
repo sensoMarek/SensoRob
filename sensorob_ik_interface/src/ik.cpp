@@ -8,7 +8,8 @@
 namespace ik {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik");
 
-    int computeAndLogIK(const moveit::planning_interface::MoveGroupInterface& move_group,
+    int computeAndLogIK(const std::shared_ptr<rclcpp::Node>& move_group_node,
+                        const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
                         int num_total_samples,
                         std::string file_pos_name,
@@ -18,13 +19,19 @@ namespace ik {
                 move_group.getCurrentState()->getJointModelGroup(planning_group);
         moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
 
-        kinematics::KinematicsQueryOptions o;
-        o.return_approximate_solution = false;
+        // Create a tf2_ros::Buffer with a clock
+        tf2_ros::Buffer tf_buffer(move_group_node->get_clock());
+
+        // Create a tf2_ros::TransformListener
+        tf2_ros::TransformListener tf_listener(tf_buffer, move_group_node);
+
+        // Select move group and IK algorithm
+        const kinematics::KinematicsBaseConstPtr& solver = joint_model_group->getSolverInstance();
+
+
         std::vector<double> joint_values_ik;
         int num_valid_samples = 0;
         int num_found_samples = 0;
-        double timeout = 0.1; // t[s]
-
 
         // Open file for reading (with translation and orientation data of end effector)
         std::fstream file_pos(file_pos_name, std::ios::in);
@@ -59,36 +66,82 @@ namespace ik {
                     break;
             }
 
-            // Create pose read from file
-            geometry_msgs::msg::PoseStamped pose_desired;
-            pose_desired.pose.position.x = lineDoubles[0];
-            pose_desired.pose.position.y = lineDoubles[1];
-            pose_desired.pose.position.z = lineDoubles[2];
-            pose_desired.header.frame_id = "base_link";
-            pose_desired.header.stamp = rclcpp::Clock().now();
+            // Create pose from file in world frame
+            geometry_msgs::msg::Pose pose_desired;
+            pose_desired.position.x = lineDoubles[0];
+            pose_desired.position.y = lineDoubles[1];
+            pose_desired.position.z = lineDoubles[2];
+            pose_desired.orientation.w = lineDoubles[3];
+            pose_desired.orientation.x = lineDoubles[4];
+            pose_desired.orientation.y = lineDoubles[5];
+            pose_desired.orientation.z = lineDoubles[6];
+
+            // Perform the transformation to the "world" frame, so we can compute the accuracy of found IK solutions
+            geometry_msgs::msg::PoseStamped pose_desired_world;
+            geometry_msgs::msg::PoseStamped pose_desired_base_link;
+            pose_desired_base_link.pose = pose_desired;
+            pose_desired_base_link.header.frame_id = "base_link";
+
+            // Transformation base_link -> world
+            try {
+                // Wait for the transform to become available with a timeout
+                tf_buffer.canTransform("world", "base_link", tf2::TimePointZero, std::chrono::seconds(3));
+
+                tf_buffer.transform(pose_desired_base_link, pose_desired_world, "world");
+            } catch (tf2::TransformException &ex) {
+                clog(ex.what());
+                clog("Failed to transform pose" + std::to_string(num_valid_samples), ERROR );
+                pose_desired_world = pose_desired_base_link;
+            }
+
+            // Variables for getPositionIK function
+            std::vector<geometry_msgs::msg::Pose> ik_poses = {pose_desired_base_link.pose};
+            std::vector<std::vector<double>> solutions;
+            std::vector<double> ik_seed_state = {0, 0, 0, 0, 0, 0};
+            kinematics::KinematicsResult result{};
+            kinematics::KinematicsQueryOptions o;
+            o.return_approximate_solution = false; // we do not want approx solutions
 
             // Measure the duration of IK computation
             rclcpp::Time start_time = rclcpp::Clock().now();
-            bool ik_found = cur_state->setFromIK(joint_model_group, pose_desired.pose, timeout,
-                                                 moveit::core::GroupStateValidityCallbackFn(), o);
+
+            // Compute inverse kinematics
+            solver->getPositionIK(ik_poses, ik_seed_state, solutions, result, o);
+
             rclcpp::Time end_time = rclcpp::Clock().now();
-            rclcpp::Duration duration = end_time - start_time;
 
-            // If IK found, validate and log results
-            if (ik_found) {
-                num_found_samples++;
-                cur_state->copyJointGroupPositions(joint_model_group, joint_values_ik);
-
-                cur_state->setJointGroupPositions(planning_group, joint_values_ik);
-                const Eigen::Affine3d &pose_found = cur_state->getGlobalLinkTransform("link_6");
-
-                double accurancy = sqrt(pow(pose_desired.pose.position.x - pose_found.translation().x(), 2) +
-                                        pow(pose_desired.pose.position.y - pose_found.translation().y(), 2) +
-                                        pow(pose_desired.pose.position.z - pose_found.translation().z(), 2));
-                file_time << accurancy << " " << duration.seconds() << std::endl;
-            } else {
+            // Check if the computation was successful
+            if (result.kinematic_error != kinematics::KinematicError::OK) {
+                /*throw std::runtime_error("Unable to compute IK. Error: " + std::to_string(result.kinematic_error));*/
                 /*clog("Did not find IK solution", ERROR);*/
                 file_time << -1 << " " << -1 << std::endl;
+            }
+            else {
+                num_found_samples++;
+                rclcpp::Duration duration = end_time - start_time;
+
+                file_time << duration.seconds() << " ";
+
+                /*clog("pose_desired_world: "+ std::to_string(pose_desired_world.pose.position.x)+" "+ std::to_string(pose_desired_world.pose.position.y)+" "+ std::to_string(pose_desired_world.pose.position.z));*/
+
+                for (const auto &solution : solutions) {
+                    cur_state->setJointGroupPositions(planning_group, solution);
+                    const Eigen::Affine3d &pose_found = cur_state->getGlobalLinkTransform("link_6");
+                      /*clog("pose_found:   "+ std::to_string(pose_found.translation().x())+" "+ std::to_string(pose_found.translation().y())+" "+ std::to_string(pose_found.translation().z()));*/
+
+                    double accuracy = sqrt( pow(pose_desired_world.pose.position.x - pose_found.translation().x(), 2) +
+                                                pow(pose_desired_world.pose.position.y - pose_found.translation().y(), 2) +
+                                                pow(pose_desired_world.pose.position.z - pose_found.translation().z(), 2));
+                    file_time << accuracy << " ";
+
+                    /*std::string tmp;
+                    for (const auto &joint : solution) {
+                        tmp += " " + std::to_string(joint);
+                    }
+                    clog(tmp);*/
+                }
+
+                file_time << std::endl;
             }
 
             // Counter
@@ -97,7 +150,7 @@ namespace ik {
         }
 
         clog("Processed " + std::to_string(num_valid_samples) + " samples.");
-        clog("Accurancy and duration of IK computation saved.");
+        clog("Duration and accuracy of found solutions saved.");
         clog("IK end-effector states: \n"
              "Total: " + std::to_string(num_total_samples) + "\n"
              "Valid: " + std::to_string(num_valid_samples) + "\n"

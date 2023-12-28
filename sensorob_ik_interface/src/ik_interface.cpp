@@ -57,14 +57,14 @@ int main(int argc, char** argv)
 
     std::vector<std::string> joint_names = move_group.getActiveJoints();
     moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
-    int num_of_joint_samples = 5;
+    int num_of_joint_samples = 10;
     std::string file_pos_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/position.csv";
     std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
 
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
-    fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name);
+//    fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name);
     // compute and log IK accurance and duration
-    ik::computeAndLogIK(move_group, PLANNING_GROUP, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
+    ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
 
     
     visual_tools.trigger();

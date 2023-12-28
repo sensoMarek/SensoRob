@@ -14,8 +14,10 @@ find_package(moveit_ros_planning REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
-find_package(geometry_msgs)
-find_package(diagnostic_msgs)
+find_package(geometry_msgs REQUIRED)
+find_package(diagnostic_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 
 include_directories(
@@ -40,6 +42,10 @@ ament_target_dependencies(
   "moveit_msgs"
   "moveit_visual_tools"
   "rviz_visual_tools"
+  "geometry_msgs"
+  "diagnostic_msgs"
+  "tf2_ros"
+  "tf2_geometry_msgs"
 )
 
 install(TARGETS ik_interface
