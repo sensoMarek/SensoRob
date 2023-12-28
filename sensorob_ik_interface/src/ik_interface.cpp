@@ -1,5 +1,4 @@
 #include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
@@ -34,10 +33,6 @@ int main(int argc, char** argv)
 
     static const std::string PLANNING_GROUP = "sensorob_group";
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
-    moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
-    const moveit::core::JointModelGroup* joint_model_group =
-            move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     // Visualization
     namespace rvt = rviz_visual_tools;
@@ -67,9 +62,9 @@ int main(int argc, char** argv)
     std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
 
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
-    fk::computeAndLogFK(move_group_node, PLANNING_GROUP, joint_model_group, cur_state, joint_names, num_of_joint_samples, file_pos_name);
+    fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name);
     // compute and log IK accurance and duration
-    ik::computeAndLogIK(PLANNING_GROUP, joint_model_group, cur_state, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
+    ik::computeAndLogIK(move_group, PLANNING_GROUP, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
 
     
     visual_tools.trigger();
