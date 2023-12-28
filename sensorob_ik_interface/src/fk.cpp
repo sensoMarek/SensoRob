@@ -8,35 +8,48 @@ namespace fk {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("fk");
 
 
-    int computeAndLogFK(const std::string& planning_group,
+    int computeAndLogFK(const std::shared_ptr<rclcpp::Node>& move_group_node,
+                        const std::string& planning_group,
                         const moveit::core::JointModelGroup* joint_model_group,
                         const moveit::core::RobotStatePtr& cur_state,
+                        const std::vector<std::string>& joint_names,
                         int num_of_joint_samples,
                         std::string file_name) {
 
-        std::vector<const moveit::core::JointModel::Bounds*> jmb = joint_model_group->getActiveJointModelsBounds();
-        std::vector<std::vector<double>> joint_limits; // only 5 joints used for space sampling, each contains max and min position
+        rclcpp::Client<moveit_msgs::srv::GetStateValidity>::SharedPtr validity_client;
+        validity_client = move_group_node->create_client<moveit_msgs::srv::GetStateValidity>("check_state_validity");
 
+        // Wait for the service to become available
+        while (!validity_client->wait_for_service(std::chrono::seconds(1))) {
+            if (!rclcpp::ok()) {
+                clog("Interrupted while waiting for the service. Exiting.", ERROR);
+                break;
+            }
+            clog("Service not available, waiting again...");
+        }
+        clog("'check_state_validity' service is available");
+
+        // Create a request
+        auto request = std::make_shared<moveit_msgs::srv::GetStateValidity::Request>();
+        request->group_name = planning_group;
+        request->robot_state.joint_state.name = joint_names;
+        request->robot_state.joint_state.header.frame_id = "base_link";
+
+        // Get joint model bounds (min, max)
+        std::vector<const moveit::core::JointModel::Bounds*> jmb = joint_model_group->getActiveJointModelsBounds();
+        std::vector<std::vector<double>> joint_limits;
         joint_limits.resize(6, std::vector<double>(2, 0.0));
         for (unsigned long i=0; i<6; i++) {
-            joint_limits[i][0] = jmb[i]->data()->max_position_;
-            joint_limits[i][1] = jmb[i]->data()->min_position_;
+            joint_limits[i][0] = jmb[i]->data()->max_position_ - 0.0000001;
+            joint_limits[i][1] = jmb[i]->data()->min_position_ + 0.0000001;
         }
 
+        // Create a vector of all robot configurations
         std::vector<std::vector<double>> joint_samples;
-
-
-        for (unsigned long i=0; i<5; i++) {
+        for (unsigned long i=0; i<6; i++) {
             joint_samples.push_back(interpolate(std::min(joint_limits[i][0],joint_limits[i][1]),
                                                 std::max(joint_limits[i][0],joint_limits[i][1]),
                                                 num_of_joint_samples));
-        }
-
-        for (unsigned long i=0; i<5; i++) {
-//        clog( "joint_samples [%ld]: \n ", i);
-            for (unsigned long j=0; j<joint_samples[i].size(); j++) {
-//            clog( "[%ld/%zu] %.2f: \n ",j,joint_samples[i].size(), joint_samples[i][j]);
-            }
         }
 
         std::vector<double> joint_states;
@@ -46,62 +59,55 @@ namespace fk {
             clog("File is not successfully opened, exiting!", ERROR);
             return -1;
         }
-
         clog("File opened");
 
-        for (int i0 = 0; i0 < num_of_joint_samples; i0++) {  // joint1
-            for (int i1 = 0; i1 < num_of_joint_samples; i1++) {  // joint2
-                for (int i2 = 0; i2 < num_of_joint_samples; i2++) {  // joint3
-                    for (int i3 = 0; i3 < num_of_joint_samples; i3++) {  // joint4
-                        for (int i4 = 0; i4 < num_of_joint_samples; i4++) {  // joint5
-
-                            joint_states = {joint_samples[0][i1],
+        // Iterate over all states and check its validity (self-collision point of view)
+        for (int i0 = 0; i0 < num_of_joint_samples; i0++) {
+            for (int i1 = 0; i1 < num_of_joint_samples; i1++) {
+                for (int i2 = 0; i2 < num_of_joint_samples; i2++) {
+                    for (int i3 = 0; i3 < num_of_joint_samples; i3++) {
+                        for (int i4 = 0; i4 < num_of_joint_samples; i4++) {
+                            joint_states.clear();
+                            joint_states = {joint_samples[0][i0],
                                             joint_samples[1][i1],
                                             joint_samples[2][i2],
                                             joint_samples[3][i3],
                                             joint_samples[4][i4],
                                             0.0};
 
-                            /*clog( "[%.2f], [%.2f], [%.2f], [%.2f], [%.2f], [%.2f]",
-                                        joint_states[0],
-                                        joint_states[1],
-                                        joint_states[2],
-                                        joint_states[3],
-                                        joint_states[4],
-                                        joint_states[5]);*/
+                            // set current join states and send asynchronous service request, then wait for being ready
+                            request->robot_state.joint_state.position = joint_states;
+                            auto future = validity_client->async_send_request(request);
+                            future.wait();
 
-                            cur_state->setJointGroupPositions(planning_group, joint_states);
-                            const Eigen::Affine3d &end_effector_state = cur_state->getGlobalLinkTransform("link_6");
+                            // get response
+                            auto response = future.get();
+                            if (response->valid) {
+//                                clog("Joint values are valid!");
+                                cur_state->setJointGroupPositions(planning_group, joint_states);
+                                const Eigen::Affine3d &end_effector_state = cur_state->getGlobalLinkTransform("link_6");
 
-                            /*clog( "Translation: x: [%.3f], y: [%.3f], z: [%.3f]",
-                                        end_effector_state.translation().x(),
-                                        end_effector_state.translation().y(),
-                                        end_effector_state.translation().z());*/
-
-                            Eigen::Quaterniond quaternion(end_effector_state.rotation());
-                            /*clog( "Rotation: w: [%.3f], x: [%.3f], y: [%.3f], z: [%.3f]",
-                                        quaternion.w(),
-                                        quaternion.x(),
-                                        quaternion.y(),
-                                        quaternion.z());*/
-
-                            file << end_effector_state.translation().x() << " "
-                                    << end_effector_state.translation().y() << " "
-                                    << end_effector_state.translation().z() << " "
-                                    << quaternion.w() << " "
-                                    << quaternion.x() << " "
-                                    << quaternion.y() << " "
-                                    << quaternion.z() << " "
-                                    << std::endl;
-
+                                Eigen::Quaterniond quaternion(end_effector_state.rotation());
+                                file << end_effector_state.translation().x() << " "
+                                     << end_effector_state.translation().y() << " "
+                                     << end_effector_state.translation().z() << " "
+                                     << quaternion.w() << " "
+                                     << quaternion.x() << " "
+                                     << quaternion.y() << " "
+                                     << quaternion.z() << " "
+                                     << std::endl;
+                            }
+//                            else {
+//                                clog("Joint values are not valid!", WARN);
+//                            }
                         }
                     }
                 }
             }
         }
 
+        // close file
         clog("Translation and orientation saved.");
-
         file.close();
         if (!file.is_open()) {
             clog("File closed.");

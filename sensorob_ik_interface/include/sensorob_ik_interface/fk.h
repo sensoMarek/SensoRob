@@ -10,6 +10,7 @@
 #define INFO "INFO"
 
 #include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit_msgs/srv/get_state_validity.hpp>
 
 #include <stdio.h>
 #include <string.h>
@@ -17,9 +18,11 @@
 #include <vector>
 #include <fstream>
 namespace fk {
-    int computeAndLogFK(const std::string& planning_group,
+    int computeAndLogFK(const std::shared_ptr<rclcpp::Node>& move_group_node,
+                        const std::string& planning_group,
                         const moveit::core::JointModelGroup* joint_model_group,
                         const moveit::core::RobotStatePtr& cur_state,
+                        const std::vector<std::string>& joint_names,
                         int num_of_joint_samples,
                         std::string file_name);
     std::vector<double> interpolate(double start, double end, int n);

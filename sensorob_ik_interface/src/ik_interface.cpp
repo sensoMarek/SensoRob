@@ -33,19 +33,15 @@ int main(int argc, char** argv)
     std::thread([&executor]() { executor.spin(); }).detach();
 
     static const std::string PLANNING_GROUP = "sensorob_group";
-
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
-
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
-
     const moveit::core::JointModelGroup* joint_model_group =
             move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
-
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     // Visualization
     namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link", "move_group_tutorial",
+    moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link", "rviz_visual_tools",
                                                         move_group.getRobotModel());
     visual_tools.deleteAllMarkers();
     visual_tools.loadRemoteControl();
@@ -64,13 +60,14 @@ int main(int argc, char** argv)
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
+    std::vector<std::string> joint_names = move_group.getActiveJoints();
     moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
-    int num_of_joint_samples = 3;
+    int num_of_joint_samples = 5;
     std::string file_pos_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/position.csv";
     std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
 
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
-    fk::computeAndLogFK(PLANNING_GROUP, joint_model_group, cur_state, num_of_joint_samples, file_pos_name);
+    fk::computeAndLogFK(move_group_node, PLANNING_GROUP, joint_model_group, cur_state, joint_names, num_of_joint_samples, file_pos_name);
     // compute and log IK accurance and duration
     ik::computeAndLogIK(PLANNING_GROUP, joint_model_group, cur_state, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);
 
