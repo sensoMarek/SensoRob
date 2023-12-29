@@ -1,7 +1,6 @@
 //
 // Created by jakub on 29.12.2023.
 //
-
 #include "sensorob_ik_interface/viz.h"
 
 namespace viz {
@@ -16,13 +15,13 @@ namespace viz {
         // Open file for reading (with translation and orientation data of end effector)
         std::fstream file_pos(file_pos_name, std::ios::in);
         if (!file_pos.is_open()) {
-            clog("File file_pos is not successfully opened, exiting!", ERROR);
+            clog("File file_pos is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File file_pos opened");
+        clog("File file_pos opened", LOGGER);
 
         // Read lines from the file
-        clog("Reading points");
+        clog("Reading points", LOGGER);
         std::string line;
         while (std::getline(file_pos, line)) {
             // Use a stringstream to parse doubles from the line
@@ -47,7 +46,7 @@ namespace viz {
             pose_points.push_back(point);
 
         }
-        clog("Publishing points on topic");
+        clog("Publishing points on topic", LOGGER);
 
         // Visualize IK points in RViz
         visualization_msgs::msg::Marker marker;
@@ -68,9 +67,9 @@ namespace viz {
         // Close file for reading
         file_pos.close();
         if (!file_pos.is_open()) {
-            clog("File file_pos closed.");
+            clog("File file_pos closed.", LOGGER);
         } else {
-            clog("File file_pos not opened", ERROR);
+            clog("File file_pos not opened", LOGGER, ERROR);
             return -2;
         }
 
@@ -78,13 +77,4 @@ namespace viz {
     }
 
 
-    void clog(const std::string& data, std::string log_level) {
-        if (log_level == "WARN") {
-            RCLCPP_WARN(LOGGER, "%s", data.c_str());
-        } else if (log_level == "ERROR") {
-            RCLCPP_ERROR(LOGGER,"%s", data.c_str());
-        } else {
-            RCLCPP_INFO(LOGGER, "%s", data.c_str());
-        }
-    }
 }

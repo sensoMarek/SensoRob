@@ -1,7 +1,6 @@
 //
 // Created by jakub on 4.12.2023.
 //
-
 #include "sensorob_ik_interface/fk.h"
 
 namespace fk {
@@ -17,7 +16,7 @@ namespace fk {
         const moveit::core::JointModelGroup* joint_model_group =
                 move_group.getCurrentState()->getJointModelGroup(planning_group);
         moveit::core::RobotStatePtr cur_state = move_group.getCurrentState(10);
-        std::vector<std::string> joint_names = move_group.getActiveJoints();
+        const std::vector<std::string>& joint_names = move_group.getActiveJoints();
         int num_processed_samples = 0;
 
         rclcpp::Client<moveit_msgs::srv::GetStateValidity>::SharedPtr validity_client;
@@ -26,12 +25,12 @@ namespace fk {
         // Wait for the service to become available
         while (!validity_client->wait_for_service(std::chrono::seconds(1))) {
             if (!rclcpp::ok()) {
-                clog("Interrupted while waiting for the service. Exiting.", ERROR);
+                clog("Interrupted while waiting for the service. Exiting.", LOGGER, ERROR);
                 break;
             }
-            clog("Service not available, waiting again...");
+            clog("Service not available, waiting again...", LOGGER);
         }
-        clog("'check_state_validity' service is available");
+        clog("'check_state_validity' service is available", LOGGER);
 
         // Create a request
         auto request = std::make_shared<moveit_msgs::srv::GetStateValidity::Request>();
@@ -49,7 +48,7 @@ namespace fk {
         }
 
         // Create a vector of all robot configurations
-        clog("Creating robot states");
+        clog("Creating robot states", LOGGER);
         std::vector<std::vector<double>> joint_samples;
         for (unsigned long i=0; i<6; i++) {
             joint_samples.push_back(interpolate(std::min(joint_limits[i][0],joint_limits[i][1]),
@@ -61,13 +60,13 @@ namespace fk {
         std::fstream file(file_name, std::ios::out);
 
         if (!file.is_open()) {
-            clog("File is not successfully opened, exiting!", ERROR);
+            clog("File is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File opened");
+        clog("File opened", LOGGER);
 
         // Iterate over all states and check its validity (self-collision point of view)
-        clog("Validating and saving valid robot states");
+        clog("Validating and saving valid robot states", LOGGER);
         for (int i0 = 0; i0 < num_of_joint_samples; i0++) {
             for (int i1 = 0; i1 < num_of_joint_samples; i1++) {
                 for (int i2 = 0; i2 < num_of_joint_samples; i2++) {
@@ -109,7 +108,7 @@ namespace fk {
                             }*/
 
                             num_processed_samples++;
-                            if (num_processed_samples%100==0) clog("Processed " + std::to_string(num_processed_samples) + " samples.");
+                            if (num_processed_samples%100==0) clog("Processed " + std::to_string(num_processed_samples) + " samples.", LOGGER);
                         }
                     }
                 }
@@ -117,13 +116,13 @@ namespace fk {
         }
 
         // Close file
-        clog("Processed " + std::to_string(num_processed_samples) + " samples.");
-        clog("Translation and orientation saved.");
+        clog("Processed " + std::to_string(num_processed_samples) + " samples.", LOGGER);
+        clog("Translation and orientation saved.", LOGGER);
         file.close();
         if (!file.is_open()) {
-            clog("File closed.");
+            clog("File closed.", LOGGER);
         } else {
-            clog("File not opened", ERROR);
+            clog("File not opened", LOGGER, ERROR);
             return -2;
         }
 
@@ -141,15 +140,5 @@ namespace fk {
         }
 
         return result;
-    }
-
-    void clog(const std::string& data, std::string log_level) {
-        if (log_level == "WARN") {
-            RCLCPP_WARN(LOGGER, "%s", data.c_str());
-        } else if (log_level == "ERROR") {
-            RCLCPP_ERROR(LOGGER,"%s", data.c_str());
-        } else {
-            RCLCPP_INFO(LOGGER, "%s", data.c_str());
-        }
     }
 }
