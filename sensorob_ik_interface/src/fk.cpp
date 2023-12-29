@@ -12,7 +12,7 @@ namespace fk {
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
                         int num_of_joint_samples,
-                        std::string file_name) {
+                        const std::string& file_name) {
 
         const moveit::core::JointModelGroup* joint_model_group =
                 move_group.getCurrentState()->getJointModelGroup(planning_group);
