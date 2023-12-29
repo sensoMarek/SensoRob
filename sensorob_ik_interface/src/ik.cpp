@@ -1,9 +1,7 @@
 //
 // Created by jakub on 4.12.2023.
 //
-
 #include "sensorob_ik_interface/ik.h"
-
 
 namespace ik {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik");
@@ -36,19 +34,19 @@ namespace ik {
         // Open file for reading (with translation and orientation data of end effector)
         std::fstream file_pos(file_pos_name, std::ios::in);
         if (!file_pos.is_open()) {
-            clog("File file_pos is not successfully opened, exiting!", ERROR);
+            clog("File file_pos is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File file_pos opened");
+        clog("File file_pos opened", LOGGER);
 
         // Open file for writing (logging)
         std::fstream file_time;
         file_time.open(file_time_name, std::ios::out);
         if (!file_time.is_open()) {
-            clog("File file_time is not successfully opened, exiting!", ERROR);
+            clog("File file_time is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File file_time opened");
+        clog("File file_time opened", LOGGER);
 
         // Read lines from the file
         std::string line;
@@ -89,8 +87,8 @@ namespace ik {
 
                 tf_buffer.transform(pose_desired_base_link, pose_desired_world, "world");
             } catch (tf2::TransformException &ex) {
-                clog(ex.what());
-                clog("Failed to transform pose" + std::to_string(num_valid_samples), ERROR );
+                clog(ex.what(), LOGGER);
+                clog("Failed to transform pose" + std::to_string(num_valid_samples), LOGGER, ERROR );
                 pose_desired_world = pose_desired_base_link;
             }
 
@@ -146,44 +144,35 @@ namespace ik {
 
             // Counter
             num_valid_samples++;
-            if (num_valid_samples%100==0) clog("Processed " + std::to_string(num_valid_samples) + " samples.");
+            if (num_valid_samples%100==0) clog("Processed " + std::to_string(num_valid_samples) + " samples.", LOGGER);
         }
 
-        clog("Processed " + std::to_string(num_valid_samples) + " samples.");
-        clog("Duration and accuracy of found solutions saved.");
+        clog("Processed " + std::to_string(num_valid_samples) + " samples.", LOGGER);
+        clog("Duration and accuracy of found solutions saved.", LOGGER);
         clog("IK end-effector states: \n"
              "Total: " + std::to_string(num_total_samples) + "\n"
              "Valid: " + std::to_string(num_valid_samples) + "\n"
-             "Found: " + std::to_string(num_found_samples));
+             "Found: " + std::to_string(num_found_samples), LOGGER);
 
         // Close file for reading
         file_pos.close();
         if (!file_pos.is_open()) {
-            clog("File file_pos closed.");
+            clog("File file_pos closed.", LOGGER);
         } else {
-            clog("File file_pos not opened", ERROR);
+            clog("File file_pos not opened", LOGGER, ERROR);
             return -2;
         }
 
         // Close file for writing
         file_time.close();
         if (!file_time.is_open()) {
-            clog("File file_time closed.");
+            clog("File file_time closed.", LOGGER);
         } else {
-            clog("File file_time not opened", ERROR);
+            clog("File file_time not opened", LOGGER, ERROR);
             return -2;
         }
 
         return 0;
     }
 
-    void clog(const std::string& data, std::string log_level) {
-        if (log_level == "WARN") {
-            RCLCPP_WARN(LOGGER, "%s", data.c_str());
-        } else if (log_level == "ERROR") {
-            RCLCPP_ERROR(LOGGER,"%s", data.c_str());
-        } else {
-            RCLCPP_INFO(LOGGER, "%s", data.c_str());
-        }
-    }
 }

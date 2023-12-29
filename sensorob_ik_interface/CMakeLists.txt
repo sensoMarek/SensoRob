@@ -29,7 +29,8 @@ add_executable(ik_interface
         src/ik_interface.cpp
         src/fk.cpp
         src/ik.cpp
-        src/viz.cpp)
+        src/viz.cpp
+        src/logger.cpp)
 target_include_directories(ik_interface PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
