@@ -50,7 +50,7 @@ namespace viz {
 
         // Visualize IK points in RViz
         visualization_msgs::msg::Marker marker;
-        marker.header.frame_id = "base_link";
+        marker.header.frame_id = "world";
         marker.type = visualization_msgs::msg::Marker::POINTS;
         marker.action = visualization_msgs::msg::Marker::ADD;
         marker.pose.orientation.w = 1.0;

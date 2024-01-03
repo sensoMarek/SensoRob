@@ -77,19 +77,20 @@ namespace ik {
             // Perform the transformation to the "world" frame, so we can compute the accuracy of found IK solutions
             geometry_msgs::msg::PoseStamped pose_desired_world;
             geometry_msgs::msg::PoseStamped pose_desired_base_link;
-            pose_desired_base_link.pose = pose_desired;
-            pose_desired_base_link.header.frame_id = "base_link";
+            pose_desired_world.pose = pose_desired;
+            pose_desired_world.header.frame_id = "world";
 
             // Transformation base_link -> world
             try {
                 // Wait for the transform to become available with a timeout
-                tf_buffer.canTransform("world", "base_link", tf2::TimePointZero, std::chrono::seconds(3));
+                tf_buffer.canTransform("base_link", "world", tf2::TimePointZero, std::chrono::seconds(10));
 
-                tf_buffer.transform(pose_desired_base_link, pose_desired_world, "world");
+                tf_buffer.transform(pose_desired_world, pose_desired_base_link, "base_link");
             } catch (tf2::TransformException &ex) {
                 clog(ex.what(), LOGGER);
                 clog("Failed to transform pose" + std::to_string(num_valid_samples), LOGGER, ERROR );
-                pose_desired_world = pose_desired_base_link;
+//                pose_desired_world = pose_desired_base_link;
+                continue;
             }
 
             // Variables for getPositionIK function
