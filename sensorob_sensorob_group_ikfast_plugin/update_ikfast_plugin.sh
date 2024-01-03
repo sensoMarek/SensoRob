@@ -9,7 +9,7 @@ base_link_name=base_link
 eef_link_name=link_6
 ikfast_output_path=/home/jakub/ros2_ws/src/SensoRob/sensorob_sensorob_group_ikfast_plugin/src/sensorob_sensorob_group_ikfast_solver.cpp
 
-rosrun moveit_kinematics create_ikfast_moveit_plugin.py\
+ros2 run moveit_kinematics create_ikfast_moveit_plugin.py\
   --search_mode=$search_mode\
   --srdf_filename=$srdf_filename\
   --robot_name_in_srdf=$robot_name_in_srdf\

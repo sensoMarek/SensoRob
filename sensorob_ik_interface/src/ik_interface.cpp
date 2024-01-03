@@ -45,10 +45,11 @@ int main(int argc, char** argv)
 
     int num_of_joint_samples = 4;
     std::string file_pos_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/position.csv";
+    std::string file_joint_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/joint.csv";
     std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
 
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
-    fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name);
+    fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name, file_joint_name);
 
     // compute and log IK accurance and duration
     ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, std::pow(num_of_joint_samples,5), file_pos_name, file_time_name);

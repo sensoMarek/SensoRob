@@ -11,7 +11,8 @@ namespace fk {
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
                         int num_of_joint_samples,
-                        const std::string& file_name) {
+                        const std::string& file_pos_name,
+                        const std::string& file_joint_name) {
 
         const moveit::core::JointModelGroup* joint_model_group =
                 move_group.getCurrentState()->getJointModelGroup(planning_group);
@@ -43,8 +44,8 @@ namespace fk {
         std::vector<std::vector<double>> joint_limits;
         joint_limits.resize(6, std::vector<double>(2, 0.0));
         for (unsigned long i=0; i<6; i++) {
-            joint_limits[i][0] = jmb[i]->data()->max_position_ - 0.0000001;
-            joint_limits[i][1] = jmb[i]->data()->min_position_ + 0.0000001;
+            joint_limits[i][0] = jmb[i]->data()->max_position_ - 0.02;
+            joint_limits[i][1] = jmb[i]->data()->min_position_ + 0.02;
         }
 
         // Create a vector of all robot configurations
@@ -57,13 +58,22 @@ namespace fk {
         }
 
         std::vector<double> joint_states;
-        std::fstream file(file_name, std::ios::out);
+        std::fstream file_pos(file_pos_name, std::ios::out);
 
-        if (!file.is_open()) {
-            clog("File is not successfully opened, exiting!", LOGGER, ERROR);
+        if (!file_pos.is_open()) {
+            clog("File file_pos_name is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File opened", LOGGER);
+        clog("File file_pos_name opened", LOGGER);
+
+        std::fstream file_joint(file_joint_name, std::ios::out);
+
+        if (!file_pos.is_open()) {
+            clog("File file_joint_name is not successfully opened, exiting!", LOGGER, ERROR);
+            return -1;
+        }
+        clog("File file_joint_name opened", LOGGER);
+        
 
         // Iterate over all states and check its validity (self-collision point of view)
         clog("Validating and saving valid robot states", LOGGER);
@@ -94,7 +104,9 @@ namespace fk {
                                 const Eigen::Affine3d &end_effector_state = cur_state->getGlobalLinkTransform("link_6");
 
                                 Eigen::Quaterniond quaternion(end_effector_state.rotation());
-                                file << end_effector_state.translation().x() << " "
+
+                                /*log position and orientation of end effector*/
+                                file_pos << end_effector_state.translation().x() << " "
                                      << end_effector_state.translation().y() << " "
                                      << end_effector_state.translation().z() << " "
                                      << quaternion.w() << " "
@@ -102,6 +114,17 @@ namespace fk {
                                      << quaternion.y() << " "
                                      << quaternion.z() << " "
                                      << std::endl;
+
+                                /*log joint states position*/
+                                file_joint << joint_states[0] << " "
+                                         << joint_states[1] << " "
+                                         << joint_states[2] << " "
+                                         << joint_states[3] << " "
+                                         << joint_states[4] << " "
+                                         << joint_states[5] << " "
+                                         //new
+//                                << i0 << " " << i1 << " " << i2 << " " << i3 << " " << i4 << " "
+                                         << std::endl;
                             }
                             /*else {
                                 clog("Joint values are not valid!", WARN);
@@ -115,14 +138,22 @@ namespace fk {
             }
         }
 
-        // Close file
+        // Close files
         clog("Processed " + std::to_string(num_processed_samples) + " samples.", LOGGER);
         clog("Translation and orientation saved.", LOGGER);
-        file.close();
-        if (!file.is_open()) {
-            clog("File closed.", LOGGER);
+        file_pos.close();
+        if (!file_pos.is_open()) {
+            clog("File file_pos_name closed.", LOGGER);
         } else {
-            clog("File not opened", LOGGER, ERROR);
+            clog("File file_pos_name not closed", LOGGER, ERROR);
+            return -2;
+        }
+
+        file_joint.close();
+        if (!file_joint.is_open()) {
+            clog("File file_joint_name closed.", LOGGER);
+        } else {
+            clog("File file_joint_name not closed", LOGGER, ERROR);
             return -2;
         }
 
