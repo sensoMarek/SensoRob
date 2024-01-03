@@ -49,7 +49,7 @@ namespace fk {
         }
 
         // Create a vector of all robot configurations
-        clog("Creating robot states", LOGGER);
+        clog("Creating " + std::to_string((int)std::pow(num_of_joint_samples,5)) + " states.", LOGGER);
         std::vector<std::vector<double>> joint_samples;
         for (unsigned long i=0; i<6; i++) {
             joint_samples.push_back(interpolate(std::min(joint_limits[i][0],joint_limits[i][1]),
