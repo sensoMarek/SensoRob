@@ -9,7 +9,9 @@ def generate_launch_description():
     moveit_config = MoveItConfigsBuilder("sensorob").to_moveit_configs()
 
     num_of_joint_samples_arg = LaunchConfiguration("num_of_joint_samples"),
-    create_states_arg = LaunchConfiguration("create_states"),
+    computeIK_arg = LaunchConfiguration("computeIK"),
+    computeFK_arg = LaunchConfiguration("computeFK"),
+
     # MoveGroupInterface demo executable
     ik_interface_node = Node(
         name="ik_interface",
@@ -22,7 +24,8 @@ def generate_launch_description():
             moveit_config.robot_description_kinematics,
             {"use_sim_time": True},
             {"num_of_joint_samples": num_of_joint_samples_arg},
-            {"create_states": create_states_arg}
+            {"computeFK": computeFK_arg},
+            {"computeIK": computeIK_arg}
         ],
     )
 
@@ -30,9 +33,12 @@ def generate_launch_description():
         DeclareLaunchArgument("num_of_joint_samples",
                               default_value='6',
                               description='Number of samples'),
-        DeclareLaunchArgument("create_states",
+        DeclareLaunchArgument("computeIK_arg",
                               default_value='True',
-                              description='If true, assuming already created file "position.csv"'),
+                              description='If False, inverse kinematics will be not computed'),
+        DeclareLaunchArgument("computeFK_arg",
+                              default_value='True',
+                              description='If False, forward kinematics will be not computed'),
         ik_interface_node])
 
 
