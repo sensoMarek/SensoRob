@@ -129,9 +129,74 @@ namespace viz {
     void display_planes_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
                                std::vector<geometry_msgs::msg::Point>& pose_points,
                                std::vector<geometry_msgs::msg::Point>& pose_points_transformed) {
+
+        std::vector<geometry_msgs::msg::Point> points_xy, points_yz, points_xz;
+        double bandwidth = 0.05; // [m]
+        double offset_x = 0.00;
+        double offset_y = 0.00;
+        double offset_z = 0.20;
+
+        for (uint i = 0; i < pose_points_transformed.size(); i++) {
+
+            geometry_msgs::msg::Point point = pose_points[i];
+            geometry_msgs::msg::Point point_transformed = pose_points_transformed[i];
+
+            // xy
+            if (point_transformed.z > (offset_z - bandwidth / 2.0) &&
+                point_transformed.z < (offset_z + bandwidth / 2.0)) {
+                points_xy.push_back(point);
+            }
+
+            // yz
+            if (point_transformed.x > (offset_x - bandwidth / 2.0) &&
+                point_transformed.x < (offset_x + bandwidth / 2.0)) {
+                points_yz.push_back(point);
+            }
+
+            // xz
+            if (point_transformed.y > (offset_y - bandwidth / 2.0) &&
+                point_transformed.y < (offset_y + bandwidth / 2.0)) {
+                points_xz.push_back(point);
+            }
+        }
+
+        // Visualize IK points in RViz
+        visualization_msgs::msg::Marker marker;
+        marker.header.frame_id = "world";
+        marker.type = visualization_msgs::msg::Marker::POINTS;
+        marker.action = visualization_msgs::msg::Marker::ADD;
+        marker.pose.orientation.w = 1.0;
+        marker.scale.x = 0.005;
+        marker.scale.y = 0.005;
+        marker.color.a = 0.6;
+        marker.color.r = 1.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
+
+        // xy
         visual_tools.trigger();
         visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to xy-plane points.");
         clog("Publishing xy-plane points ", LOGGER);
+        marker.points = points_xy;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
+        // yz
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to yz-plane points.");
+        clog("Publishing yz-plane points ", LOGGER);
+        marker.points = points_yz;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
+        // xz
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to xz-plane points.");
+        clog("Publishing xz-plane points ", LOGGER);
+        marker.points = points_xz;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
     }
 
 
