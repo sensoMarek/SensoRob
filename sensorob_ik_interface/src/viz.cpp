@@ -7,11 +7,35 @@ namespace viz {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("viz");
 
     int visualizePoints(moveit_visual_tools::MoveItVisualTools& visual_tools,
-                        std::string file_pos_name) {
+                        std::string& file_pos_name) {
 
         // Create vector of points published on marker topic to visualize in RViZ
         std::vector<geometry_msgs::msg::Point> pose_points;
+        bool success_code = load_points(file_pos_name, pose_points);
 
+        // if reading from file is not successful
+        if (success_code != 0) return -1;
+
+        //transform point to base_link frame
+        std::vector<geometry_msgs::msg::Point> pose_points_transformed;
+        success_code = transform_points(pose_points, pose_points_transformed);
+
+        // if transforming points is not successful
+        if (success_code != 0) return -1;
+
+        // publish all points
+        display_all_points(visual_tools, pose_points);
+
+        // publish only axes in selected bandwidth of each plane sequentially
+        display_planes_points(visual_tools, pose_points, pose_points_transformed);
+
+
+
+        return 0;
+    }
+
+    int load_points(std::string& file_pos_name,
+                     std::vector<geometry_msgs::msg::Point>& pose_points) {
         // Open file for reading (with translation and orientation data of end effector)
         std::fstream file_pos(file_pos_name, std::ios::in);
         if (!file_pos.is_open()) {
@@ -46,7 +70,44 @@ namespace viz {
             pose_points.push_back(point);
 
         }
-        clog("Publishing points on topic", LOGGER);
+
+        // Close file for reading
+        file_pos.close();
+        if (!file_pos.is_open()) {
+            clog("File file_pos closed.", LOGGER);
+        } else {
+            clog("File file_pos not opened", LOGGER, ERROR);
+            return -2;
+        }
+
+        return 0;
+    }
+
+
+    int transform_points(std::vector<geometry_msgs::msg::Point>& pose_points,
+                         std::vector<geometry_msgs::msg::Point>& pose_points_transformed) {
+
+        for (const auto &point : pose_points) {
+            geometry_msgs::msg::Point point_transformed;
+
+            point_transformed.x = point.x - 0.05;
+            point_transformed.y = point.y - 0.05;
+            point_transformed.z = point.z - 0.20;
+
+            pose_points_transformed.push_back(point_transformed);
+        }
+
+        // redundant
+        if (pose_points.size() != pose_points_transformed.size()) return -2;
+
+        return 0;
+    }
+
+    void display_all_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
+                            std::vector<geometry_msgs::msg::Point>& pose_points) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to display all valid points.");
+        clog("Publishing all points ", LOGGER);
 
         // Visualize IK points in RViz
         visualization_msgs::msg::Marker marker;
@@ -63,17 +124,79 @@ namespace viz {
         marker.color.b = 0.0;
         visual_tools.publishMarker(marker);
         visual_tools.trigger();
+    }
 
-        // Close file for reading
-        file_pos.close();
-        if (!file_pos.is_open()) {
-            clog("File file_pos closed.", LOGGER);
-        } else {
-            clog("File file_pos not opened", LOGGER, ERROR);
-            return -2;
+    void display_planes_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
+                               std::vector<geometry_msgs::msg::Point>& pose_points,
+                               std::vector<geometry_msgs::msg::Point>& pose_points_transformed) {
+
+        std::vector<geometry_msgs::msg::Point> points_xy, points_yz, points_xz;
+        double bandwidth = 0.05; // [m]
+        double offset_x = 0.00;
+        double offset_y = 0.00;
+        double offset_z = 0.20;
+
+        for (uint i = 0; i < pose_points_transformed.size(); i++) {
+
+            geometry_msgs::msg::Point point = pose_points[i];
+            geometry_msgs::msg::Point point_transformed = pose_points_transformed[i];
+
+            // xy
+            if (point_transformed.z > (offset_z - bandwidth / 2.0) &&
+                point_transformed.z < (offset_z + bandwidth / 2.0)) {
+                points_xy.push_back(point);
+            }
+
+            // yz
+            if (point_transformed.x > (offset_x - bandwidth / 2.0) &&
+                point_transformed.x < (offset_x + bandwidth / 2.0)) {
+                points_yz.push_back(point);
+            }
+
+            // xz
+            if (point_transformed.y > (offset_y - bandwidth / 2.0) &&
+                point_transformed.y < (offset_y + bandwidth / 2.0)) {
+                points_xz.push_back(point);
+            }
         }
 
-        return 0;
+        // Visualize IK points in RViz
+        visualization_msgs::msg::Marker marker;
+        marker.header.frame_id = "world";
+        marker.type = visualization_msgs::msg::Marker::POINTS;
+        marker.action = visualization_msgs::msg::Marker::ADD;
+        marker.pose.orientation.w = 1.0;
+        marker.scale.x = 0.005;
+        marker.scale.y = 0.005;
+        marker.color.a = 0.6;
+        marker.color.r = 1.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
+
+        // xy
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to xy-plane points.");
+        clog("Publishing xy-plane points ", LOGGER);
+        marker.points = points_xy;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
+        // yz
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to yz-plane points.");
+        clog("Publishing yz-plane points ", LOGGER);
+        marker.points = points_yz;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
+        // xz
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to xz-plane points.");
+        clog("Publishing xz-plane points ", LOGGER);
+        marker.points = points_xz;
+        visual_tools.publishMarker(marker);
+        visual_tools.trigger();
+
     }
 
 
