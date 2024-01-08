@@ -17,14 +17,15 @@ int main(int argc, char** argv)
     rclcpp::executors::SingleThreadedExecutor executor;
     executor.add_node(move_group_node);
     std::thread([&executor]() { executor.spin(); }).detach();
+    
 
     // Get the value from parameters
-    int num_of_joint_samples = move_group_node->get_parameter("num_of_joint_samples").get_value<int>();
+    int num_of_samples = move_group_node->get_parameter("num_of_samples").get_value<int>();
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
 
     if (!computeFK){
-        num_of_joint_samples = -1; // in this state we dont know ho many samples are in the file
+        num_of_samples = -1; // in this state we dont know ho many samples are in the file
     }
 
     static const std::string PLANNING_GROUP = "sensorob_group";
@@ -47,15 +48,6 @@ int main(int argc, char** argv)
 
     clog("Planning frame: " + move_group.getPlanningFrame(), LOGGER);
     clog("End effector link: " + move_group.getEndEffectorLink(), LOGGER);
-    if (num_of_joint_samples > 14) {
-        clog("num_of_joint_samples was set to "
-        + std::to_string(num_of_joint_samples)
-        + ", which means "
-        + std::to_string(std::pow(num_of_joint_samples,5))
-        + " states, what is too large number of robot configurations to process. "
-          "Will use default value 6 num_of_joint_states.", LOGGER);
-        num_of_joint_samples = 6;
-    }
 
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
@@ -66,12 +58,12 @@ int main(int argc, char** argv)
     
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
     if(computeFK) {
-        fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name, file_joint_name);
+        fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_samples, file_pos_name, file_joint_name);
     }
 
     // compute and log IK accurance and duration
     if (computeIK) {
-        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, std::pow(num_of_joint_samples, 5),
+        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, num_of_samples,
                             file_pos_name, file_time_name);
     }
 

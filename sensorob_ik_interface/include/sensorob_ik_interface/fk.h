@@ -22,6 +22,5 @@ namespace fk {
                         int num_of_joint_samples,
                         const std::string& file_pos_name,
                         const std::string& file_joint_name);
-    std::vector<double> interpolate(double start, double end, int n);
 }
 #endif //SENSOROB_IK_INTERFACE_FK_H

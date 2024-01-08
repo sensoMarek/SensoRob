@@ -8,7 +8,7 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     moveit_config = MoveItConfigsBuilder("sensorob").to_moveit_configs()
 
-    num_of_joint_samples_arg = LaunchConfiguration("num_of_joint_samples"),
+    num_of_samples_arg = LaunchConfiguration("num_of_samples"),
     computeIK_arg = LaunchConfiguration("computeIK"),
     computeFK_arg = LaunchConfiguration("computeFK"),
 
@@ -23,15 +23,15 @@ def generate_launch_description():
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
             {"use_sim_time": True},
-            {"num_of_joint_samples": num_of_joint_samples_arg},
+            {"num_of_samples": num_of_samples_arg},
             {"computeFK": computeFK_arg},
             {"computeIK": computeIK_arg}
         ],
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument("num_of_joint_samples",
-                              default_value='6',
+        DeclareLaunchArgument("num_of_samples",
+                              default_value='1000',
                               description='Number of samples'),
         DeclareLaunchArgument("computeIK",
                               default_value='True',
