@@ -33,10 +33,10 @@ def generate_launch_description():
         DeclareLaunchArgument("num_of_joint_samples",
                               default_value='6',
                               description='Number of samples'),
-        DeclareLaunchArgument("computeIK_arg",
+        DeclareLaunchArgument("computeIK",
                               default_value='True',
                               description='If False, inverse kinematics will be not computed'),
-        DeclareLaunchArgument("computeFK_arg",
+        DeclareLaunchArgument("computeFK",
                               default_value='True',
                               description='If False, forward kinematics will be not computed'),
         ik_interface_node])

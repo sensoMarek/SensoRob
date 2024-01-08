@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     }
 
     // Visualize point in RViZ published on topic
-    viz::visualizePoints(visual_tools, file_pos_name);
+    viz::visualizePoints(visual_tools, file_pos_name, file_time_name);
 
     
     visual_tools.trigger();
