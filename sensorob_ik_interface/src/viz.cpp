@@ -7,47 +7,55 @@ namespace viz {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("viz");
 
     int visualizePoints(moveit_visual_tools::MoveItVisualTools& visual_tools,
-                        std::string& file_pos_name) {
+                        std::string& file_pos_name,
+                        std::string& file_time_name) {
+        //computation path
 
         // Create vector of points published on marker topic to visualize in RViZ
         std::vector<geometry_msgs::msg::Point> pose_points;
         bool success_code = load_points(file_pos_name, pose_points);
-
-        // if reading from file is not successful
         if (success_code != 0) return -1;
 
-        //transform point to base_link frame
+        // transform point to base_link frame
         std::vector<geometry_msgs::msg::Point> pose_points_transformed;
-        success_code = transform_points(pose_points, pose_points_transformed);
-
-        // if transforming points is not successful
+        success_code = transform_points(pose_points);
         if (success_code != 0) return -1;
 
+        std::vector<geometry_msgs::msg::Point> pose_points_missing;
+        bool success_code_missing_points = load_missing_points(file_time_name, pose_points, pose_points_missing);
+
+        // display part
         // publish all points
-        display_all_points(visual_tools, pose_points);
+        std::string logText = "valid";
+        display_points(visual_tools, pose_points, logText);
+
+        // publish missing points
+        if (success_code_missing_points == 0) {
+            logText =  "missing";
+            display_points(visual_tools, pose_points_missing, logText);
+        }
 
         // publish only axes in selected bandwidth of each plane sequentially
-        display_planes_points(visual_tools, pose_points, pose_points_transformed);
-
-
+        display_planes_points(visual_tools, pose_points);
 
         return 0;
     }
 
     int load_points(std::string& file_pos_name,
                      std::vector<geometry_msgs::msg::Point>& pose_points) {
+
         // Open file for reading (with translation and orientation data of end effector)
-        std::fstream file_pos(file_pos_name, std::ios::in);
-        if (!file_pos.is_open()) {
-            clog("File file_pos is not successfully opened, exiting!", LOGGER, ERROR);
+        std::fstream file(file_pos_name, std::ios::in);
+        if (!file.is_open()) {
+            clog("File is not successfully opened, exiting!", LOGGER, ERROR);
             return -1;
         }
-        clog("File file_pos opened", LOGGER);
+        clog("File opened", LOGGER);
 
         // Read lines from the file
-        clog("Reading points", LOGGER);
+        clog("Gathering all points", LOGGER);
         std::string line;
-        while (std::getline(file_pos, line)) {
+        while (std::getline(file, line)) {
             // Use a stringstream to parse doubles from the line
             std::istringstream iss(line);
             std::vector<double> lineDoubles;
@@ -72,27 +80,29 @@ namespace viz {
         }
 
         // Close file for reading
-        file_pos.close();
-        if (!file_pos.is_open()) {
-            clog("File file_pos closed.", LOGGER);
+        file.close();
+        if (!file.is_open()) {
+            clog("File closed.", LOGGER);
         } else {
-            clog("File file_pos not opened", LOGGER, ERROR);
+            clog("File not closed", LOGGER, ERROR);
             return -2;
         }
 
         return 0;
     }
 
-
     int transform_points(std::vector<geometry_msgs::msg::Point>& pose_points,
-                         std::vector<geometry_msgs::msg::Point>& pose_points_transformed) {
+                         double trans_x,
+                         double trans_y,
+                         double trans_z) {
+        std::vector<geometry_msgs::msg::Point> pose_points_transformed;
 
         for (const auto &point : pose_points) {
             geometry_msgs::msg::Point point_transformed;
 
-            point_transformed.x = point.x - 0.05;
-            point_transformed.y = point.y - 0.05;
-            point_transformed.z = point.z - 0.20;
+            point_transformed.x = point.x - trans_x;
+            point_transformed.y = point.y - trans_y;
+            point_transformed.z = point.z - trans_z;
 
             pose_points_transformed.push_back(point_transformed);
         }
@@ -100,18 +110,82 @@ namespace viz {
         // redundant
         if (pose_points.size() != pose_points_transformed.size()) return -2;
 
+        pose_points.clear();
+        pose_points = pose_points_transformed;
+
         return 0;
     }
 
-    void display_all_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
-                            std::vector<geometry_msgs::msg::Point>& pose_points) {
-        visual_tools.trigger();
-        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to display all valid points.");
-        clog("Publishing all points ", LOGGER);
+    int load_missing_points(std::string& file_time_name,
+                            std::vector<geometry_msgs::msg::Point>& pose_points,
+                            std::vector<geometry_msgs::msg::Point>& pose_points_missing) {
+
+        std::fstream file(file_time_name, std::ios::in);
+        if (!file.is_open()) {
+            clog("File is not successfully opened, exiting!", LOGGER, ERROR);
+            return -1;
+        }
+        clog("File opened", LOGGER);
+
+        // Read lines from the file
+        clog("Gathering missing points", LOGGER);
+        std::string line;
+        int counter = 0;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string numberAsString;
+            double firstNumber;
+
+            if (std::getline(iss, numberAsString, ' ')) { // blank space separated values
+                try {
+                    firstNumber = std::stod(numberAsString); // convert to double
+                } catch (const std::invalid_argument& e) {
+                    clog(e.what(), LOGGER, ERROR);
+                    firstNumber = 0;
+
+                } catch (const std::out_of_range& e) {
+                    clog(e.what(), LOGGER, ERROR);
+                    firstNumber = 0;
+                }
+                counter++;
+            }
+
+            if (firstNumber == -1.0) {
+                /*clog("Missing point found!", LOGGER);*/
+                pose_points_missing.push_back(pose_points[counter]);
+            }
+        }
+
+        // Close file for reading
+        file.close();
+        if (!file.is_open()) {
+            clog("File closed.", LOGGER);
+        } else {
+            clog("File not closed", LOGGER, ERROR);
+            return -2;
+        }
+
+        if (pose_points_missing.empty()) {
+            clog("All poses were solved by IK solver, no missing point found!", LOGGER);
+            return -3;
+        } /*else {
+            clog("Found " + std::to_string(pose_points_missing.size()) + " missing points.", LOGGER);
+        }*/
+
+        return 0;
+    }
+
+
+    void display_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
+                            std::vector<geometry_msgs::msg::Point>& pose_points,
+                            std::string& logText) {
+//        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' in the RvizVisualToolsGui to display " + logText + " points.");
+        clog("Publishing " + std::to_string(pose_points.size()) + " " +  logText + " points.", LOGGER);
 
         // Visualize IK points in RViz
         visualization_msgs::msg::Marker marker;
-        marker.header.frame_id = "world";
+        marker.header.frame_id = "base_link";
         marker.type = visualization_msgs::msg::Marker::POINTS;
         marker.action = visualization_msgs::msg::Marker::ADD;
         marker.pose.orientation.w = 1.0;
@@ -128,41 +202,37 @@ namespace viz {
 
     void display_planes_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
                                std::vector<geometry_msgs::msg::Point>& pose_points,
-                               std::vector<geometry_msgs::msg::Point>& pose_points_transformed) {
+                               double bandwidth,
+                               double offset_x,
+                               double offset_y,
+                               double offset_z) {
 
         std::vector<geometry_msgs::msg::Point> points_xy, points_yz, points_xz;
-        double bandwidth = 0.05; // [m]
-        double offset_x = 0.00;
-        double offset_y = 0.00;
-        double offset_z = 0.20;
 
-        for (uint i = 0; i < pose_points_transformed.size(); i++) {
-
-            geometry_msgs::msg::Point point = pose_points[i];
-            geometry_msgs::msg::Point point_transformed = pose_points_transformed[i];
+        for (const auto point : pose_points) {
 
             // xy
-            if (point_transformed.z > (offset_z - bandwidth / 2.0) &&
-                point_transformed.z < (offset_z + bandwidth / 2.0)) {
+            if (point.z > (offset_z - bandwidth / 2.0) &&
+                point.z < (offset_z + bandwidth / 2.0)) {
                 points_xy.push_back(point);
             }
 
             // yz
-            if (point_transformed.x > (offset_x - bandwidth / 2.0) &&
-                point_transformed.x < (offset_x + bandwidth / 2.0)) {
+            if (point.x > (offset_x - bandwidth / 2.0) &&
+                point.x < (offset_x + bandwidth / 2.0)) {
                 points_yz.push_back(point);
             }
 
             // xz
-            if (point_transformed.y > (offset_y - bandwidth / 2.0) &&
-                point_transformed.y < (offset_y + bandwidth / 2.0)) {
+            if (point.y > (offset_y - bandwidth / 2.0) &&
+                point.y < (offset_y + bandwidth / 2.0)) {
                 points_xz.push_back(point);
             }
         }
 
         // Visualize IK points in RViz
         visualization_msgs::msg::Marker marker;
-        marker.header.frame_id = "world";
+        marker.header.frame_id = "base_link";
         marker.type = visualization_msgs::msg::Marker::POINTS;
         marker.action = visualization_msgs::msg::Marker::ADD;
         marker.pose.orientation.w = 1.0;
