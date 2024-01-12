@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
     // compute and log IK accurance and duration
     if (computeIK) {
-        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, num_of_samples,
+        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP,
                             file_pos_name, file_time_name);
     }
 

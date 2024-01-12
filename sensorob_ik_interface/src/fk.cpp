@@ -61,7 +61,9 @@ namespace fk {
 
         // Iterate over all states and check its validity (self-collision point of view)
         clog("Validating and saving valid robot states", LOGGER);
-        for (int i = 0; i < num_of_samples; i++) {
+        int i =0;
+        while (i< num_of_samples) {
+//        for (int i = 0; i < num_of_samples; i++) {
             cur_state->setToRandomPositions();
             joint_states.clear();
             cur_state->copyJointGroupPositions(planning_group, joint_states);
@@ -74,6 +76,7 @@ namespace fk {
             // Get response
             auto response = future.get();
             if (response->valid) {
+                i++;
                 /*clog("Joint values are valid!");*/
 
                 cur_state->setJointGroupPositions(planning_group, joint_states);

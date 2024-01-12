@@ -9,7 +9,6 @@ namespace ik {
     int computeAndLogIK(const std::shared_ptr<rclcpp::Node>& move_group_node,
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
-                        int num_total_samples,
                         const std::string& file_pos_name,
                         const std::string& file_time_name) {
 
@@ -151,7 +150,6 @@ namespace ik {
         clog("Processed " + std::to_string(num_valid_samples) + " samples.", LOGGER);
         clog("Duration and accuracy of found solutions saved.", LOGGER);
         clog("IK end-effector states: \n"
-             "Total: " + std::to_string(num_total_samples) + "\n"
              "Valid: " + std::to_string(num_valid_samples) + "\n"
              "Found: " + std::to_string(num_found_samples), LOGGER);
 
