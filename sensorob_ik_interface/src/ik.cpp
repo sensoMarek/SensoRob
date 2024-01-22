@@ -99,13 +99,14 @@ namespace ik {
             std::vector<double> ik_seed_state = {0, 0, 0, 0, 0, 0};
             moveit_msgs::msg::MoveItErrorCodes result;
             kinematics::KinematicsQueryOptions o;
-            o.return_approximate_solution = false; // we do not want approx solutions
+            o.return_approximate_solution = false;  // we do not want approx solutions
+            double timeout = 0.005;  // solver timeout
 
             // Measure the duration of IK computation
             rclcpp::Time start_time = rclcpp::Clock().now();
 
             // Compute inverse kinematics
-            solver->searchPositionIK(pose_desired_base_link.pose, ik_seed_state, 0.005, solution, result, o);
+            solver->searchPositionIK(pose_desired_base_link.pose, ik_seed_state, timeout, solution, result, o);
 
 
             rclcpp::Time end_time = rclcpp::Clock().now();
