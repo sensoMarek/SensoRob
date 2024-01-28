@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<library path="sensorob_sensorob_group_moveit_ikfast_plugin">
-  <class name="sensorob_sensorob_group/IKFastKinematicsPlugin" type="sensorob_sensorob_group::IKFastKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
-    <description>IKFast61 plugin for closed-form kinematics of sensorob sensorob_group</description>
-  </class>
-</library>
