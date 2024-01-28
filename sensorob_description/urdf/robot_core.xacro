@@ -4,7 +4,6 @@
   <xacro:include filename="materials.xacro" />
   <xacro:include filename="sensorob.gazebo" />
 
-
   <link name="world">
   </link>
 
@@ -17,14 +16,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -38,14 +37,14 @@
     <visual>
       <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -59,14 +58,14 @@
     <visual>
       <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -80,14 +79,14 @@
     <visual>
       <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -101,14 +100,14 @@
     <visual>
       <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
       <geometry>
-       <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -166,7 +165,7 @@
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="2.181662" lower="-2.96706" effort="100" velocity="100"/>
+    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="100" velocity="100"/> <!-- +-pi -->
   </joint>
 
   <joint name="joint_2" type="revolute">
@@ -174,7 +173,7 @@
     <parent link="link_1"/>
     <child link="link_2"/>
     <axis xyz="-1.0 0.0 -0.0"/>
-    <limit upper="2.007129" lower="-2.007129" effort="100" velocity="100"/>
+    <limit upper="1.570796327" lower="-1.570796327" effort="100" velocity="100"/> <!-- +-pi/2 -->
   </joint>
 
   <joint name="joint_3" type="revolute">
@@ -182,7 +181,7 @@
     <parent link="link_2"/>
     <child link="link_3"/>
     <axis xyz="1.0 0.0 0.0"/>
-    <limit upper="2.879793" lower="-2.792527" effort="100" velocity="100"/>
+    <limit upper="2.094395102" lower="-2.094395102" effort="100" velocity="100"/> <!-- +-2pi/3-->
   </joint>
 
   <joint name="joint_4" type="revolute">
@@ -190,7 +189,7 @@
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="4.45059" lower="-1.658063" effort="100" velocity="100"/>
+    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="100" velocity="100"/> <!-- +-pi -->
   </joint>
 
   <joint name="joint_5" type="revolute">
@@ -198,7 +197,7 @@
     <parent link="link_4"/>
     <child link="link_5"/>
     <axis xyz="-1.0 -0.0 0.0"/>
-    <limit upper="2.96706" lower="-2.96706" effort="100" velocity="100"/>
+    <limit upper="1.570796327" lower="-1.570796327" effort="100" velocity="100"/> <!-- +-pi/2 -->
   </joint>
 
   <joint name="joint_6" type="revolute">
@@ -206,7 +205,7 @@
     <parent link="link_5"/>
     <child link="link_6"/>
     <axis xyz="0.0 -0.0 -1.0"/>
-    <limit upper="2.792527" lower="-2.792527" effort="100" velocity="100"/>
+    <limit upper="6.283185307" lower="-6.283185307" effort="100" velocity="100"/> <!-- +-2pi -->
   </joint>
 
 </robot>
