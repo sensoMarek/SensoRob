@@ -205,42 +205,48 @@
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit effort="100" lower="-2.96706" upper="2.181662" velocity="100"/>
+    <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="100"/>
+    <!-- +-pi -->
   </joint>
   <joint name="joint_2" type="revolute">
     <origin rpy="0 0 0" xyz="-0.101407 0.0 0.117"/>
     <parent link="link_1"/>
     <child link="link_2"/>
     <axis xyz="-1.0 0.0 -0.0"/>
-    <limit effort="100" lower="-2.007129" upper="2.007129" velocity="100"/>
+    <limit effort="100" lower="-1.570796327" upper="1.570796327" velocity="100"/>
+    <!-- +-pi/2 -->
   </joint>
   <joint name="joint_3" type="revolute">
     <origin rpy="0 0 0" xyz="0.031561 0.0 0.425001"/>
     <parent link="link_2"/>
     <child link="link_3"/>
     <axis xyz="1.0 0.0 0.0"/>
-    <limit effort="100" lower="-2.792527" upper="2.879793" velocity="100"/>
+    <limit effort="100" lower="-2.094395102" upper="2.094395102" velocity="100"/>
+    <!-- +-2pi/3-->
   </joint>
   <joint name="joint_4" type="revolute">
     <origin rpy="0 0 0" xyz="0.0374 0.0 0.248625"/>
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit effort="100" lower="-1.658063" upper="4.45059" velocity="100"/>
+    <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="100"/>
+    <!-- +-pi -->
   </joint>
   <joint name="joint_5" type="revolute">
     <origin rpy="0 0 0" xyz="-0.02768 0.0 0.143625"/>
     <parent link="link_4"/>
     <child link="link_5"/>
     <axis xyz="-1.0 -0.0 0.0"/>
-    <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
+    <limit effort="100" lower="-1.570796327" upper="1.570796327" velocity="100"/>
+    <!-- +-pi/2 -->
   </joint>
   <joint name="joint_6" type="revolute">
     <origin rpy="0 0 0" xyz="-0.011 0.0 0.22175"/>
     <parent link="link_5"/>
     <child link="link_6"/>
     <axis xyz="0.0 -0.0 -1.0"/>
-    <limit effort="100" lower="-2.792527" upper="2.792527" velocity="100"/>
+    <limit effort="100" lower="-6.283185307" upper="6.283185307" velocity="100"/>
+    <!-- +-2pi -->
   </joint>
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
