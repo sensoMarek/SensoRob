@@ -20,23 +20,24 @@ def generate_launch_description():
     """
     
     moveit_config = MoveItConfigsBuilder("sensorob", package_name="sensorob_moveit_config").to_moveit_configs()
-
     ld = LaunchDescription()
 
-    ld.add_action(
-        DeclareBooleanLaunchArg(
-            "debug",
-            default_value='False',
-            description="By default, we are not in debug mode",
-        )
-    )
-
     # Given the published joint states, publish tf for the robot links
+    ld.add_action(DeclareLaunchArgument("publish_frequency", default_value="50.0"))
+
+    # Given the published joint states, publish tf for the robot links and the robot description
     ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/rsp.launch.py")
-            ),
+        Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            respawn=True,
+            output="screen",
+            parameters=[
+                moveit_config.robot_description,
+                {
+                    "publish_frequency": LaunchConfiguration("publish_frequency"),
+                },
+            ],
         )
     )
 

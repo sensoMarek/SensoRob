@@ -3,14 +3,14 @@ controller_manager:
   ros__parameters:
     update_rate: 100  # Hz
 
-    sensorob_group_controller:
+    sensorob_group_fake_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-sensorob_group_controller:
+sensorob_group_fake_controller:
   ros__parameters:
     joints:
       - joint_1
@@ -20,6 +20,9 @@ sensorob_group_controller:
       - joint_5
       - joint_6
     command_interfaces:
-      []
+      - position
     state_interfaces:
-      []
+      - position
+      - velocity
+    state_publish_rate: 400.0         
+    action_monitor_rate: 100.0
