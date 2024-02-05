@@ -1,6 +1,5 @@
 from moveit_configs_utils import MoveItConfigsBuilder
 from launch import LaunchDescription
-from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 from launch.actions import (
     DeclareLaunchArgument,
     IncludeLaunchDescription,
