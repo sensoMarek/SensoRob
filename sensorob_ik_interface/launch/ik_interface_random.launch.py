@@ -7,41 +7,64 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     moveit_config = MoveItConfigsBuilder("sensorob").to_moveit_configs()
+    ld = LaunchDescription()
 
-    num_of_samples_arg = LaunchConfiguration("num_of_samples")
-    computeIK_arg = LaunchConfiguration("computeIK")
-    computeFK_arg = LaunchConfiguration("computeFK")
-    logs_path_arg = LaunchConfiguration("logs_folder_path")
-
-    ik_interface_node = Node(
-        name="ik_interface",
-        package="sensorob_ik_interface",
-        executable="ik_interface_random",
-        output="screen",
-        parameters=[
-            moveit_config.robot_description,
-            moveit_config.robot_description_semantic,
-            moveit_config.robot_description_kinematics,
-            {"use_sim_time": True},
-            {"num_of_samples": num_of_samples_arg},
-            {"computeFK": computeFK_arg},
-            {"computeIK": computeIK_arg},
-            {"logs_folder_path": logs_path_arg}
-        ],
-    )
-
-    return LaunchDescription([
+    ld.add_action(
         DeclareLaunchArgument("num_of_samples",
                               default_value='1000',
-                              description='Number of samples used for IK test'),
+                              description='Number of samples used for IK test')
+    )
+
+    ld.add_action(
         DeclareLaunchArgument("computeIK",
                               default_value='True',
-                              description='If False, inverse kinematics will be not computed'),
+                              description='If False, inverse kinematics will be not computed')
+    )
+
+    ld.add_action(
         DeclareLaunchArgument("computeFK",
                               default_value='True',
-                              description='If False, forward kinematics will be not computed'),
+                              description='If False, forward kinematics will be not computed')
+    )
+    ld.add_action(
         DeclareLaunchArgument("logs_folder_path",
                               default_value='/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik',
                               description='The path to the log folder in your PC, '
-                                          'where files will be stored when performing IK test'),
-        ik_interface_node])
+                                          'where files will be stored when performing IK test')
+    )
+
+    ld.add_action(
+        DeclareLaunchArgument('use_sim_time',
+                              default_value='True',
+                              description='Use sim time if true')
+    )
+
+    ld.add_action(
+        DeclareLaunchArgument('timeout',
+                              default_value='0.005',
+                              description='Solver timeout [s]')
+    )
+
+    ik_interface_params = [
+        moveit_config.robot_description,
+        moveit_config.robot_description_semantic,
+        moveit_config.robot_description_kinematics,
+        {"use_sim_time": LaunchConfiguration("use_sim_time")},
+        {"num_of_samples": LaunchConfiguration("num_of_samples")},
+        {"computeFK": LaunchConfiguration("computeIK")},
+        {"computeIK": LaunchConfiguration("computeFK")},
+        {"logs_folder_path": LaunchConfiguration("logs_folder_path")},
+        {"timeout": LaunchConfiguration("timeout")}
+    ]
+
+    ld.add_action(
+        Node(
+            name="ik_interface",
+            package="sensorob_ik_interface",
+            executable="ik_interface_random",
+            output="screen",
+            parameters=ik_interface_params,
+        )
+    )
+
+    return ld
