@@ -11,6 +11,7 @@ def generate_launch_description():
     num_of_joint_samples_arg = LaunchConfiguration("num_of_joint_samples")
     computeIK_arg = LaunchConfiguration("computeIK")
     computeFK_arg = LaunchConfiguration("computeFK")
+    logs_path_arg = LaunchConfiguration("logs_folder_path")
 
     ik_interface_node = Node(
         name="ik_interface",
@@ -24,7 +25,8 @@ def generate_launch_description():
             {"use_sim_time": True},
             {"num_of_joint_samples": num_of_joint_samples_arg},
             {"computeFK": computeFK_arg},
-            {"computeIK": computeIK_arg}
+            {"computeIK": computeIK_arg},
+            {"logs_folder_path": logs_path_arg}
         ],
     )
 
@@ -40,4 +42,8 @@ def generate_launch_description():
         DeclareLaunchArgument("computeFK",
                               default_value='True',
                               description='If False, forward kinematics will be not computed'),
+        DeclareLaunchArgument("logs_folder_path",
+                              default_value='/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik',
+                              description='The path to the log folder in your PC, '
+                                          'where files will be stored when performing IK test'),
         ik_interface_node])

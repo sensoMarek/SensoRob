@@ -22,6 +22,7 @@ int main(int argc, char** argv)
     int num_of_joint_samples = move_group_node->get_parameter("num_of_joint_samples").get_value<int>();
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
+    std::string  logs_folder_path = move_group_node->get_parameter("logs_folder_path").get_value<std::string>();
 
     if (!computeFK){
         num_of_joint_samples = -1; // in this state we dont know ho many samples are in the file
@@ -60,9 +61,9 @@ int main(int argc, char** argv)
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
-    std::string file_pos_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/position.csv";
-    std::string file_joint_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/joint.csv";
-    std::string file_time_name = "/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik/accurancy_and_time.csv";
+    std::string file_pos_name = logs_folder_path + "/position.csv";
+    std::string file_joint_name = logs_folder_path + "/joint.csv";
+    std::string file_time_name = logs_folder_path + "/accurancy_and_time.csv";
 
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
     if(computeFK) {
