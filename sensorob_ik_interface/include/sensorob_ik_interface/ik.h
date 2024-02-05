@@ -25,7 +25,8 @@ namespace ik {
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
                         const std::string& file_pos_name,
-                        const std::string& file_time_name);
+                        const std::string& file_time_name,
+                        const double& solver_timeout);
 }
 
 #endif //SENSOROB_IK_INTERFACE_IK_H

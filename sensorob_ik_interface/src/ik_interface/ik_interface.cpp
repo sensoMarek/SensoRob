@@ -23,6 +23,7 @@ int main(int argc, char** argv)
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
     std::string  logs_folder_path = move_group_node->get_parameter("logs_folder_path").get_value<std::string>();
+    double solver_timeout = move_group_node->get_parameter("timeout").get_value<double>();
 
     if (!computeFK){
         num_of_joint_samples = -1; // in this state we dont know ho many samples are in the file
@@ -72,7 +73,7 @@ int main(int argc, char** argv)
 
     // compute and log IK accurance and duration
     if (computeIK) {
-        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, file_pos_name, file_time_name);
+        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, file_pos_name, file_time_name, solver_timeout);
     }
 
     // Visualize point in RViZ published on topic

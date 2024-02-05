@@ -24,9 +24,10 @@ int main(int argc, char** argv)
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
     std::string  logs_folder_path = move_group_node->get_parameter("logs_folder_path").get_value<std::string>();
+    double solver_timeout = move_group_node->get_parameter("timeout").get_value<double>();
 
     if (!computeFK){
-        num_of_samples = -1; // in this state we dont know ho many samples are in the file
+        num_of_samples = -1; // in this state we don't know ho many samples are in the file
     }
 
     static const std::string PLANNING_GROUP = "sensorob_group";
@@ -62,10 +63,9 @@ int main(int argc, char** argv)
         fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_samples, file_pos_name, file_joint_name);
     }
 
-    // compute and log IK accurance and duration
+    // compute and log IK accuracy and duration
     if (computeIK) {
-        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP,
-                            file_pos_name, file_time_name);
+        ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, file_pos_name, file_time_name, solver_timeout);
     }
 
     // Visualize point in RViZ published on topic

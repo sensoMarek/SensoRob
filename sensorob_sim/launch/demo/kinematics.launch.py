@@ -10,7 +10,6 @@ def generate_launch_description():
 
     # Config
     package_name = 'sensorob_sim'
-    use_sim_time = 'false'
     rviz_config_file = get_package_share_directory('sensorob_moveit_config') + "/config/kinematics.rviz"
 
     # Launches
