@@ -24,7 +24,6 @@ namespace ik {
     int computeAndLogIK(const std::shared_ptr<rclcpp::Node>& move_group_node,
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
-                        int num_provided_samples,
                         const std::string& file_pos_name,
                         const std::string& file_time_name);
 }

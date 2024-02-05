@@ -1,7 +1,5 @@
 # Sensorob simulation package
 
-This package contains `config` and `launch` subdirectories. 
-
 ## General
 In config folder there is stored info about ROS2 Controllers.  
 We are using `sensorob_group_controller` of type `joint_trajectory_controller/JointTrajectoryController`

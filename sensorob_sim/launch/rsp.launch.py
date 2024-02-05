@@ -24,13 +24,13 @@ def generate_launch_description():
         parameters=[params]
     )
 
-    # static_tf = Node(
-    #     package="tf2_ros",
-    #     executable="static_transform_publisher",
-    #     name="static_transform_publisher",
-    #     output="log",
-    #     arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "base_link"],
-    # )
+    static_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        name="static_transform_publisher",
+        output="log",
+        arguments=["0.05", "0.05", "0.20", "0.0", "0.0", "0.0", "world", "base_link"],
+    )
 
     # Launch!
     return LaunchDescription([
@@ -40,5 +40,5 @@ def generate_launch_description():
             description='Use sim time if true'),
 
         node_robot_state_publisher,
-        # static_tf
+        static_tf
     ])

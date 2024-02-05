@@ -9,7 +9,6 @@ namespace ik {
     int computeAndLogIK(const std::shared_ptr<rclcpp::Node>& move_group_node,
                         const moveit::planning_interface::MoveGroupInterface& move_group,
                         const std::string& planning_group,
-                        int num_total_samples,
                         const std::string& file_pos_name,
                         const std::string& file_time_name) {
 
@@ -25,7 +24,8 @@ namespace ik {
 
         // Select move group and IK algorithm
         const kinematics::KinematicsBaseConstPtr& solver = joint_model_group->getSolverInstance();
-
+        clog("solver->getDefaultTimeout(): " + std::to_string(solver->getDefaultTimeout()), LOGGER);
+        clog("joint_model_group->getDefaultIKTimeout(): " + std::to_string(joint_model_group->getDefaultIKTimeout()), LOGGER);
 
         std::vector<double> joint_values_ik;
         int num_valid_samples = 0;
@@ -95,22 +95,24 @@ namespace ik {
 
             // Variables for getPositionIK function
             std::vector<geometry_msgs::msg::Pose> ik_poses = {pose_desired_base_link.pose};
-            std::vector<std::vector<double>> solutions;
+            std::vector< double > solution;
             std::vector<double> ik_seed_state = {0, 0, 0, 0, 0, 0};
-            kinematics::KinematicsResult result{};
+            moveit_msgs::msg::MoveItErrorCodes result;
             kinematics::KinematicsQueryOptions o;
-            o.return_approximate_solution = false; // we do not want approx solutions
+            o.return_approximate_solution = false;  // we do not want approx solutions
+            double timeout = 0.005;  // solver timeout
 
             // Measure the duration of IK computation
             rclcpp::Time start_time = rclcpp::Clock().now();
 
             // Compute inverse kinematics
-            solver->getPositionIK(ik_poses, ik_seed_state, solutions, result, o);
+            solver->searchPositionIK(pose_desired_base_link.pose, ik_seed_state, timeout, solution, result, o);
+
 
             rclcpp::Time end_time = rclcpp::Clock().now();
 
             // Check if the computation was successful
-            if (result.kinematic_error != kinematics::KinematicError::OK) {
+            if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS) {
                 /*throw std::runtime_error("Unable to compute IK. Error: " + std::to_string(result.kinematic_error));*/
                 /*clog("Did not find IK solution", ERROR);*/
                 file_time << -1 << " " << -1 << std::endl;
@@ -123,22 +125,20 @@ namespace ik {
 
                 /*clog("pose_desired_world: "+ std::to_string(pose_desired_world.pose.position.x)+" "+ std::to_string(pose_desired_world.pose.position.y)+" "+ std::to_string(pose_desired_world.pose.position.z));*/
 
-                for (const auto &solution : solutions) {
-                    cur_state->setJointGroupPositions(planning_group, solution);
-                    const Eigen::Affine3d &pose_found = cur_state->getGlobalLinkTransform("link_6");
-                      /*clog("pose_found:   "+ std::to_string(pose_found.translation().x())+" "+ std::to_string(pose_found.translation().y())+" "+ std::to_string(pose_found.translation().z()));*/
+                cur_state->setJointGroupPositions(planning_group, solution);
+                const Eigen::Affine3d &pose_found = cur_state->getGlobalLinkTransform("link_6");
+                  /*clog("pose_found:   "+ std::to_string(pose_found.translation().x())+" "+ std::to_string(pose_found.translation().y())+" "+ std::to_string(pose_found.translation().z()));*/
 
-                    double accuracy = sqrt( pow(pose_desired_world.pose.position.x - pose_found.translation().x(), 2) +
-                                                pow(pose_desired_world.pose.position.y - pose_found.translation().y(), 2) +
-                                                pow(pose_desired_world.pose.position.z - pose_found.translation().z(), 2));
-                    file_time << accuracy << " ";
+                double accuracy = sqrt( pow(pose_desired_world.pose.position.x - pose_found.translation().x(), 2) +
+                                            pow(pose_desired_world.pose.position.y - pose_found.translation().y(), 2) +
+                                            pow(pose_desired_world.pose.position.z - pose_found.translation().z(), 2));
+                file_time << accuracy << " ";
 
-                    /*std::string tmp;
-                    for (const auto &joint : solution) {
-                        tmp += " " + std::to_string(joint);
-                    }
-                    clog(tmp);*/
+                /*std::string tmp;
+                for (const auto &joint : solution) {
+                    tmp += " " + std::to_string(joint);
                 }
+                clog(tmp);*/
 
                 file_time << std::endl;
             }
@@ -151,7 +151,6 @@ namespace ik {
         clog("Processed " + std::to_string(num_valid_samples) + " samples.", LOGGER);
         clog("Duration and accuracy of found solutions saved.", LOGGER);
         clog("IK end-effector states: \n"
-             "Total: " + std::to_string(num_total_samples) + "\n"
              "Valid: " + std::to_string(num_valid_samples) + "\n"
              "Found: " + std::to_string(num_found_samples), LOGGER);
 

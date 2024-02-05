@@ -73,7 +73,7 @@ namespace fk {
             return -1;
         }
         clog("File file_joint_name opened", LOGGER);
-        
+
 
         // Iterate over all states and check its validity (self-collision point of view)
         clog("Validating and saving valid robot states", LOGGER);
@@ -107,24 +107,24 @@ namespace fk {
 
                                 /*log position and orientation of end effector*/
                                 file_pos << end_effector_state.translation().x() << " "
-                                     << end_effector_state.translation().y() << " "
-                                     << end_effector_state.translation().z() << " "
-                                     << quaternion.w() << " "
-                                     << quaternion.x() << " "
-                                     << quaternion.y() << " "
-                                     << quaternion.z() << " "
-                                     << std::endl;
+                                         << end_effector_state.translation().y() << " "
+                                         << end_effector_state.translation().z() << " "
+                                         << quaternion.w() << " "
+                                         << quaternion.x() << " "
+                                         << quaternion.y() << " "
+                                         << quaternion.z() << " "
+                                         << std::endl;
 
                                 /*log joint states position*/
                                 file_joint << joint_states[0] << " "
-                                         << joint_states[1] << " "
-                                         << joint_states[2] << " "
-                                         << joint_states[3] << " "
-                                         << joint_states[4] << " "
-                                         << joint_states[5] << " "
-                                         //new
-//                                << i0 << " " << i1 << " " << i2 << " " << i3 << " " << i4 << " "
-                                         << std::endl;
+                                           << joint_states[1] << " "
+                                           << joint_states[2] << " "
+                                           << joint_states[3] << " "
+                                           << joint_states[4] << " "
+                                           << joint_states[5] << " "
+                                           //new
+                                           //                                << i0 << " " << i1 << " " << i2 << " " << i3 << " " << i4 << " "
+                                           << std::endl;
                             }
                             /*else {
                                 clog("Joint values are not valid!", WARN);

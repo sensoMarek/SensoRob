@@ -1,7 +1,7 @@
-sensorob_group:
-  kinematics_solver: sensorob_sensorob_group/IKFastKinematicsPlugin
-  kinematics_solver_search_resolution: 0.005
-  kinematics_solver_timeout: 0.005
+#sensorob_group:
+#  kinematics_solver: sensorob_sensorob_group/IKFastKinematicsPlugin
+#  kinematics_solver_search_resolution: 0.005
+#  kinematics_solver_timeout: 0.005
 
 #sensorob_group:
 #  kinematics_solver: cached_ik_kinematics_plugin/CachedKDLKinematicsPlugin
@@ -12,3 +12,7 @@ sensorob_group:
 #  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
 #  kinematics_solver_search_resolution: 0.005
 #  kinematics_solver_timeout: 0.005
+
+sensorob_group:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  kinematics_solver_timeout: 0.005
