@@ -3,6 +3,6 @@
 
   <xacro:include filename="$(find sensorob_description)/urdf/robot_core.xacro" />
    <xacro:include filename="sensorob.ros2_control.xacro" />
-   <xacro:sensorob_ros2_control name="FakeSystem"/>
+   <xacro:sensorob_ros2_control name="MockSystem"/>
 
 </robot>

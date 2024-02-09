@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
 
     # Config
-    package_name = 'sensorob_sim'
+    package_name = 'sensorob'
     rviz_config_file = get_package_share_directory('sensorob_moveit_config') + "/config/kinematics.rviz"
 
     # Launches

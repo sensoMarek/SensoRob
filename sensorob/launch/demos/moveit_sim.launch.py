@@ -8,8 +8,8 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
 
     # Config
-    package_name = 'sensorob_sim'
-    use_sim_time = 'true'
+    package_name = 'sensorob'
+    use_sim_time = 'True'
     rviz_config_file = get_package_share_directory('sensorob_moveit_config') + "/config/moveit_sim.rviz"
 
     # Launches

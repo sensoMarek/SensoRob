@@ -301,7 +301,7 @@
   </ros2_control>
   <gazebo>
     <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-      <parameters>/home/jakub/ros2_ws/install/sensorob_sim/share/sensorob_sim/config/sensorob_controllers.yaml</parameters>
+      <parameters>/home/jakub/ros2_ws/install/sensorob/share/sensorob/config/sensorob_controllers.yaml</parameters>
     </plugin>
   </gazebo>
 </robot>
