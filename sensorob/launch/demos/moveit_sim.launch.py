@@ -6,17 +6,24 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    """
+     * robot_state_publisher
+     * gazebo
+     * controllers
+     * move_group
+     * rviz
+    """
 
     # Config
     package_name = 'sensorob'
-    use_sim_time = 'True'
+    sim_mode = 'True'
     rviz_config_file = get_package_share_directory('sensorob_moveit_config') + "/config/moveit_sim.rviz"
 
     # Launches
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name), 'launch', 'rsp.launch.py'
-        )]), launch_arguments={'use_sim_time': use_sim_time}.items()
+        )]), launch_arguments={'sim_mode': sim_mode}.items()
     )
 
     gazebo = IncludeLaunchDescription(
@@ -25,22 +32,31 @@ def generate_launch_description():
         )])
     )
 
+    controllers = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            get_package_share_directory(package_name), 'launch', 'controllers.launch.py'
+        )]), launch_arguments={'sim_mode': sim_mode}.items()
+    )
+
     moveit = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name), 'launch', 'moveit.launch.py'
-        )]), launch_arguments={'use_sim_time': use_sim_time}.items()
+        )]), launch_arguments={'sim_mode': sim_mode}.items()
     )
 
     rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name), 'launch', 'rviz.launch.py'
-        )]), launch_arguments={'rviz_config_file': rviz_config_file,
-                               'use_sim_time': use_sim_time}.items()
+        )]), launch_arguments={
+            'rviz_config_file': rviz_config_file,
+            'sim_mode': sim_mode
+            }.items()
     )
 
     return LaunchDescription([
         rsp,
         gazebo,
+        controllers,
         moveit,
         rviz
     ])

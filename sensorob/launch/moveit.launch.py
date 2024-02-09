@@ -3,7 +3,7 @@ import yaml
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, Command
 from ament_index_python.packages import get_package_share_directory
 import xacro
 from moveit_configs_utils import MoveItConfigsBuilder
@@ -32,13 +32,13 @@ def load_yaml(package_name, file_path):
 
 
 def moveit_launch():
-    DeclareLaunchArgument('use_sim_time', default_value='True', description='Use sim time if true'),
+
+    sim_mode = LaunchConfiguration('sim_mode')
     moveit_config = MoveItConfigsBuilder("sensorob", package_name="sensorob_moveit_config").to_moveit_configs()
 
-    # Config
-    robot_description_file = get_package_share_directory('sensorob_description') + "/urdf/sensorob.urdf.xacro"
-    robot_description_config = xacro.process_file(robot_description_file)
-    robot_description = {'robot_description': robot_description_config.toxml()}
+    # Process the URDF file
+    robot_description_file = os.path.join(get_package_share_directory('sensorob_description'), 'urdf', "sensorob.urdf.xacro")
+    robot_description = Command(['xacro ', robot_description_file, ' sim_mode:=', sim_mode])
 
     planning_pipeline_config = {'move_group': {
         'planning_plugin': 'ompl_interface/OMPLPlanner',
@@ -64,7 +64,7 @@ def moveit_launch():
                          moveit_config.trajectory_execution,
                          moveit_controllers,
                          planning_scene_monitor_parameters,
-                         {"use_sim_time": LaunchConfiguration('use_sim_time')}]
+                         {"use_sim_time": LaunchConfiguration('sim_mode')}]
 
     # default
     return Node(package='moveit_ros_move_group',
@@ -77,5 +77,9 @@ def moveit_launch():
 def generate_launch_description():
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'sim_mode',
+            default_value='False',
+            description='Use sim time (perform sim_mode) if true'),
         moveit_launch()
     ])

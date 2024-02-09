@@ -6,7 +6,13 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 
+
 def generate_launch_description():
+    """
+    robot_state_publisher
+    rviz
+    joint_state_publisher_gui
+    """
 
     # Config
     package_name = 'sensorob'

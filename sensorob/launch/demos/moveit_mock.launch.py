@@ -11,11 +11,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     """
-    Includes
      * robot_state_publisher
      * move_group
-     * moveit_rviz
-     * ros2_control_node + controller spawners
+     * rviz
+     * ros2_control_node + controller_spawner
     """
     
     moveit_config = MoveItConfigsBuilder("sensorob", package_name="sensorob_moveit_config").to_moveit_configs()

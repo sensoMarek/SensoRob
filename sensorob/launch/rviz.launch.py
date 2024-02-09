@@ -8,29 +8,30 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_rviz2_launch():
     # Launch optional arguments
+    sim_mode = LaunchConfiguration('sim_mode')
+    rviz_config_file = LaunchConfiguration('rviz_config_file')
     moveit_config = MoveItConfigsBuilder("sensorob", package_name="sensorob_moveit_config").to_moveit_configs()
 
     return Node(package='rviz2',
                 executable='rviz2',
                 name='rviz2',
                 output='log',
-                arguments=['-d', LaunchConfiguration('rviz_config_file')],
+                arguments=['-d', rviz_config_file],
                 parameters=[moveit_config.planning_pipelines,
                             moveit_config.robot_description_kinematics,
-                            {"use_sim_time": LaunchConfiguration('use_sim_time')}]
+                            {"use_sim_time": sim_mode}]
                 )
 
 
 def generate_launch_description():
     # Defaults
-    use_sim_time_default = 'False'
     rviz_config_file_default = get_package_share_directory('sensorob_moveit_config') + "/config/moveit.rviz"
 
     return LaunchDescription([
         DeclareLaunchArgument(
-            'use_sim_time',
-            default_value=use_sim_time_default,
-            description='Use sim time if true'),
+            'sim_mode',
+            default_value='False',
+            description='Use sim time (perform sim_mode) if true'),
         DeclareLaunchArgument(
             'rviz_config_file',
             default_value=rviz_config_file_default,
