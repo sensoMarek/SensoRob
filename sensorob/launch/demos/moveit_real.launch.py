@@ -16,7 +16,7 @@ def generate_launch_description():
 
     # Config
     package_name = 'sensorob'
-    sim_mode = 'True'
+    sim_mode = 'False'
     rviz_config_file = get_package_share_directory('sensorob_moveit_config') + "/config/moveit_sim.rviz"
 
     # Launches
@@ -26,10 +26,10 @@ def generate_launch_description():
         )]), launch_arguments={'sim_mode': sim_mode}.items()
     )
 
-    gazebo = IncludeLaunchDescription(
+    ros2_control_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory(package_name), 'launch', 'gazebo.launch.py'
-        )])
+            get_package_share_directory(package_name), 'launch', 'controller_control_node.launch.py'
+        )]), launch_arguments={'sim_mode': sim_mode}.items()
     )
 
     controller_spawner = IncludeLaunchDescription(
@@ -55,8 +55,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         rsp,
-        gazebo,
+        ros2_control_node,
         controller_spawner,
-        moveit,
+        # moveit,
         rviz
     ])
