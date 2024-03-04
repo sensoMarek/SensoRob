@@ -22,6 +22,10 @@ def generate_launch_description():
             {'robot_description': robot_description},
             controller_params_file
         ]
+        # ,
+        # remappings=[
+        #     ('/state', '/controller_state'),
+        # ]
     )
 
     return LaunchDescription([

@@ -87,7 +87,9 @@ sensorob_group_controller:
       - joint_5
       - joint_6
 
-    allow_nonzero_velocity_at_trajectory_end: true
+    state_publish_rate: 1000.0       # Defaults to 50
+    action_monitor_rate: 1000.0      # Defaults to 20
+    allow_nonzero_velocity_at_trajectory_end: false
 
     interface_name: position
     command_interfaces:
@@ -95,3 +97,10 @@ sensorob_group_controller:
     state_interfaces:
       - position
       - velocity
+
+    constraints:
+      #      goal_time: 0.5                   # Override default
+      stopped_velocity_tolerance: 0.02 # Override default
+      joint_1:
+        trajectory: 0.20               # Not enforced if unspecified
+        goal: 0.005
