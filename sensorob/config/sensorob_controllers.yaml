@@ -102,5 +102,20 @@ sensorob_group_controller:
       #      goal_time: 0.5                   # Override default
       stopped_velocity_tolerance: 0.02 # Override default
       joint_1:
-        trajectory: 0.20               # Not enforced if unspecified
+        trajectory: 0.15               # Not enforced if unspecified
+        goal: 0.005
+      joint_2:
+        trajectory: 0.15               # Not enforced if unspecified
+        goal: 0.005
+      joint_3:
+        trajectory: 0.15               # Not enforced if unspecified
+        goal: 0.005
+      joint_4:
+        trajectory: 0.15               # Not enforced if unspecified
+        goal: 0.005
+      joint_5:
+        trajectory: 0.15               # Not enforced if unspecified
+        goal: 0.005
+      joint_6:
+        trajectory: 0.15               # Not enforced if unspecified
         goal: 0.005

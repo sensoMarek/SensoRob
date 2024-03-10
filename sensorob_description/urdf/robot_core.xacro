@@ -165,7 +165,7 @@
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="500" velocity="6"/> <!-- +-pi -->
+    <limit upper="3.1414" lower="-3.1414" effort="500" velocity="6"/> <!-- +-pi -->
   </joint>
 
   <joint name="joint_2" type="revolute">
@@ -189,7 +189,7 @@
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="200" velocity="8"/> <!-- +-pi -->
+    <limit upper="3.1414" lower="-3.1414" effort="200" velocity="8"/> <!-- +-pi -->
   </joint>
 
   <joint name="joint_5" type="revolute">
@@ -205,7 +205,7 @@
     <parent link="link_5"/>
     <child link="link_6"/>
     <axis xyz="0.0 -0.0 -1.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
+    <limit upper="3.1414" lower="-3.1414" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
   </joint>
 
 </robot>
