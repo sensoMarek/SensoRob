@@ -37,3 +37,17 @@ ros2 launch sensorob moveit_sim.launch.py
 <p align="center">
 <img src="/media/images/moveit_sim_screenshot.png" width="70%" title="Moveit with Gazebo screenshot">
 </p>
+
+### Moveit + real robot
+In order to launch the move group node with real hardware, type following command in the terminal
+
+```
+ros2 launch sensorob moveit_real.launch.py
+```
+
+<p align="center">
+  <video src=/media/videos/moveit_real.mp4" width="70%" controls autoplay loop>
+    title="Moveit with real motor"
+    Your browser does not support the video tag.
+  </video>
+</p>
