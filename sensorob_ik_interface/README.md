@@ -56,7 +56,7 @@ We also created 2 ways of generating poses in FK.
 ## Launch
 The simulation has to be launched first, e.g.   
 ```
-ros2 launch sensorob_sim moveit_fake.launch.py
+ros2 launch sensorob moveit_mock.launch.py
 ```
 
 Then the IK solver test is ready to run  (run in second terminal)
