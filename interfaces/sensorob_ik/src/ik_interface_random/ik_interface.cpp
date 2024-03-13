@@ -1,7 +1,7 @@
 //
 // Created by jakub on 27.11.2023.
 //
-#include "sensorob_ik_interface/ik_interface.h"
+#include "sensorob_ik/ik_interface.h"
 
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik_interface");
 
@@ -17,16 +17,17 @@ int main(int argc, char** argv)
     rclcpp::executors::SingleThreadedExecutor executor;
     executor.add_node(move_group_node);
     std::thread([&executor]() { executor.spin(); }).detach();
+    
 
     // Get the value from parameters
-    int num_of_joint_samples = move_group_node->get_parameter("num_of_joint_samples").get_value<int>();
+    int num_of_samples = move_group_node->get_parameter("num_of_samples").get_value<int>();
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
     std::string  logs_folder_path = move_group_node->get_parameter("logs_folder_path").get_value<std::string>();
     double solver_timeout = move_group_node->get_parameter("timeout").get_value<double>();
 
     if (!computeFK){
-        num_of_joint_samples = -1; // in this state we dont know ho many samples are in the file
+        num_of_samples = -1; // in this state we don't know ho many samples are in the file
     }
 
     static const std::string PLANNING_GROUP = "sensorob_group";
@@ -49,15 +50,6 @@ int main(int argc, char** argv)
 
     clog("Planning frame: " + move_group.getPlanningFrame(), LOGGER);
     clog("End effector link: " + move_group.getEndEffectorLink(), LOGGER);
-    if (num_of_joint_samples > 14) {
-        clog("num_of_joint_samples was set to "
-             + std::to_string(num_of_joint_samples)
-             + ", which means "
-             + std::to_string(std::pow(num_of_joint_samples,5))
-             + " states, what is too large number of robot configurations to process. "
-               "Will use value 6 num_of_joint_states.", LOGGER, WARN);
-        num_of_joint_samples = 6;
-    }
 
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
@@ -65,13 +57,13 @@ int main(int argc, char** argv)
     std::string file_pos_name = logs_folder_path + "/position.csv";
     std::string file_joint_name = logs_folder_path + "/joint.csv";
     std::string file_time_name = logs_folder_path + "/accurancy_and_time.csv";
-
+    
     // compute and log translation and orientation (FK) of the end effector for a joint values seed
     if(computeFK) {
-        fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_joint_samples, file_pos_name, file_joint_name);
+        fk::computeAndLogFK(move_group_node, move_group, PLANNING_GROUP, num_of_samples, file_pos_name, file_joint_name);
     }
 
-    // compute and log IK accurance and duration
+    // compute and log IK accuracy and duration
     if (computeIK) {
         ik::computeAndLogIK(move_group_node, move_group, PLANNING_GROUP, file_pos_name, file_time_name, solver_timeout);
     }
@@ -79,7 +71,7 @@ int main(int argc, char** argv)
     // Visualize point in RViZ published on topic
     viz::visualizePoints(visual_tools, file_pos_name, file_time_name);
 
-
+    
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
 

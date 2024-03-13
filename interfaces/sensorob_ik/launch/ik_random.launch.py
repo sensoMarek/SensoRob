@@ -10,11 +10,9 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     ld.add_action(
-        DeclareLaunchArgument("num_of_joint_samples",
-                          default_value='6',
-                          description='Number of joint samples.\n'
-                                      'This number will represent how many total samples will be used for IK test '
-                                      'given formula num_of_joint_samples^(num of used joints)')
+        DeclareLaunchArgument("num_of_samples",
+                              default_value='1000',
+                              description='Number of samples used for IK test')
     )
 
     ld.add_action(
@@ -52,7 +50,7 @@ def generate_launch_description():
         moveit_config.robot_description_semantic,
         moveit_config.robot_description_kinematics,
         {"use_sim_time": LaunchConfiguration("use_sim_time")},
-        {"num_of_joint_samples": LaunchConfiguration("num_of_joint_samples")},
+        {"num_of_samples": LaunchConfiguration("num_of_samples")},
         {"computeFK": LaunchConfiguration("computeIK")},
         {"computeIK": LaunchConfiguration("computeFK")},
         {"logs_folder_path": LaunchConfiguration("logs_folder_path")},
@@ -62,8 +60,8 @@ def generate_launch_description():
     ld.add_action(
         Node(
             name="ik_interface",
-            package="sensorob_ik_interface",
-            executable="ik_interface",
+            package="sensorob_ik",
+            executable="ik_interface_random",
             output="screen",
             parameters=ik_interface_params,
         )

@@ -10,7 +10,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/transform_listener.h>
 
-#include "sensorob_ik_interface/logger.h"
+#include "sensorob_ik/logger.h"
 
 #include <stdio.h>
 #include <string.h>

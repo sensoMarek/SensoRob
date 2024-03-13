@@ -1,7 +1,7 @@
 //
 // Created by jakub on 29.12.2023.
 //
-#include "sensorob_ik_interface/viz.h"
+#include "sensorob_ik/viz.h"
 
 namespace viz {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("viz");

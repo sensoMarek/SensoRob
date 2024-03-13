@@ -15,9 +15,9 @@
 #include <vector>
 #include <fstream>
 
-#include "sensorob_ik_interface/fk.h"
-#include "sensorob_ik_interface/ik.h"
-#include "sensorob_ik_interface/viz.h"
-#include "sensorob_ik_interface/logger.h"
+#include "sensorob_ik/fk.h"
+#include "sensorob_ik/ik.h"
+#include "sensorob_ik/viz.h"
+#include "sensorob_ik/logger.h"
 
 #endif //SENSOROB_IK_INTERFACE_IK_INTERFACE_H

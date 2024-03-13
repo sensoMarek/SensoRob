@@ -13,7 +13,7 @@
 #include <vector>
 #include <fstream>
 
-#include "sensorob_ik_interface/logger.h"
+#include "sensorob_ik/logger.h"
 
 namespace fk {
     int computeAndLogFK(const std::shared_ptr<rclcpp::Node>& move_group_node,

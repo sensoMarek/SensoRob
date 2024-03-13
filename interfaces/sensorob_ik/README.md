@@ -61,17 +61,17 @@ ros2 launch sensorob moveit_mock.launch.py
 
 Then the IK solver test is ready to run  (run in second terminal)
 ```
-ros2 launch sensorob_ik_interface ik_interface.launch.py
+ros2 launch sensorob_ik ik_interface.launch.py
 ```
 
 or   
 ```
-ros2 launch sensorob_ik_interface ik_interface_random.launch.py
+ros2 launch sensorob_ik ik_interface_random.launch.py
 ```
 
 Use `-s` argument to see all the arguments, for instance:  
 ```
-ros2 launch sensorob_ik_interface ik_interface.launch.py -s
+ros2 launch sensorob_ik ik_interface.launch.py -s
 ```
 
 ```

@@ -1,7 +1,7 @@
 //
 // Created by jakub on 4.12.2023.
 //
-#include "sensorob_ik_interface/fk.h"
+#include "sensorob_ik/fk.h"
 
 namespace fk {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("fk");
