@@ -40,10 +40,18 @@ def moveit_launch():
     robot_description_file = os.path.join(get_package_share_directory('sensorob_description'), 'urdf', "sensorob.urdf.xacro")
     robot_description = Command(['xacro ', robot_description_file, ' sim_mode:=', sim_mode])
 
-    planning_pipeline_config = {'move_group': {
-        'planning_plugin': 'ompl_interface/OMPLPlanner',
-        'request_adapters': """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
-        'start_state_max_bounds_error': 0.1}}
+    planning_pipeline_config = {
+        # 'move_group': {
+        #     'planning_plugin': 'ompl_interface/OMPLPlanner',
+        #     'request_adapters': """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+        #     'start_state_max_bounds_error': 0.1},
+        'move_group': {
+            'planning_plugin': 'stomp_moveit/StompPlanner',
+            'request_adapters': """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",  # default_planner_request_adapters/AddRuckigTrajectorySmoothing
+        }
+        # 'move_group': {
+        #     'planning_plugin': 'chomp_interface/CHOMPPlanner'}
+    }
 
     controllers_yaml = load_yaml('sensorob', 'config/moveit_controllers.yaml')
     moveit_controllers = {'moveit_simple_controller_manager': controllers_yaml,
@@ -57,10 +65,15 @@ def moveit_launch():
                                          "publish_transforms_updates": True,
                                          "monitor_dynamics": False}
 
+    planning_pipelines = {
+        'pipelines': ["ompl", "chomp", "pilz_industrial_motion_planner", "stomp"]
+    }
+
     move_group_params = [robot_description,
                          moveit_config.robot_description_semantic,
                          moveit_config.robot_description_kinematics,
                          planning_pipeline_config,
+                         planning_pipelines,
                          moveit_config.trajectory_execution,
                          moveit_controllers,
                          planning_scene_monitor_parameters,
