@@ -6,8 +6,7 @@ from launch import LaunchDescription
 def generate_launch_description():
     moveit_config = MoveItConfigsBuilder("sensorob").to_moveit_configs()
 
-    # MoveGroupInterface demo executable
-    ik_interface_node = Node(
+    planner = Node(
         name="planner",
         package="sensorob_planner",
         executable="planner",
@@ -21,6 +20,5 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        ik_interface_node])
-
-
+        planner
+        ])
