@@ -28,7 +28,7 @@ def generate_launch_description():
         executable="static_transform_publisher",
         name="static_transform_publisher",
         output="log",
-        arguments=["0.05", "0.05", "0.20", "0.0", "0.0", "0.0", "world", "base_link"],
+        arguments=["-0.065", "0.00", "0.1328", "0.0", "0.0", "0.0", "world", "base_link"],
     )
 
     # Launch!

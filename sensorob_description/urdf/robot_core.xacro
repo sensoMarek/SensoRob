@@ -155,7 +155,7 @@
   </link>
 
   <joint name="world_link_joint" type="fixed">
-    <origin xyz="0.05 0.05 0.2" rpy="0 0 0"/>
+    <origin xyz="-0.065 0.0 0.1328" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
@@ -204,7 +204,7 @@
     <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="0.0 -0.0 -1.0"/>
+    <axis xyz="0.0 -0.0 1.0"/>
     <limit upper="3.1414" lower="-3.1414" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
   </joint>
 
