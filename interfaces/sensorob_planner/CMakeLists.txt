@@ -30,6 +30,7 @@ add_executable(planner
   src/planner.cpp
   src/logger.cpp
   src/obstacles.cpp
+  src/file_logger.cpp
 )
 
 target_include_directories(planner PUBLIC
