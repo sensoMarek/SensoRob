@@ -52,8 +52,7 @@ int main(int argc, char** argv)
     ocm.weight = 1.0;
 
     move_group.setPlanningTime(60);
-    move_group.setPlannerId("STOMP"); // TODO preco hento nefunguje?
-    move_group.setPlanningPipelineId("stomp");
+
     /* Cannot find planning configuration for group 'sensorob_group' using planner 'stomp'. Will use defaults instead.*/
 
         // Example values
@@ -87,8 +86,12 @@ int main(int argc, char** argv)
         num_rerun,
         allow_nc_planning, 
         allow_c_planning,  
-        allow_file_logging
+        allow_file_logging,
+        planner_id,
+        planning_pipeline_id
     );
+    move_group.setPlannerId(planner_id);
+    move_group.setPlanningPipelineId(planning_pipeline_id);
 
     // logging
     std::string home_dir_path;

@@ -33,7 +33,7 @@ def generate_launch_description():
     ld.add_action(
         DeclareLaunchArgument('planner_id',
                               default_value='RRTConnect',
-                              description='Any configured planner id from defined moveit pipelines: ompl, chomp, pilz_industrial_motion_planner, stomp, etc.\ne.g., RRTConnect, EST, STOMP, etc.')
+                              description='[RRTConnect, RRTstar, RRT, RRTStar, TRRT, EST, LBTRRT, BiEST, STRIDE, BiTRRT, PRM, PRMstar, LazyPRMstar, FMT, PDST, STRIDE, BiEST, STRIDE, BiTRRT, STOMP, CHOMP, pilz-PTP, pilz-CIRC, pilz-LIN]\nID of the planner to be used for planning')
     )
 
     ld.add_action(
