@@ -28,17 +28,20 @@ def moveit_launch():
     robot_description_file = os.path.join(get_package_share_directory('sensorob_description'), 'urdf', "sensorob.urdf.xacro")
     robot_description = Command(['xacro ', robot_description_file, ' sim_mode:=', sim_mode])
 
-    stomp_planning_yaml = load_yaml('sensorob_moveit_config', 'config/stomp_planning.yaml')
-    ompl_planning_yaml = load_yaml('sensorob_moveit_config', 'config/ompl_planning.yaml')
-    ompl_defaults_yaml = load_yaml('sensorob_moveit_config', 'config/ompl_defaults.yaml')
-    chomp_planning_yaml = load_yaml('sensorob_moveit_config', 'config/chomp_planning.yaml')
+    # stomp_planning_yaml = load_yaml('sensorob_moveit_config', 'config/stomp_planning.yaml')
+    # ompl_planning_yaml = load_yaml('sensorob_moveit_config', 'config/ompl_planning.yaml')
+    # ompl_defaults_yaml = load_yaml('sensorob_moveit_config', 'config/ompl_defaults.yaml')
+    # chomp_planning_yaml = load_yaml('sensorob_moveit_config', 'config/chomp_planning.yaml')
     # print(f"Loaded stomp_planning_yaml: {stomp_planning_yaml}")
     # planning_pipeline_config = {
     #     # 'move_group': stomp_planning_yaml,
     #     'move_group': ompl_planning_yaml
     #     # 'move_group': chomp_planning_yaml
     # }
-    planning_pipeline_config = ompl_planning_yaml
+
+    # planning_pipelines = {
+    #     'pipelines': ["ompl", "chomp", "pilz_industrial_motion_planner", "stomp"]
+    # }
 
     controllers_yaml = load_yaml('sensorob', 'config/moveit_controllers.yaml')
     moveit_controllers = {'moveit_simple_controller_manager': controllers_yaml,
@@ -52,21 +55,14 @@ def moveit_launch():
                                          "publish_transforms_updates": True,
                                          "monitor_dynamics": False}
 
-    planning_pipelines = {
-        'pipelines': ["ompl", "chomp", "pilz_industrial_motion_planner", "stomp"]
-    }
-
-    joint_limits = load_yaml('sensorob_moveit_config', 'config/joint_limits.yaml')
-
     move_group_params = [robot_description,
                          moveit_config.robot_description_semantic,
                          moveit_config.robot_description_kinematics,
-                         planning_pipeline_config,
-                         planning_pipelines,
+                         moveit_config.planning_pipelines,
                          moveit_config.trajectory_execution,
                          moveit_controllers,
                          planning_scene_monitor_parameters,
-                         joint_limits,
+                         moveit_config.joint_limits,
                          {"use_sim_time": LaunchConfiguration('sim_mode')}]
 
     # default
