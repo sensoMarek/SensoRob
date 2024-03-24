@@ -25,6 +25,12 @@ def generate_launch_description():
     )
 
     ld.add_action(
+        DeclareLaunchArgument('planning',
+                              default_value='non-constrained',
+                              description='[constrained, non-constrained, dont]\nMode of the planner\n - constrained:     planning both constrained and non-constrained movements\n - non-constrained: planning non-constrained movements\n - dont:            no planning, only adding obstacles')
+    )
+
+    ld.add_action(
         Node(
             name="planner",
             package="sensorob_planner",
@@ -37,6 +43,7 @@ def generate_launch_description():
                 {"use_sim_time": True},
                 {"num_rerun": LaunchConfiguration("num_rerun")},
                 {"file_logging": LaunchConfiguration("file_logging")},
+                {"planning": LaunchConfiguration("planning")}
             ],
         )
     )

@@ -19,7 +19,6 @@ def generate_launch_description():
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        output='screen',
         parameters=[params]
     )
 
@@ -27,7 +26,6 @@ def generate_launch_description():
         package="tf2_ros",
         executable="static_transform_publisher",
         name="static_transform_publisher",
-        output="log",
         arguments=["-0.065", "0.00", "0.1328", "0.0", "0.0", "0.0", "world", "base_link"],
     )
 

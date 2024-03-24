@@ -29,31 +29,90 @@ int main(int argc, char** argv)
     visual_tools.deleteAllMarkers();
     visual_tools.loadRemoteControl();
     
+
+    // move_group.setJointValueTarget(jointValueTarget2);  
+
+    // clog("A", LOGGER);
+    // auto current_pose = move_group.getPoseTarget();
+    // clog("B", LOGGER);
+    // clog("wxyz: "+ std::to_string(current_pose.pose.orientation.w) + " "+ std::to_string(current_pose.pose.orientation.x) + " "+ std::to_string(current_pose.pose.orientation.y) + " "+ std::to_string(current_pose.pose.orientation.z) + " ", LOGGER);
+    // clog("move_group.getPoseReferenceFrame(): " + move_group.getPoseReferenceFrame(), LOGGER);
     //  constraints
     moveit_msgs::msg::OrientationConstraint ocm;
     ocm.link_name = move_group.getEndEffectorLink();
-    ocm.header.frame_id = "base_link";
+    ocm.header.frame_id = move_group.getPoseReferenceFrame();
     ocm.orientation.w =  sqrt(2)/2.0;
     ocm.orientation.x = -sqrt(2)/2.0;
     ocm.orientation.y = 0;
     ocm.orientation.z = 0;
-    ocm.absolute_x_axis_tolerance = 0.5;
-    ocm.absolute_y_axis_tolerance = 0.5;
-    ocm.absolute_z_axis_tolerance = 0.5; // zmensit
+    // ocm.orientation = current_pose.pose.orientation;
+    ocm.absolute_x_axis_tolerance = 0.4;
+    ocm.absolute_y_axis_tolerance = 0.4;
+    ocm.absolute_z_axis_tolerance = 1.5; 
     ocm.weight = 1.0;
 
+
+    clog(move_group.getPlanningPipelineId(), LOGGER);
+    move_group.setPlanningTime(60);
+    move_group.setPlannerId("STOMP"); // TODO preco hento nefunguje?
+    move_group.setPlanningPipelineId("stomp");
+    /* Cannot find planning configuration for group 'sensorob_group' using planner 'stomp'. Will use defaults instead.*/
+
+        // Example values
+    // std::string planner_id = "RRTStar";
+    // std::string group = "sensorob_group";
+    // std::map<std::string, std::string> params;
+    // params["type"] = "geometric::RRTstar";
+    // params["range"] = "0.0";
+    // params["goal_bias"] = "0.05";
+    // params["delay_collision_checking"] = "1";
+    // bool replace = true; // Example value
+
+    // std::string planner_id = "EST";
+    // std::string group = "sensorob_group";
+    // std::map<std::string, std::string> params;
+    // params["type"] = "geometric::EST";
+    // params["range"] = "0.0";
+    // params["goal_bias"] = "0.05";
+    // bool replace = true; // Example value
+
+    // move_group.setPlannerParams(planner_id, group, params, replace);
+
+
     moveit_msgs::msg::Constraints test_constraints;
-    test_constraints.orientation_constraints.push_back(ocm);
+    test_constraints.orientation_constraints.emplace_back(ocm);
 
 
     // launch args
     num_rerun = move_group_node->get_parameter("num_rerun").get_value<uint>();
     allow_file_logging = move_group_node->get_parameter("file_logging").get_value<bool>();
+    mode = move_group_node->get_parameter("planning").get_value<std::string>();
 
-    if (num_rerun > 50) {
-        num_rerun = 50;
+    bool allow_nc_planning, allow_c_planning;
+
+    if (!mode.compare("dont")) {
+        allow_nc_planning = false;
+        allow_c_planning = false;
+        clog("Mode of the planner - no planning, only adding obstacles", LOGGER);
+    } else if (!mode.compare("constrained")) {
+        allow_nc_planning = true;
+        allow_c_planning = true;
+        clog("Mode of the planner - planning both constrained and non-constrained movements", LOGGER);
+    } else if (!mode.compare("non-constrained")) {
+        allow_nc_planning = true;
+        allow_c_planning = false;
+        clog("Mode of the planner - planning non-constrained movements", LOGGER);
+    } else {
+        allow_nc_planning = true;
+        allow_c_planning = false;
+        clog("Invalid argument, using default value planning:=non-constrained", LOGGER, WARN);
+        clog("Mode of the planner - planning non-constrained movements", LOGGER);
+    }
+
+    if (num_rerun > 100 && (!allow_nc_planning && !allow_c_planning)) { // is allowed planning
+        num_rerun = 100;
         allow_file_logging = false;
-        clog("Invalid inputs (num_rerun > 50), changed to:\n - num_rerun: " + std::to_string(num_rerun) + "\n - file_logging: false", LOGGER);
+        clog("Invalid inputs (num_rerun > 100), changed to:\n - num_rerun: " + std::to_string(num_rerun) + "\n - file_logging: false", LOGGER);
     }
 
     clog("Using value num_rerun: " + std::to_string(num_rerun), LOGGER);
@@ -85,22 +144,26 @@ int main(int argc, char** argv)
     // add obstacles
     addObjectsToScene(planning_scene, objects, object_ids);
 
-    visual_tools.trigger();
-    visual_tools.prompt("Press 'next' to plan");
+    if (allow_nc_planning){
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan");
 
-    plan_cycle(move_group, robot_state, home_dir_path, "scene_1");
+        plan_cycle(move_group, robot_state, home_dir_path, "scene_1");
+    }
 
-    visual_tools.trigger();
-    visual_tools.prompt("Press 'next' to plan under constraints"); 
+    if (allow_c_planning){
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan under constraints"); 
 
-    // add constraints
-    move_group.setPathConstraints(test_constraints);
+        // add constraints
+        move_group.setPathConstraints(test_constraints);
 
-    plan_cycle(move_group, robot_state, home_dir_path, "scene_1_constrainted");
+        plan_cycle(move_group, robot_state, home_dir_path, "scene_1_constrainted");
 
-    // remove constraints
-    move_group.clearPathConstraints();
-    move_group.clearTrajectoryConstraints();
+        // remove constraints
+        move_group.clearPathConstraints();
+        move_group.clearTrajectoryConstraints();
+    }
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // scene 2
     visual_tools.trigger();
@@ -116,6 +179,27 @@ int main(int argc, char** argv)
     if (result) clog("Collision object not created successfully", LOGGER, WARN);
     // add obstacles
     addObjectsToScene(planning_scene, objects, object_ids);
+
+    if (allow_nc_planning) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan");
+
+        plan_cycle(move_group, robot_state, home_dir_path, "scene_2");
+    }
+
+    if (allow_c_planning) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan under constraints"); 
+
+        // add constraints
+        move_group.setPathConstraints(test_constraints);
+
+        plan_cycle(move_group, robot_state, home_dir_path, "scene_2_constrainted");
+
+        // remove constraints
+        move_group.clearPathConstraints();
+        move_group.clearTrajectoryConstraints();
+    }
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
     visual_tools.trigger();

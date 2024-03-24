@@ -23,6 +23,7 @@
 rclcpp::Logger LOGGER = rclcpp::get_logger("planner");
 uint num_rerun;
 bool allow_file_logging;
+std::string mode;
 std::vector<moveit_msgs::msg::CollisionObject> objects;
 std::vector<std::string> object_ids;
 std::vector<std::string> environment_object_ids;
