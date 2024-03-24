@@ -51,8 +51,6 @@ int main(int argc, char** argv)
     ocm.absolute_z_axis_tolerance = 1.5; 
     ocm.weight = 1.0;
 
-
-    clog(move_group.getPlanningPipelineId(), LOGGER);
     move_group.setPlanningTime(60);
     move_group.setPlannerId("STOMP"); // TODO preco hento nefunguje?
     move_group.setPlanningPipelineId("stomp");
@@ -82,40 +80,15 @@ int main(int argc, char** argv)
     moveit_msgs::msg::Constraints test_constraints;
     test_constraints.orientation_constraints.emplace_back(ocm);
 
-
-    // launch args
-    num_rerun = move_group_node->get_parameter("num_rerun").get_value<uint>();
-    allow_file_logging = move_group_node->get_parameter("file_logging").get_value<bool>();
-    mode = move_group_node->get_parameter("planning").get_value<std::string>();
-
-    bool allow_nc_planning, allow_c_planning;
-
-    if (!mode.compare("dont")) {
-        allow_nc_planning = false;
-        allow_c_planning = false;
-        clog("Mode of the planner - no planning, only adding obstacles", LOGGER);
-    } else if (!mode.compare("constrained")) {
-        allow_nc_planning = true;
-        allow_c_planning = true;
-        clog("Mode of the planner - planning both constrained and non-constrained movements", LOGGER);
-    } else if (!mode.compare("non-constrained")) {
-        allow_nc_planning = true;
-        allow_c_planning = false;
-        clog("Mode of the planner - planning non-constrained movements", LOGGER);
-    } else {
-        allow_nc_planning = true;
-        allow_c_planning = false;
-        clog("Invalid argument, using default value planning:=non-constrained", LOGGER, WARN);
-        clog("Mode of the planner - planning non-constrained movements", LOGGER);
-    }
-
-    if (num_rerun > 100 && (!allow_nc_planning && !allow_c_planning)) { // is allowed planning
-        num_rerun = 100;
-        allow_file_logging = false;
-        clog("Invalid inputs (num_rerun > 100), changed to:\n - num_rerun: " + std::to_string(num_rerun) + "\n - file_logging: false", LOGGER);
-    }
-
-    clog("Using value num_rerun: " + std::to_string(num_rerun), LOGGER);
+    // TODO args func
+    process_launch_args(
+        move_group_node, 
+        LOGGER, 
+        num_rerun,
+        allow_nc_planning, 
+        allow_c_planning,  
+        allow_file_logging
+    );
 
     // logging
     std::string home_dir_path;

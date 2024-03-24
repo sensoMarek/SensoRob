@@ -31,6 +31,7 @@ add_executable(planner
   src/logger.cpp
   src/obstacles.cpp
   src/file_logger.cpp
+  src/launch_args_processor.cpp
 )
 
 target_include_directories(planner PUBLIC

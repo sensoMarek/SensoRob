@@ -19,11 +19,14 @@
 #include "sensorob_planner/logger.h"
 #include "sensorob_planner/file_logger.h"
 #include "sensorob_planner/obstacles.h"
+#include "sensorob_planner/launch_args_processor.h"
 
 rclcpp::Logger LOGGER = rclcpp::get_logger("planner");
+
 uint num_rerun;
 bool allow_file_logging;
-std::string mode;
+std::string planning_mode;
+bool allow_nc_planning, allow_c_planning;
 std::vector<moveit_msgs::msg::CollisionObject> objects;
 std::vector<std::string> object_ids;
 std::vector<std::string> environment_object_ids;

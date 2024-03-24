@@ -31,6 +31,12 @@ def generate_launch_description():
     )
 
     ld.add_action(
+        DeclareLaunchArgument('planner_id',
+                              default_value='RRTConnect',
+                              description='Any configured planner id from defined moveit pipelines: ompl, chomp, pilz_industrial_motion_planner, stomp, etc.\ne.g., RRTConnect, EST, STOMP, etc.')
+    )
+
+    ld.add_action(
         Node(
             name="planner",
             package="sensorob_planner",
@@ -43,7 +49,8 @@ def generate_launch_description():
                 {"use_sim_time": True},
                 {"num_rerun": LaunchConfiguration("num_rerun")},
                 {"file_logging": LaunchConfiguration("file_logging")},
-                {"planning": LaunchConfiguration("planning")}
+                {"planning": LaunchConfiguration("planning")},
+                {"planner_id": LaunchConfiguration("planner_id")}
             ],
         )
     )
