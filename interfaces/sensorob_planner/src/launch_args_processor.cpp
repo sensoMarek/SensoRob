@@ -50,7 +50,7 @@ void process_launch_args(
 
     // planner_id
     std::string planner_id_ = move_group_node->get_parameter("planner_id").get_value<std::string>();
-    std::vector<std::string> ompl_planner_ids = {"RRTConnect", "RRTStar", "RRT", "RRTstar", "TRRT", "EST", "LBTRRT", "BiEST", "STRIDE", "BiTRRT", "PRM", "PRMstar", "LazyPRMstar", "PDST", "STRIDE", "BiEST", "STRIDE", "BiTRRT"};
+    std::vector<std::string> ompl_planner_ids = {"RRTConnect", "RRTStar", "RRT", "RRTstar", "TRRT", "EST", "LBTRRT", "BiEST", "STRIDE", "BiTRRT", "PRM", "PRMStar", "LazyPRMstar", "PDST", "STRIDE", "BiEST", "STRIDE", "BiTRRT"};
     std::vector<std::string> stomp_planner_ids = {"STOMP"};
     std::vector<std::string> chomp_planner_ids = {"CHOMP"};
     std::vector<std::string> pilz_planner_ids = {"PTP", "CIRC", "LIN"};
@@ -58,7 +58,6 @@ void process_launch_args(
     if (std::find(ompl_planner_ids.begin(), ompl_planner_ids.end(), planner_id_) != ompl_planner_ids.end()) {
         planner_id = planner_id_;
         planning_pipeline_id = "";  // "ompl"; does not work
-        clog("A", LOGGER);
     } else if (std::find(stomp_planner_ids.begin(), stomp_planner_ids.end(), planner_id_) != stomp_planner_ids.end()) {
         planner_id = planner_id_;
         planning_pipeline_id = "stomp";
@@ -74,6 +73,7 @@ void process_launch_args(
         clog("Cannot find planning configuration for group 'sensorob_group' using planner '" + planner_id_ + "'. Will use defaults instead.", LOGGER, WARN);
     }
 
-    clog("Planner id: " + planner_id + ", planning pipeline id: " + planning_pipeline_id, LOGGER);
+    std::string pp_id = !planning_pipeline_id.compare("")?"ompl":planning_pipeline_id;
+    clog("Planner id: " + planner_id + ", planning pipeline id: " + pp_id, LOGGER);
 
 }

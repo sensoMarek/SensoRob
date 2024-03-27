@@ -43,7 +43,7 @@ static const double obstacle2_position[3] = {
 static const double obstacle3_size[3] = {1.40, 0.20, 0.05};
 static const double obstacle3_position[3] = {
 	0, 
-	0.80, 
+	0.85, 
 	obstacle3_size[2]/2 + 0.40
 };
 

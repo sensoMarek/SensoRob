@@ -43,7 +43,7 @@ std::string create_new_dir(const std::string name, const std::string path, rclcp
 
 std::fstream open_file(
     const std::string file_name, 
-    std::string& dir_name,
+    const std::string dir_name,
     rclcpp::Logger& LOGGER) 
     {
     std::fstream file(dir_name + "/" + file_name, std::ios::out);
@@ -62,7 +62,7 @@ int logTool(
     moveit::planning_interface::MoveGroupInterface& move_group, 
     const std::string planning_group,
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
-    std::string& dir_name,
+    const std::string dir_name,
     rclcpp::Logger& LOGGER) 
 {
     std::fstream file = open_file("tool.txt", dir_name, LOGGER);
@@ -101,10 +101,10 @@ int logTool(
 
 
 int logTrajectory(
-    moveit::planning_interface::MoveGroupInterface& move_group, 
+    [[maybe_unused]] moveit::planning_interface::MoveGroupInterface& move_group, 
     [[maybe_unused]] const std::string planning_group,
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
-    std::string& dir_name,
+    const std::string dir_name,
     rclcpp::Logger& LOGGER) 
 {
     std::fstream file = open_file("trajectory.txt", dir_name, LOGGER);
@@ -116,25 +116,25 @@ int logTrajectory(
         file << "point: " << j << std::endl;   
 
         // pos
-        for (uint i=0; i<move_group.getJoints().size(); i++) {
+        for (uint i=0; i<6; i++) {
             file << std::fixed << std::setprecision(16)<< plan.trajectory_.joint_trajectory.points[j].positions[i] << " ";
-            if (i==(move_group.getJoints().size()-1)) {
+            if (i==(6-1)) {
                 file << std::endl;
             }    
         }
 
         // vel
-        for (uint i=0; i<move_group.getJoints().size(); i++) {
+        for (uint i=0; i<6; i++) {
             file << std::fixed << std::setprecision(16)<< plan.trajectory_.joint_trajectory.points[j].velocities[i] << " ";
-            if (i==(move_group.getJoints().size()-1)) {
+            if (i==(6-1)) {
                 file << std::endl;
             }    
         }
 
         // acc
-        for (uint i=0; i<move_group.getJoints().size(); i++) {
+        for (uint i=0; i<6; i++) {
             file << std::fixed << std::setprecision(16)<< plan.trajectory_.joint_trajectory.points[j].accelerations[i] << " ";
-            if (i==(move_group.getJoints().size()-1)) {
+            if (i==(6-1)) {
                 file << std::endl;
             }    
         }
@@ -147,16 +147,14 @@ int logTrajectory(
     return 0;
 }
 
-int logSummary(
+trajectory_attributes logSummary(
     moveit::planning_interface::MoveGroupInterface& move_group, 
     const std::string planning_group,
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
-    std::string& dir_name,
+    const std::string dir_name,
+    bool allow_file_logging,
     rclcpp::Logger& LOGGER) 
 {
-    std::fstream file = open_file("summary.txt", dir_name, LOGGER);
-
-    if (!file.is_open()) return -1;
     moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(move_group.getRobotModel()));
     const moveit::core::JointModelGroup* joint_model_group = move_group.getCurrentState()->getJointModelGroup(planning_group);
     std::string endEffectorLink = move_group.getEndEffectorLink();
@@ -186,16 +184,16 @@ int logSummary(
     }
 
     // joint distance + max vel + max acc
-    std::vector<double> joints_distance; joints_distance.resize(move_group.getJoints().size()); std::fill(joints_distance.begin(), joints_distance.end(), 0.0);
-    std::vector<double> max_joint_vel; max_joint_vel.resize(move_group.getJoints().size()); std::fill(max_joint_vel.begin(), max_joint_vel.end(), 0.0);
-    std::vector<double> max_joint_acc; max_joint_acc.resize(move_group.getJoints().size()); std::fill(max_joint_acc.begin(), max_joint_acc.end(), 0.0);
+    std::vector<double> joints_distance; joints_distance.resize(6); std::fill(joints_distance.begin(), joints_distance.end(), 0.0);
+    std::vector<double> max_joint_vel; max_joint_vel.resize(6); std::fill(max_joint_vel.begin(), max_joint_vel.end(), 0.0);
+    std::vector<double> max_joint_acc; max_joint_acc.resize(6); std::fill(max_joint_acc.begin(), max_joint_acc.end(), 0.0);
     
     std::vector<double> joints_pos_old = plan.trajectory_.joint_trajectory.points[0].positions;
-    double joints_distance_sum;
+    double joints_distance_sum = 0.0;
 
     for (uint j=1; j<plan.trajectory_.joint_trajectory.points.size(); j++) {
         
-        for (uint i=0; i<move_group.getJoints().size(); i++) {
+        for (uint i=0; i<6; i++) {
             // joint distance
             joints_distance[i] += abs(plan.trajectory_.joint_trajectory.points[j].positions[i] - plan.trajectory_.joint_trajectory.points[j-1].positions[i]);
 
@@ -205,49 +203,154 @@ int logSummary(
         }
     }
 
-    // logging
-    file << "Planning time [s]: " << std::fixed << std::setprecision(8) << plan.planning_time_ << std::endl;
-    file << "Number of points [-]: " << plan.trajectory_.joint_trajectory.points.size() << std::endl;
-    file << "Tool path distance [m]: " << std::fixed << std::setprecision(6) << path_distance << std::endl;
-    
-    file << "Joint distance [rad]" << std::endl;
     for (uint i=0; i<joints_distance.size(); i++) {
-        file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << joints_distance[i] << std::endl;
-        joints_distance_sum += joints_distance[i];
-    }
-    
-    file << "Sum joint distance [rad]: " << std::fixed << std::setprecision(6) << joints_distance_sum << std::endl;
-    
-    file << "Joint max abs vel [rad/s]" << std::endl;
-    for (uint i=0; i<max_joint_vel.size(); i++) {
-        file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << max_joint_vel[i] << std::endl;
-    }
-    
-    file << "Joint max abs acc [rad/s^2]" << std::endl;
-    for (uint i=0; i<max_joint_acc.size(); i++) {
-        file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << max_joint_acc[i] << std::endl;
+        joints_distance_sum += abs(joints_distance[i]);
     }
 
-    file.close();
-    return 0;
+    double trajectory_time = plan.trajectory_.joint_trajectory.points.back().time_from_start.sec + plan.trajectory_.joint_trajectory.points.back().time_from_start.nanosec/1e9;
+    if (allow_file_logging) {
+        std::fstream file = open_file("summary.txt", dir_name, LOGGER);
+        if (file.is_open()) {
+            // logging
+            file << "Planning time [s]: " << std::fixed << std::setprecision(8) << plan.planning_time_ << std::endl;
+            file << "Trajectory time [s]: " << std::fixed << std::setprecision(6) << trajectory_time << std::endl;
+            file << "Number of points [-]: " << plan.trajectory_.joint_trajectory.points.size() << std::endl;
+            file << "Tool path distance [m]: " << std::fixed << std::setprecision(6) << path_distance << std::endl;
+            
+            file << "Joint distance [rad]" << std::endl;
+            for (uint i=0; i<joints_distance.size(); i++) {
+                file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << joints_distance[i] << std::endl;
+            }
+            
+            file << "Sum joint distance [rad]: " << std::fixed << std::setprecision(6) << joints_distance_sum << std::endl;
+            
+            file << "Joint max abs vel [rad/s]" << std::endl;
+            for (uint i=0; i<max_joint_vel.size(); i++) {
+                file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << max_joint_vel[i] << std::endl;
+            }
+            
+            file << "Joint max abs acc [rad/s^2]" << std::endl;
+            for (uint i=0; i<max_joint_acc.size(); i++) {
+                file << "  - joint " << i+1 << " : " << std::fixed << std::setprecision(6) << max_joint_acc[i] << std::endl;
+            }
+
+            file.close();
+        }
+        else {
+            clog("Failed to open file summary.txt", LOGGER, ERROR);
+        }
+    }
+
+    trajectory_attributes traj_attributes;
+    traj_attributes.tool_distance = path_distance;
+    traj_attributes.joint_distance = joints_distance_sum;
+    traj_attributes.planning_time = plan.planning_time_;
+    traj_attributes.number_of_points = plan.trajectory_.joint_trajectory.points.size();
+    traj_attributes.trajectory_time = trajectory_time;
+
+    return traj_attributes;
+
 }
 
-void logAll(
+trajectory_attributes logAll(
     moveit::planning_interface::MoveGroupInterface& move_group, 
     const std::string planning_group,
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
     const std::string scene_dir_path,
     const std::string scene_dir_name,
+    bool allow_file_logging,
     rclcpp::Logger& LOGGER) 
 {
-    // create subdir
-    std::string dir_name = create_new_dir(scene_dir_name, scene_dir_path, LOGGER);
+    std::string dir_name;
 
-    // log to files
-    logTool(move_group, planning_group, plan, dir_name, LOGGER);
-    logTrajectory(move_group, planning_group, plan, dir_name, LOGGER);
-    logSummary(move_group, planning_group, plan, dir_name, LOGGER);
+    if (allow_file_logging){
+        // create subdir
+        dir_name = create_new_dir(scene_dir_name, scene_dir_path, LOGGER);
 
+        // log to files
+        logTool(move_group, planning_group, plan, dir_name, LOGGER);
+        logTrajectory(move_group, planning_group, plan, dir_name, LOGGER);
+    }
+
+
+    trajectory_attributes traj_attributes = logSummary(move_group, planning_group, plan, dir_name, allow_file_logging, LOGGER);
+    traj_attributes.dir_name = scene_dir_path;
+
+    return traj_attributes;
+
+}
+
+std::string trajectory_attributes_to_string(const trajectory_attributes& attributes) {
+    std::stringstream ss;
+    ss << "Planning time: " << attributes.planning_time << ", ";
+    ss << "Trajectory time: " << attributes.trajectory_time << ", ";
+    ss << "Tool distance: " << attributes.tool_distance << ", ";
+    ss << "Joint distance: " << std::abs(attributes.joint_distance) << ", ";
+    ss << "Number of points: " << attributes.number_of_points;
+    
+    return ss.str();
+}
+
+int log_struct(
+    const std::vector<trajectory_attributes> traj_attributes_vector, 
+    const  uint num_rerun,
+    bool allow_file_logging,
+    rclcpp::Logger& LOGGER) 
+    {
+
+    double path_distance = 0.0;
+    double joints_distance_sum = 0.0;
+    double trajectory_time = 0.0;
+    double planning_time = 0.0;
+    double number_of_points = 0.0;
+
+    try {
+        if (traj_attributes_vector.size() == 0) {
+            throw std::invalid_argument("Empty vector");
+        }
+    } catch (const std::invalid_argument& e) {
+        clog("Empty vector of trajectory attributes", LOGGER, ERROR);
+        return -1;
+    }
+    
+    double num_success = traj_attributes_vector.size();
+
+    for (uint i=0; i<(uint)num_success; i++) {
+        path_distance += traj_attributes_vector[i].tool_distance;
+        joints_distance_sum += traj_attributes_vector[i].joint_distance;
+        trajectory_time += traj_attributes_vector[i].trajectory_time;
+        planning_time += traj_attributes_vector[i].planning_time;
+        number_of_points += traj_attributes_vector[i].number_of_points;
+    }
+
+    trajectory_attributes final_traj_attributes;
+    final_traj_attributes.tool_distance = path_distance/num_success;
+    final_traj_attributes.joint_distance = joints_distance_sum/num_success;
+    final_traj_attributes.trajectory_time = trajectory_time/num_success;
+    final_traj_attributes.planning_time = planning_time/num_success;
+    final_traj_attributes.number_of_points = number_of_points/num_success;
+
+    if (allow_file_logging) {
+        final_traj_attributes.dir_name = traj_attributes_vector[0].dir_name;
+        std::fstream file = open_file("final_summary.txt",  final_traj_attributes.dir_name, LOGGER);
+        if (file.is_open()) {
+            // logging
+            file << "Number of successful runs [-]: " << (int)num_success << "/" << num_rerun << std::endl;
+            file << "Planning time [s]: " << std::fixed << std::setprecision(8) << final_traj_attributes.planning_time << std::endl;
+            file << "Trajectory time [s]: " << std::fixed << std::setprecision(6) << final_traj_attributes.trajectory_time << std::endl;
+            file << "Number of points [-]: " << final_traj_attributes.number_of_points << std::endl;
+            file << "Tool path distance [m]: " << std::fixed << std::setprecision(6) << final_traj_attributes.tool_distance << std::endl;
+            file << "Joint distance [rad]: " << std::fixed << std::setprecision(6) << final_traj_attributes.joint_distance << std::endl;
+            file.close();
+        }
+        else {
+            clog("Failed to open file final_summary.txt", LOGGER, ERROR);
+        }
+        file.close();
+    }
+
+    clog("Average results:", LOGGER);
+    clog(trajectory_attributes_to_string(final_traj_attributes), LOGGER);
 }
 
 

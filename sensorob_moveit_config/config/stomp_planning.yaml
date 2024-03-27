@@ -13,7 +13,7 @@ num_iterations: 10000
 num_iterations_after_valid: 0
 num_rollouts: 15
 max_rollouts: 25
-exponentiated_cost_sensitivity: 0.5
+exponentiated_cost_sensitivity: 0.4
 control_cost_weight: 0.1
 delta_t: 0.1
 path_marker_topic: 'path_marker'
