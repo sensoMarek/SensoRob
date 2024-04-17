@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
+        - /MotionPlanning1/Scene Geometry1
         - /Marker1/Topic1
         - /MarkerArray1
         - /MarkerArray1/Topic1
@@ -144,7 +145,7 @@ Visualization Manager:
       Robot Description: robot_description
       Scene Geometry:
         Scene Alpha: 1
-        Scene Color: 50; 230; 50
+        Scene Color: 98; 160; 234
         Scene Display Time: 0.009999999776482582
         Show Scene Geometry: true
         Voxel Coloring: Z-Axis
@@ -259,10 +260,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6397970914840698
+      Pitch: 0.44979721307754517
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 5.148370265960693
+      Yaw: 1.520183801651001
     Saved: ~
 Window Geometry:
   Displays:

@@ -8,6 +8,7 @@ request_adapters: >-
     default_planner_request_adapters/FixStartStateBounds
     default_planner_request_adapters/FixStartStateCollision
     default_planner_request_adapters/FixStartStatePathConstraints
+# stomp_moveit/StompSmoothingAdapter
 
 planner_configs:
   AnytimePathShortening:
@@ -141,7 +142,7 @@ planner_configs:
 
 
 sensorob_group:
-  default_planner_config: RRTStar
+  default_planner_config: RRTConnect
   planner_configs:
     - AnytimePathShortening
     - SBL
@@ -167,4 +168,4 @@ sensorob_group:
 
 enforce_constrained_state_space: True
 projection_evaluator': joints(joint_1,joint_2)
-default_planner_config: RRTStar
+default_planner_config: RRTConnect
