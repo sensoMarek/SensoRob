@@ -47,9 +47,7 @@ int main(int argc, char** argv)
 
     visual_tools.trigger();
 
-    clog("Planning frame: " + move_group.getPlanningFrame(), LOGGER);
-    clog("End effector link: " + move_group.getEndEffectorLink(), LOGGER);
-    if (num_of_joint_samples > 14) {
+    if (num_of_joint_samples > 25) {
         clog("num_of_joint_samples was set to "
              + std::to_string(num_of_joint_samples)
              + ", which means "

@@ -30,18 +30,18 @@ namespace viz {
                     std::vector<geometry_msgs::msg::Point>& pose_points,
                     std::vector<geometry_msgs::msg::Point>& pose_points_missing);
     int transform_points(std::vector<geometry_msgs::msg::Point>& pose_points,
-                         double trans_x = 0.05,
-                         double trans_y = 0.05,
-                         double trans_z = 0.20);
+                         double trans_x = 0.00,
+                         double trans_y = -0.000,
+                         double trans_z = 0.1328);  // from rsp -> transform world->base_link:  "0.06828", "--y", "-0.001091", "--z", "0.1328"], 
     void display_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
                             std::vector<geometry_msgs::msg::Point>& pose_points,
                             std::string& logText);
     void display_planes_points(moveit_visual_tools::MoveItVisualTools& visual_tools,
                                std::vector<geometry_msgs::msg::Point>& pose_points,
-                               double bandwidth = 0.05,
-                               double offset_x = 0.00,
-                               double offset_y = 0.00,
-                               double offset_z = 0.20);
+                               double bandwidth = 0.05, //the widht of the plane displayed
+                               double offset_x = 0.0,
+                               double offset_y = 0.0,
+                               double offset_z = 0.0); 
 }
 
 #endif //SENSOROB_IK_INTERFACE_VIZ_H

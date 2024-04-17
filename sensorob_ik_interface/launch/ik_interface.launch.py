@@ -53,8 +53,8 @@ def generate_launch_description():
         moveit_config.robot_description_kinematics,
         {"use_sim_time": LaunchConfiguration("use_sim_time")},
         {"num_of_joint_samples": LaunchConfiguration("num_of_joint_samples")},
-        {"computeFK": LaunchConfiguration("computeIK")},
-        {"computeIK": LaunchConfiguration("computeFK")},
+        {"computeFK": LaunchConfiguration("computeFK")},
+        {"computeIK": LaunchConfiguration("computeIK")},
         {"logs_folder_path": LaunchConfiguration("logs_folder_path")},
         {"timeout": LaunchConfiguration("timeout")}
     ]

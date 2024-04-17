@@ -48,9 +48,6 @@ int main(int argc, char** argv)
 
     visual_tools.trigger();
 
-    clog("Planning frame: " + move_group.getPlanningFrame(), LOGGER);
-    clog("End effector link: " + move_group.getEndEffectorLink(), LOGGER);
-
     // Start the demo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 

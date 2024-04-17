@@ -81,7 +81,7 @@ namespace ik {
             pose_desired_world.pose = pose_desired;
             pose_desired_world.header.frame_id = "world";
 
-            // Transformation base_link -> world
+            // Transformation world > base_link 
             try {
                 // Wait for the transform to become available with a timeout
                 tf_buffer.canTransform("base_link", "world", tf2::TimePointZero, std::chrono::seconds(10));
