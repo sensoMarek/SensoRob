@@ -160,12 +160,14 @@
     <child link="base_link"/>
   </joint>
 
+<!-- data from https://www.sensodrive.de/products/torque-technology-senso-joint.php#:~:text=requirements%20if%20necessary.-,Technical%20data,-Technical%20data%20SensoJoint -->
   <joint name="joint_1" type="revolute">
     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="3.1414" lower="-3.1414" effort="500" velocity="6"/> <!-- +-pi -->
+    <limit upper="${pi}" lower="${-pi}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
   <joint name="joint_2" type="revolute">
@@ -173,7 +175,8 @@
     <parent link="link_1"/>
     <child link="link_2"/>
     <axis xyz="-1.0 0.0 -0.0"/>
-    <limit upper="1.570796327" lower="-1.570796327" effort="500" velocity="6"/> <!-- +-pi/2 -->
+    <limit upper="${pi/2}" lower="${-pi/2}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
   <joint name="joint_3" type="revolute">
@@ -181,7 +184,8 @@
     <parent link="link_2"/>
     <child link="link_3"/>
     <axis xyz="1.0 0.0 0.0"/>
-    <limit upper="2.094395102" lower="-2.094395102" effort="300" velocity="7"/> <!-- +-2pi/3-->
+    <limit upper="${2*pi/3}" lower="${-2*pi/3}" effort="24" velocity="1.9896"/> <!--drive 4010 24Nm, 19/min-1 -->
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
   <joint name="joint_4" type="revolute">
@@ -189,7 +193,8 @@
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="3.1414" lower="-3.1414" effort="200" velocity="8"/> <!-- +-pi -->
+    <limit upper="${pi}" lower="${-pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 -->
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
   <joint name="joint_5" type="revolute">
@@ -197,15 +202,17 @@
     <parent link="link_4"/>
     <child link="link_5"/>
     <axis xyz="-1.0 -0.0 0.0"/>
-    <limit upper="1.570796327" lower="-1.570796327" effort="200" velocity="8"/> <!-- +-pi/2 -->
+    <limit upper="${pi/2}" lower="${-pi/2}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
   <joint name="joint_6" type="revolute">
     <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="0.0 -0.0 -1.0"/>
-    <limit upper="3.1414" lower="-3.1414" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
+    <axis xyz="0.0 -0.0 1.0"/>
+    <limit upper="${pi}" lower="${-pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
+    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
 </robot>

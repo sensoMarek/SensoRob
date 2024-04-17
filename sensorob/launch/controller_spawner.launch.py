@@ -29,7 +29,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         name="joint_trajectory_controller_node",
-        arguments=["sensorob_group_controller", "-c", "/controller_manager"],
+        arguments=["sensorob_group_controller", "-c", "/controller_manager"]
     )
 
     return LaunchDescription([
