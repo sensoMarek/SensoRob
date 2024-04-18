@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
     // Visualization
     namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link",
+    moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "world",
                                                         "ik_valid_points",
                                                         move_group.getRobotModel());
     visual_tools.deleteAllMarkers();
@@ -50,8 +50,6 @@ int main(int argc, char** argv)
     ocm.absolute_y_axis_tolerance = 0.4;
     ocm.absolute_z_axis_tolerance = 1.5; 
     ocm.weight = 1.0;
-
-    move_group.setPlanningTime(60);
 
     /* Cannot find planning configuration for group 'sensorob_group' using planner 'stomp'. Will use defaults instead.*/
 
@@ -93,6 +91,13 @@ int main(int argc, char** argv)
     move_group.setPlannerId(planner_id);
     move_group.setPlanningPipelineId(planning_pipeline_id);
 
+    move_group.setPlanningTime(30); //seconds
+    clog("Planning time: " + std::to_string(move_group.getPlanningTime()), LOGGER);
+
+    clog("End effector link: " + move_group.getEndEffectorLink(), LOGGER);
+
+    
+
     // logging
     std::string home_dir_path;
     if (allow_file_logging) {
@@ -104,7 +109,7 @@ int main(int argc, char** argv)
 
     // Start the demo
     visual_tools.trigger();
-    visual_tools.prompt("Press 'next' to add obstacles");
+    visual_tools.prompt("Press 'next' to start");
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // scene 1
 
     result = obstacles::create_environment(move_group.getPlanningFrame(), objects);
@@ -114,52 +119,21 @@ int main(int argc, char** argv)
     addObjectsToScene(planning_scene, objects, environment_object_ids);
     sleep(1);
     objects.clear(); 
+
     result = obstacles::create_scene_1(move_group.getPlanningFrame(), objects);
-    if (result) clog("Collision objects not created successfully", LOGGER, WARN);
-    
-    // add obstacles
-    addObjectsToScene(planning_scene, objects, object_ids);
-
-    if (allow_nc_planning){
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan");
-
-        plan_cycle(move_group, robot_state, home_dir_path, "scene_1");
-    }
-
-    if (allow_c_planning){
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan under constraints"); 
-        // add constraints
-        move_group.setPathConstraints(test_constraints);
-
-        plan_cycle(move_group, robot_state, home_dir_path, "scene_1_constrainted");
-
-        // remove constraints
-        move_group.clearPathConstraints();
-        move_group.clearTrajectoryConstraints();
-    }
-
-    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // scene 2
-    // visual_tools.trigger();
-    // visual_tools.prompt("Press 'next' to change obstacles"); 
-
-    // remove obstacles
-    planning_scene.removeCollisionObjects(object_ids);
-    sleep(1);
-    clog(std::to_string(object_ids.size()) + " objects were removed", LOGGER);
-
-    object_ids.clear(); objects.clear(); 
-    result = obstacles::create_scene_2(move_group.getPlanningFrame(), objects);
     if (result) clog("Collision object not created successfully", LOGGER, WARN);
     // add obstacles
     addObjectsToScene(planning_scene, objects, object_ids);
+
+    robot_state->setJointGroupPositions("sensorob_group", jointValueTargetA);
+    move_group.setStartState(*robot_state);
+    move_group.setJointValueTarget(jointValueTargetB);
 
     if (allow_nc_planning) {
         // visual_tools.trigger();
         // visual_tools.prompt("Press 'next' to plan");
 
-        plan_cycle(move_group, robot_state, home_dir_path, "scene_2");
+        plan_cycle(move_group, visual_tools, home_dir_path, "scene_1");
     }
 
     if (allow_c_planning) {
@@ -169,7 +143,7 @@ int main(int argc, char** argv)
         // add constraints
         move_group.setPathConstraints(test_constraints);
 
-        plan_cycle(move_group, robot_state, home_dir_path, "scene_2_constrainted");
+        plan_cycle(move_group, visual_tools, home_dir_path, "scene_1_constrainted");
 
         // remove constraints
         move_group.clearPathConstraints();
@@ -177,24 +151,49 @@ int main(int argc, char** argv)
     }
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // scene 3
-    // visual_tools.trigger();
-    // visual_tools.prompt("Press 'next' to add all obstacles"); 
 
-    result = obstacles::create_scene_1(move_group.getPlanningFrame(), objects);
+/*     visual_tools.prompt("Press 'next' to add all obstacles"); 
+    visual_tools.trigger();
+    visual_tools.deleteAllMarkers(); */
+
+    planning_scene.removeCollisionObjects(object_ids);
+    object_ids.clear(); objects.clear();
+
+    result = obstacles::create_scene_2(move_group.getPlanningFrame(), objects);
     if (result) clog("Collision object not created successfully", LOGGER, WARN);
     // add obstacles
     addObjectsToScene(planning_scene, objects, object_ids);
+
+    robot_state->setJointGroupPositions("sensorob_group", jointValueTarget1);
+    move_group.setStartState(*robot_state);
+    move_group.setJointValueTarget(jointValueTarget2);
 
     if (allow_nc_planning) {
         // visual_tools.trigger();
         // visual_tools.prompt("Press 'next' to plan");
 
-        plan_cycle(move_group, robot_state, home_dir_path, "scene_3");
+        plan_cycle(move_group, visual_tools, home_dir_path, "scene_2");
+    }
+
+    if (allow_c_planning) {
+        // visual_tools.trigger();
+        // visual_tools.prompt("Press 'next' to plan under constraints"); 
+
+        // add constraints
+        move_group.setPathConstraints(test_constraints);
+
+        plan_cycle(move_group, visual_tools, home_dir_path, "scene_2_constrainted");
+
+        // remove constraints
+        move_group.clearPathConstraints();
+        move_group.clearTrajectoryConstraints();
     }
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
-    // visual_tools.trigger();
-    // visual_tools.prompt("Press 'next' to remove obstacles"); 
+/* 
+    visual_tools.prompt("Press 'next' to remove obstacles"); 
+    visual_tools.trigger();
+    visual_tools.deleteAllMarkers(); */
 
     // remove obstacles
     planning_scene.removeCollisionObjects(object_ids);
@@ -234,14 +233,10 @@ void addObjectsToScene(moveit::planning_interface::PlanningSceneInterface& plann
 
 void plan_cycle(
     moveit::planning_interface::MoveGroupInterface& move_group, 
-    moveit::core::RobotStatePtr robot_state, 
+    moveit_visual_tools::MoveItVisualTools visual_tools, 
     const std::string home_dir_path, 
     const std::string dir_name) 
 {
-
-    robot_state->setJointGroupPositions("sensorob_group", jointValueTarget1);
-    move_group.setStartState(*robot_state);
-    move_group.setJointValueTarget(jointValueTarget2);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
@@ -256,21 +251,25 @@ void plan_cycle(
         moveit::core::MoveItErrorCode success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
         if (success == moveit::core::MoveItErrorCode::SUCCESS) {
             // clog("Planning successful", LOGGER);
-            file_logger::trajectory_attributes traj_attributes = file_logger::logAll(move_group, PLANNING_GROUP, my_plan, scene_dir_path, std::to_string(iter+1), allow_file_logging, LOGGER); 
+            bool allow_file_logging_custom = false;
+            file_logger::trajectory_attributes traj_attributes = file_logger::logAll(move_group, PLANNING_GROUP, my_plan, scene_dir_path, std::to_string(iter+1), allow_file_logging_custom, LOGGER); 
             
             traj_attributes_vector.push_back(traj_attributes);
 
             if (!allow_file_logging) clog(file_logger::trajectory_attributes_to_string(traj_attributes), LOGGER);  // if file logging is not allowed, print to console
+            visual_tools.publishTrajectoryLine(my_plan.trajectory_, move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP));
+            visual_tools.trigger();
 
         } 
         // else 
         // {
         //     clog("Planning not successful", LOGGER, WARN);
         // }
+        
     }
 
     file_logger::log_struct(traj_attributes_vector, num_rerun, allow_file_logging, LOGGER);
+    file_logger::log_vectors(traj_attributes_vector, num_rerun, allow_file_logging, LOGGER);
 
     clog("Planning statistics:\n  - success: " + std::to_string(traj_attributes_vector.size()) + "\n  - failure: " + std::to_string(num_rerun - traj_attributes_vector.size()), LOGGER);
 }
-

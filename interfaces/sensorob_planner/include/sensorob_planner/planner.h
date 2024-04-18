@@ -35,8 +35,11 @@ int result;
 static const std::string PLANNING_GROUP = "sensorob_group";
 
 // joint value targets
-std::vector<double> jointValueTarget1 = {0, 1.04585, -1.50948, 0, -0.98084, 0};
-std::vector<double> jointValueTarget2 = {0, 0.47508, -1.25613, 0, -0.15657, 0};
+std::vector<double> jointValueTarget1 = {1.7453, 0.9250, -0.1222, -0.3491,  0.5760, -1.2566};
+std::vector<double> jointValueTarget2 = {0,      1.2915, -1.0123,       0, -0.7156,  1.4661};
+
+std::vector<double> jointValueTargetA = {-0.5585, 1.0996, -1.2915, -0.7156, -0.9425, 0.5236};
+std::vector<double> jointValueTargetB = {0.4363 , 1.0821, -1.3265,  0.5585, -0.9076, 1.2217};
 
 void addObjectsToScene(
     moveit::planning_interface::PlanningSceneInterface& planning_scene, 
@@ -46,7 +49,7 @@ void addObjectsToScene(
 
 void plan_cycle(
     moveit::planning_interface::MoveGroupInterface& move_group, 
-    moveit::core::RobotStatePtr robot_state, 
+    moveit_visual_tools::MoveItVisualTools visual_tools, 
     const std::string home_dir_path, 
     const std::string dir_name);
 

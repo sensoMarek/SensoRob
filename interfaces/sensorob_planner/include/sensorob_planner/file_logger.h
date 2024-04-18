@@ -78,4 +78,11 @@ int log_struct(
     bool allow_file_logging,
     rclcpp::Logger& LOGGER
 );
+
+int log_vectors(
+    const std::vector<trajectory_attributes> traj_attributes_vector, 
+    [[maybe_unused]] const  uint num_rerun,
+    bool allow_file_logging,
+    rclcpp::Logger& LOGGER
+);
 }

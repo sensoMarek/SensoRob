@@ -27,6 +27,31 @@ int create_environment(const std::string& planning_frame, std::vector<moveit_msg
 }
 
 int create_scene_1(const std::string& planning_frame, std::vector<moveit_msgs::msg::CollisionObject>& scene_1) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// obstacle 0
+	moveit_msgs::msg::CollisionObject obstacle_0;
+	obstacle_0.header.frame_id = planning_frame;
+	obstacle_0.id = "obstacle_1";
+	shape_msgs::msg::SolidPrimitive primitive;
+	primitive.type = primitive.BOX;
+	primitive.dimensions.resize(3);
+	primitive.dimensions[0] = obstacle0_size[0];
+	primitive.dimensions[1] = obstacle0_size[1];
+	primitive.dimensions[2] = obstacle0_size[2];
+	geometry_msgs::msg::Pose box_pose;
+	box_pose.orientation.w = 1.0;
+	box_pose.position.x = obstacle0_position[0];
+	box_pose.position.y = obstacle0_position[1];
+	box_pose.position.z = obstacle0_position[2];
+	obstacle_0.primitives.push_back(primitive);
+	obstacle_0.primitive_poses.push_back(box_pose);
+	obstacle_0.operation = obstacle_0.ADD;
+
+
+	scene_1.push_back(obstacle_0); 
+	return 0;
+}
+
+int create_scene_2(const std::string& planning_frame, std::vector<moveit_msgs::msg::CollisionObject>& scene_2) {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// obstacle 1
 	moveit_msgs::msg::CollisionObject obstacle_1;
 	obstacle_1.header.frame_id = planning_frame;
@@ -63,24 +88,15 @@ int create_scene_1(const std::string& planning_frame, std::vector<moveit_msgs::m
 	obstacle_2.primitive_poses.push_back(box_pose);
 	obstacle_2.operation = obstacle_2.ADD;
 
-	scene_1.push_back(obstacle_1); 
-	scene_1.push_back(obstacle_2);
-	return 0;
-
-}
-
-int create_scene_2(const std::string& planning_frame, std::vector<moveit_msgs::msg::CollisionObject>& scene_2) {
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// obstacle 2
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// obstacle 3
 	moveit_msgs::msg::CollisionObject obstacle_3;
 	obstacle_3.header.frame_id = planning_frame;
 	obstacle_3.id = "obstacle_3";
-	shape_msgs::msg::SolidPrimitive primitive;
 	primitive.type = primitive.BOX;
 	primitive.dimensions.resize(3);
 	primitive.dimensions[0] = obstacle3_size[0];
 	primitive.dimensions[1] = obstacle3_size[1];
 	primitive.dimensions[2] = obstacle3_size[2];
-	geometry_msgs::msg::Pose box_pose;
 	box_pose.orientation.w = 1.0;
 	box_pose.position.x = obstacle3_position[0];
 	box_pose.position.y = obstacle3_position[1];
@@ -89,6 +105,8 @@ int create_scene_2(const std::string& planning_frame, std::vector<moveit_msgs::m
 	obstacle_3.primitive_poses.push_back(box_pose);
 	obstacle_3.operation = obstacle_3.ADD;
 
+	scene_2.push_back(obstacle_1); 
+	scene_2.push_back(obstacle_2); 
 	scene_2.push_back(obstacle_3); 
 	return 0;
 }

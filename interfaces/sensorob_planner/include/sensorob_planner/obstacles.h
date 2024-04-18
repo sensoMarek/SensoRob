@@ -22,6 +22,14 @@ static const double pedestal_position[3] = {
 	0
 };
 
+//obstacle_0
+static const double obstacle0_size[3] = {0.12, 0.50, 0.30};
+static const double obstacle0_position[3] = {
+	0, 
+	0.70, 
+	obstacle0_size[2]/2
+};
+
 //obstacle_1
 static const double obstacle1_size[3] = {0.4, 0.4, 0.8};
 static const double obstacle1_position[3] = {

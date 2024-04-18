@@ -10,7 +10,7 @@ void process_launch_args(
     std::string& planner_id,
     std::string& planning_pipeline_id)
 {
-    uint max_num_rerun = 100;
+    uint max_num_rerun = 1000;
 
     // planning mode
     std::string planning_mode = move_group_node->get_parameter("planning").get_value<std::string>();
@@ -50,7 +50,7 @@ void process_launch_args(
 
     // planner_id
     std::string planner_id_ = move_group_node->get_parameter("planner_id").get_value<std::string>();
-    std::vector<std::string> ompl_planner_ids = {"RRTConnect", "RRTStar", "RRT", "RRTstar", "TRRT", "EST", "LBTRRT", "BiEST", "STRIDE", "BiTRRT", "PRM", "PRMStar", "LazyPRMstar", "PDST", "STRIDE", "BiEST", "STRIDE", "BiTRRT"};
+    std::vector<std::string> ompl_planner_ids = {"RRTConnect", "RRT", "RRTstar", "TRRT", "EST", "LBTRRT", "BiEST", "STRIDE", "BiTRRT", "PRM", "PRMstar", "LazyPRMstar", "PDST", "STRIDE", "BiEST", "STRIDE", "BiTRRT"};
     std::vector<std::string> stomp_planner_ids = {"STOMP"};
     std::vector<std::string> chomp_planner_ids = {"CHOMP"};
     std::vector<std::string> pilz_planner_ids = {"PTP", "CIRC", "LIN"};

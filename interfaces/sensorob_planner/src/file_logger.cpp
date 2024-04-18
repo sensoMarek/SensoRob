@@ -351,6 +351,51 @@ int log_struct(
 
     clog("Average results:", LOGGER);
     clog(trajectory_attributes_to_string(final_traj_attributes), LOGGER);
+
+    return 0;
+}
+
+int log_vectors(
+    const std::vector<trajectory_attributes> traj_attributes_vector, 
+    [[maybe_unused]] const  uint num_rerun,
+    bool allow_file_logging,
+    rclcpp::Logger& LOGGER) 
+    {
+
+    if (!allow_file_logging) return -1;
+
+    try {
+        if (traj_attributes_vector.size() == 0) {
+            throw std::invalid_argument("Empty vector");
+        }
+    } catch (const std::invalid_argument& e) {
+        clog("Empty vector of trajectory attributes", LOGGER, ERROR);
+        return -1;
+    }
+
+    std::fstream file = open_file("vectors.txt",  traj_attributes_vector[0].dir_name, LOGGER);
+    if (file.is_open()) {
+        file << "tool_distance" << " ";
+        file << "joint_distance" << " ";
+        file << "trajectory_time" << " ";
+        file << "planning_time" << " ";
+        file << "number_of_points" << std::endl;
+        
+        for (uint i=0; i<(uint)traj_attributes_vector.size(); i++) {
+            file << traj_attributes_vector[i].tool_distance << " ";
+            file << traj_attributes_vector[i].joint_distance << " ";
+            file << traj_attributes_vector[i].trajectory_time << " ";
+            file << traj_attributes_vector[i].planning_time << " ";
+            file << traj_attributes_vector[i].number_of_points << std::endl;
+        }
+    }
+    else {
+        clog("Failed to open file vectors.txt", LOGGER, ERROR);
+    }
+
+    file.close();
+
+    return 0;
 }
 
 
