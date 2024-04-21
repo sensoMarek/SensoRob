@@ -10,6 +10,7 @@
                 <param name="mock_sensor_commands">False</param>
                 <param name="disable_commands">False</param>
                 <param name="state_following_offset">0.0</param>
+                <param name="calculate_dynamics">true</param>
             </hardware>
 
             <joint name="joint_1">
