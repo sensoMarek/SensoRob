@@ -30,13 +30,6 @@ int main(int argc, char** argv)
     visual_tools.loadRemoteControl();
     
 
-    // move_group.setJointValueTarget(jointValueTarget2);  
-
-    // clog("A", LOGGER);
-    // auto current_pose = move_group.getPoseTarget();
-    // clog("B", LOGGER);
-    // clog("wxyz: "+ std::to_string(current_pose.pose.orientation.w) + " "+ std::to_string(current_pose.pose.orientation.x) + " "+ std::to_string(current_pose.pose.orientation.y) + " "+ std::to_string(current_pose.pose.orientation.z) + " ", LOGGER);
-    // clog("move_group.getPoseReferenceFrame(): " + move_group.getPoseReferenceFrame(), LOGGER);
     //  constraints
     moveit_msgs::msg::OrientationConstraint ocm;
     ocm.link_name = move_group.getEndEffectorLink();
@@ -51,29 +44,6 @@ int main(int argc, char** argv)
     ocm.absolute_z_axis_tolerance = 1.5; 
     ocm.weight = 1.0;
 
-    /* Cannot find planning configuration for group 'sensorob_group' using planner 'stomp'. Will use defaults instead.*/
-
-        // Example values
-    // std::string planner_id = "RRTStar";
-    // std::string group = "sensorob_group";
-    // std::map<std::string, std::string> params;
-    // params["type"] = "geometric::RRTstar";
-    // params["range"] = "0.0";
-    // params["goal_bias"] = "0.05";
-    // params["delay_collision_checking"] = "1";
-    // bool replace = true; // Example value
-
-    // std::string planner_id = "EST";
-    // std::string group = "sensorob_group";
-    // std::map<std::string, std::string> params;
-    // params["type"] = "geometric::EST";
-    // params["range"] = "0.0";
-    // params["goal_bias"] = "0.05";
-    // bool replace = true; // Example value
-
-    // move_group.setPlannerParams(planner_id, group, params, replace);
-
-
     moveit_msgs::msg::Constraints test_constraints;
     test_constraints.orientation_constraints.emplace_back(ocm);
 
@@ -82,9 +52,8 @@ int main(int argc, char** argv)
         move_group_node, 
         LOGGER, 
         num_rerun,
-        allow_nc_planning, 
-        allow_c_planning,  
-        allow_file_logging,
+        planning_mode, 
+        file_logging_mode,
         planner_id,
         planning_pipeline_id
     );
@@ -100,7 +69,7 @@ int main(int argc, char** argv)
 
     // logging
     std::string home_dir_path;
-    if (allow_file_logging) {
+    if (file_logging_mode != FileLogging::NO_LOGGING) {
         clog("Creating subdirectories in 'src/SensoRob/sensorob_logs'", LOGGER);
         std::string current_dir_name(get_current_dir_name());
         const std::string main_dir_name = file_logger::create_new_dir("src/SensoRob/sensorob_logs", current_dir_name, LOGGER);
@@ -129,16 +98,16 @@ int main(int argc, char** argv)
     move_group.setStartState(*robot_state);
     move_group.setJointValueTarget(jointValueTargetB);
 
-    if (allow_nc_planning) {
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan");
+    if ((planning_mode == PlanningMode::NC_PLANNING) || (planning_mode==PlanningMode::C_PLANNING)) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan");
 
         plan_cycle(move_group, visual_tools, home_dir_path, "scene_1");
     }
 
-    if (allow_c_planning) {
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan under constraints"); 
+    if (planning_mode==PlanningMode::C_PLANNING) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan under constraints"); 
 
         // add constraints
         move_group.setPathConstraints(test_constraints);
@@ -152,9 +121,9 @@ int main(int argc, char** argv)
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // scene 3
 
-/*     visual_tools.prompt("Press 'next' to add all obstacles"); 
+    visual_tools.prompt("Press 'next' to add all obstacles"); 
     visual_tools.trigger();
-    visual_tools.deleteAllMarkers(); */
+    visual_tools.deleteAllMarkers();
 
     planning_scene.removeCollisionObjects(object_ids);
     object_ids.clear(); objects.clear();
@@ -168,32 +137,18 @@ int main(int argc, char** argv)
     move_group.setStartState(*robot_state);
     move_group.setJointValueTarget(jointValueTarget2);
 
-    if (allow_nc_planning) {
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan");
+    if ((planning_mode == PlanningMode::NC_PLANNING) || (planning_mode==PlanningMode::C_PLANNING)) {
+        visual_tools.trigger();
+        visual_tools.prompt("Press 'next' to plan");
 
         plan_cycle(move_group, visual_tools, home_dir_path, "scene_2");
     }
 
-    if (allow_c_planning) {
-        // visual_tools.trigger();
-        // visual_tools.prompt("Press 'next' to plan under constraints"); 
-
-        // add constraints
-        move_group.setPathConstraints(test_constraints);
-
-        plan_cycle(move_group, visual_tools, home_dir_path, "scene_2_constrainted");
-
-        // remove constraints
-        move_group.clearPathConstraints();
-        move_group.clearTrajectoryConstraints();
-    }
-
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
-/* 
+
     visual_tools.prompt("Press 'next' to remove obstacles"); 
     visual_tools.trigger();
-    visual_tools.deleteAllMarkers(); */
+    visual_tools.deleteAllMarkers();
 
     // remove obstacles
     planning_scene.removeCollisionObjects(object_ids);
@@ -203,8 +158,8 @@ int main(int argc, char** argv)
     object_ids.clear(); objects.clear();
 
     
-    // visual_tools.trigger();
-    // visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
 
     rclcpp::shutdown();
     return 0;
@@ -242,7 +197,7 @@ void plan_cycle(
 
     std::vector<file_logger::trajectory_attributes> traj_attributes_vector;
     std::string scene_dir_path;
-    if (allow_file_logging) {
+    if (file_logging_mode != FileLogging::NO_LOGGING) {
         scene_dir_path = file_logger::create_new_dir(dir_name, home_dir_path, LOGGER);
     }
 
@@ -251,12 +206,11 @@ void plan_cycle(
         moveit::core::MoveItErrorCode success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
         if (success == moveit::core::MoveItErrorCode::SUCCESS) {
             // clog("Planning successful", LOGGER);
-            bool allow_file_logging_custom = false;
-            file_logger::trajectory_attributes traj_attributes = file_logger::logAll(move_group, PLANNING_GROUP, my_plan, scene_dir_path, std::to_string(iter+1), allow_file_logging_custom, LOGGER); 
+            file_logger::trajectory_attributes traj_attributes = file_logger::logAll(move_group, PLANNING_GROUP, my_plan, scene_dir_path, std::to_string(iter+1), file_logging_mode==FileLogging::FULL_LOGGING, LOGGER); 
             
             traj_attributes_vector.push_back(traj_attributes);
 
-            if (!allow_file_logging) clog(file_logger::trajectory_attributes_to_string(traj_attributes), LOGGER);  // if file logging is not allowed, print to console
+            if (file_logging_mode==FileLogging::NO_LOGGING) clog(file_logger::trajectory_attributes_to_string(traj_attributes), LOGGER);  // if file logging is not allowed, print to console
             visual_tools.publishTrajectoryLine(my_plan.trajectory_, move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP));
             visual_tools.trigger();
 
@@ -268,8 +222,8 @@ void plan_cycle(
         
     }
 
-    file_logger::log_struct(traj_attributes_vector, num_rerun, allow_file_logging, LOGGER);
-    file_logger::log_vectors(traj_attributes_vector, num_rerun, allow_file_logging, LOGGER);
+    file_logger::log_struct(traj_attributes_vector, num_rerun, file_logging_mode!=FileLogging::NO_LOGGING, LOGGER);
+    file_logger::log_vectors(traj_attributes_vector, num_rerun, file_logging_mode!=FileLogging::NO_LOGGING, LOGGER);
 
     clog("Planning statistics:\n  - success: " + std::to_string(traj_attributes_vector.size()) + "\n  - failure: " + std::to_string(num_rerun - traj_attributes_vector.size()), LOGGER);
 }

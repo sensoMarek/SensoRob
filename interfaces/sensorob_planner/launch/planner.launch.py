@@ -20,14 +20,14 @@ def generate_launch_description():
 
     ld.add_action(
         DeclareLaunchArgument('file_logging',
-                              default_value='False',
-                              description='[bool] If true, logging to file will be performed')
+                              default_value='dont',
+                              description='[dont, compact, full]\nLogging mode\n - dont:    no logging\n - compact: only logging the final result\n - full:    logging the whole planning process (including all reruns and all scenes)')
     )
 
     ld.add_action(
         DeclareLaunchArgument('planning',
                               default_value='non-constrained',
-                              description='[constrained, non-constrained, dont]\nMode of the planner\n - constrained:     planning both constrained and non-constrained movements\n - non-constrained: planning non-constrained movements\n - dont:            no planning, only adding obstacles')
+                              description='[dont, non-constrained, constrained]\nMode of the planner\n - dont:            no planning, only adding obstacles\n - non-constrained: planning non-constrained movements\n - constrained:     planning both constrained and non-constrained movements')
     )
 
     ld.add_action(
