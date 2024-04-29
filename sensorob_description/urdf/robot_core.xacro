@@ -166,7 +166,7 @@
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="${pi}" lower="${-pi}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
+    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
     <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
@@ -193,7 +193,7 @@
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="${pi}" lower="${-pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 -->
+    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 -->
     <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
@@ -211,7 +211,7 @@
     <parent link="link_5"/>
     <child link="link_6"/>
     <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="${pi}" lower="${-pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
+    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
     <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
   </joint>
 
