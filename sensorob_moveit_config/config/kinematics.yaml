@@ -14,6 +14,10 @@ sensorob_group:
 #  kinematics_solver_timeout: 0.005
 
 # sensorob_group:
+#   kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+#   kinematics_solver_timeout: 0.005
+
+# sensorob_group:
 #   kinematics_solver: srv_kinematics_plugin/SrvKinematicsPlugin
 #   kinematics_solver_search_resolution: 0.0050000000000000001
 #   kinematics_solver_timeout: 0.0050000000000000001
@@ -27,7 +31,4 @@ sensorob_group:
 #   kinematics_solver: cached_ik_kinematics_plugin/CachedSrvKinematicsPlugin
 #   kinematics_solver_search_resolution: 0.0050000000000000001
 #   kinematics_solver_timeout: 0.0050000000000000001
-
-# sensorob_group:
-#   kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
-#   kinematics_solver_timeout: 0.005
+  

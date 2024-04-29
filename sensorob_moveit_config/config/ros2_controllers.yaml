@@ -26,3 +26,4 @@ sensorob_group_mock_controller:
       - velocity
     state_publish_rate: 400.0         
     action_monitor_rate: 100.0
+    allow_nonzero_velocity_at_trajectory_end: False
