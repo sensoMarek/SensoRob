@@ -1,3 +1,6 @@
 [submodule "ethercat_driver_ros2"]
 	path = ethercat_driver_ros2
 	url = https://github.com/Jakubivan/ethercat_driver_ros2
+[submodule "moveit2"]
+	path = moveit2
+	url = https://github.com/Jakubivan/moveit2
