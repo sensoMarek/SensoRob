@@ -33,8 +33,8 @@ so user knows which poses were not computed successfully
 - Visualize all points on xz-plane
 
 <p align="center">
-<img src="/media/images/ik_test_viz_all_points.png" width="40%" title="Visualized all point used for IK solver test">
-<img src="/media/images/ik_test_viz_space.png" width="40%" title="Visualized selection of robot's configuration space ">
+<img src="../../media/images/ik_test_viz_all_points.png" width="40%" title="Visualized all point used for IK solver test">
+<img src="../../media/images/ik_test_viz_space.png" width="46%" title="Visualized selection of robot's configuration space ">
 </p>
 
 ---
@@ -50,6 +50,12 @@ We also created 2 ways of generating poses in FK.
 - By using `setToRandomPositions` function we get random position in configuration space of the robot
 - Then we return also joint states
 - Parameter `num_of_samples` tells how many valid states FK should save to a file
+
+---
+
+<p align="center">
+<img src="../../media/images/ik_test.png" width="75%" title="IK test diagram">
+</p>
 
 ---
 

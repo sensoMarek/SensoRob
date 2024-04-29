@@ -30,6 +30,12 @@ Several files are saved to `sensorob_logs` folder with the data regarding the pl
 
 ---
 
+<p align="center">
+<img src="../../media/images/planner_test_diagram.png" width="75%" title="Planning algorithm test diagram">
+</p>
+
+---
+
 ## Launch
 The simulation has to be launched first, e.g.   
 ```
