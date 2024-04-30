@@ -15,7 +15,7 @@ ros2 launch sensorob kinematics.launch.py
 ```
 
 <p align="center">
-<img src="/media/images/kinematics_screenshot.png" width="70%" title="Kinematics screenshot">
+<img src="../media/images/kinematics_screenshot.png" width="70%" title="Kinematics screenshot">
 </p>
 
 ### Moveit + mock joint states
@@ -25,7 +25,7 @@ ros2 launch sensorob moveit_mock.launch.py
 ```
 
 <p align="center">
-<img src="/media/images/moveit_mock_screenshot.png" width="70%" title="Moveit with mock joints screenshot">
+<img src="../media/images/moveit_mock_screenshot.png" width="70%" title="Moveit with mock joints screenshot">
 </p>
 
 ### Moveit + simulated robot in Gazebo
@@ -35,7 +35,7 @@ ros2 launch sensorob moveit_sim.launch.py
 ```
 
 <p align="center">
-<img src="/media/images/moveit_sim_screenshot.png" width="70%" title="Moveit with Gazebo screenshot">
+<img src="../media/images/moveit_sim_screenshot.png" width="70%" title="Moveit with Gazebo screenshot">
 </p>
 
 ### Moveit + real robot
@@ -46,8 +46,8 @@ ros2 launch sensorob moveit_real.launch.py
 ```
 
 <p align="center">
-  <video src=/media/videos/moveit_real.mp4" width="70%" controls autoplay loop>
-    title="Moveit with real motor"
+  <video src"https://github.com/sensoMarek/SensoRob/blob/doc_and_minor_config_changes/media/videos/sensorob_real.gif" width="70%" controls autoplay loop>
+    title="MoveIt with real motor"
     Your browser does not support the video tag.
   </video>
 </p>
