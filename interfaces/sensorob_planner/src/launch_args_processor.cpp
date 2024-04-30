@@ -4,48 +4,61 @@ void process_launch_args(
     const std::shared_ptr<rclcpp::Node>& move_group_node, 
     const rclcpp::Logger& LOGGER,
     uint& num_rerun,
-    bool& allow_nc_planning,
-    bool& allow_c_planning,
-    bool& allow_file_logging,
+    int& planning_mode,
+    int& file_logging_mode,
     std::string& planner_id,
     std::string& planning_pipeline_id)
 {
     uint max_num_rerun = 1000;
 
     // planning mode
-    std::string planning_mode = move_group_node->get_parameter("planning").get_value<std::string>();
-    if (!planning_mode.compare("dont")) {
-        allow_nc_planning = false;
-        allow_c_planning = false;
+    std::string planning_mode_arg = move_group_node->get_parameter("planning").get_value<std::string>();
+    if (!planning_mode_arg.compare("dont")) {
+        planning_mode = PlanningMode::NO_PLANNING;
         clog("Mode of the planner - no planning, only adding obstacles", LOGGER);
-    } else if (!planning_mode.compare("constrained")) {
-        allow_nc_planning = true;
-        allow_c_planning = true;
+    } else if (!planning_mode_arg.compare("constrained")) {
+        planning_mode = PlanningMode::C_PLANNING;
         clog("Mode of the planner - planning both constrained and non-constrained movements", LOGGER);
-    } else if (!planning_mode.compare("non-constrained")) {
-        allow_nc_planning = true;
-        allow_c_planning = false;
+    } else if (!planning_mode_arg.compare("non-constrained")) {
+        planning_mode = PlanningMode::NC_PLANNING;
         clog("Mode of the planner - planning non-constrained movements", LOGGER);
     } else {
-        allow_nc_planning = true;
-        allow_c_planning = false;
+        planning_mode = PlanningMode::NC_PLANNING;
         clog("Invalid argument, using value planning:=non-constrained", LOGGER, WARN);
         clog("Mode of the planner - planning non-constrained movements", LOGGER);
     }
 
     // num_rerun
     num_rerun = move_group_node->get_parameter("num_rerun").get_value<uint>();
-    if (num_rerun > max_num_rerun && (!allow_nc_planning && !allow_c_planning)) { // is allowed planning
+    if (((num_rerun < 0) || (num_rerun > max_num_rerun)) && (planning_mode!=PlanningMode::NO_PLANNING)) { // is allowed planning
         num_rerun = max_num_rerun;
-        allow_file_logging = false;
+        file_logging_mode = FileLogging::NO_LOGGING;
         clog("Invalid inputs (num_rerun > max_num_rerun), changed to:\n - num_rerun: " + std::to_string(num_rerun) + "\n - file_logging: false", LOGGER);
     }
 
+    if (planning_mode!=PlanningMode::NO_PLANNING) clog("Planning will be performed " + std::to_string(num_rerun) + "x", LOGGER);
+
+
     //file logging
-    allow_file_logging = move_group_node->get_parameter("file_logging").get_value<bool>();
-    clog("Planning will be performed " + std::to_string(num_rerun) + "x", LOGGER);
-    std::string s("File logging is ");
-    s += allow_file_logging ? "allowed": "not allowed";
+    std::string file_logging_mode_arg = move_group_node->get_parameter("file_logging").get_value<std::string>();
+    
+    std::string s = "";
+    if (!file_logging_mode_arg.compare("dont")) {
+        file_logging_mode = FileLogging::NO_LOGGING;
+        s+="No ";
+    } else if (!file_logging_mode_arg.compare("compact") && planning_mode!=PlanningMode::NO_PLANNING) {
+        file_logging_mode = FileLogging::COMPACT_LOGGING;
+        s+="Compact ";
+    } else if (!file_logging_mode_arg.compare("full") && planning_mode!=PlanningMode::NO_PLANNING) {
+        file_logging_mode = FileLogging::FULL_LOGGING;
+        s+="Full ";
+    } else {
+        file_logging_mode = FileLogging::NO_LOGGING;
+        clog("Invalid argument, using value file_logging:=dont", LOGGER, WARN);
+        s+="No ";
+    }
+    
+    s += "file logging";
     clog(s, LOGGER);
 
     // planner_id

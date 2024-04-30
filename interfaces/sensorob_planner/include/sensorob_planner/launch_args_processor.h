@@ -5,13 +5,24 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include "sensorob_planner/logger.h"
 
+enum PlanningMode {
+    NO_PLANNING,
+    NC_PLANNING,
+    C_PLANNING
+};
+
+enum FileLogging {
+    NO_LOGGING,
+    COMPACT_LOGGING,
+    FULL_LOGGING
+};
+
 void process_launch_args(
     const std::shared_ptr<rclcpp::Node>& move_group_node, 
     const rclcpp::Logger& LOGGER,
     uint& num_rerun,
-    bool& allow_nc_planning,
-    bool& allow_c_planning,
-    bool& allow_file_logging,
+    int& planning_mode,
+    int& file_logging_mode,
     std::string& planner_id,
     std::string& planning_pipeline_id);
 
