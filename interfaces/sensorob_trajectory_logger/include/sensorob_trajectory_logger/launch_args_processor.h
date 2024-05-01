@@ -20,9 +20,7 @@ enum FileLogging {
 void process_launch_args(
     const std::shared_ptr<rclcpp::Node>& move_group_node, 
     const rclcpp::Logger& LOGGER,
-    uint& num_rerun,
-    int& planning_mode,
-    int& file_logging_mode,
+    double& desired_frequency,
     std::string& planner_id,
     std::string& planning_pipeline_id);
 

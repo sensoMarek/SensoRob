@@ -4,6 +4,9 @@
 #ifndef SENSOROB_PLANNER_PLANNER_H
 #define SENSOROB_PLANNER_PLANNER_H
 
+#include <rclcpp/rclcpp.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/msg/collision_object.hpp>
@@ -22,12 +25,11 @@
 #include "sensorob_trajectory_logger/launch_args_processor.h"
 
 
-rclcpp::Logger LOGGER = rclcpp::get_logger("planner");
+rclcpp::Logger LOGGER = rclcpp::get_logger("trajectory_logger");
 
-uint num_rerun;
-int file_logging_mode;
-std::string planner_id, planning_pipeline_id;
-int planning_mode;
+double desired_frequency;
+std::string planner_id;
+std::string planning_pipeline_id;
 std::vector<moveit_msgs::msg::CollisionObject> objects;
 std::vector<std::string> object_ids;
 std::vector<std::string> environment_object_ids;
@@ -39,7 +41,7 @@ std::vector<double> jointValueTarget1 = {1.7453, 0.9250, -0.1222, -0.3491,  0.57
 std::vector<double> jointValueTarget2 = {0,      1.2915, -1.0123,       0, -0.7156,  1.4661};
 
 std::vector<double> jointValueTargetA = {-0.5585, 1.0996, -1.2915, -0.7156, -0.9425, 0.5236};
-std::vector<double> jointValueTargetB = {0.4363 , 1.0821, -1.3265,  0.5585, -0.9076, 1.2217};
+std::vector<double> jointValueTargetB = {0.0, 0.0, -0.2, 0.0, 0.0, 0.2};
 
 void addObjectsToScene(
     moveit::planning_interface::PlanningSceneInterface& planning_scene, 
