@@ -153,6 +153,7 @@ private:
   }
 };
 
+
 int main(int argc, char** argv)
 {
     rclcpp::init(argc, argv);
@@ -235,11 +236,17 @@ int main(int argc, char** argv)
 
         RCLCPP_INFO(rclcpp::get_logger("joint_state_listener"), "Number of joint states logged: %d", joint_state_listener.getNumberOfLoggedJointStates());
 
-        file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, LOGGER);
+        file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, "planned_joint_states.txt", LOGGER);
         // joint_state_thread.join();
     } else {
         RCLCPP_ERROR(rclcpp::get_logger(""), "Planning failed!");
+        rclcpp::shutdown();
+        return -1;
     }
+
+    // transformJointStatesToPose();
+    file_logger::transformJointStatesToPose(home_dir_path, "planned_joint_states.txt", "planned_poses.txt", PLANNING_GROUP, move_group);
+    file_logger::transformJointStatesToPose(home_dir_path, "executed_joint_states.txt", "executed_poses.txt", PLANNING_GROUP, move_group);
 
 
 

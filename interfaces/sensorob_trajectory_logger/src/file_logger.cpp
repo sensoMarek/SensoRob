@@ -104,9 +104,10 @@ int logTrajectory(
     [[maybe_unused]] const std::string planning_group,
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
     const std::string dir_name,
+    const std::string file_name,
     rclcpp::Logger& LOGGER) 
 {
-    std::fstream file = open_file("planned_joint_states.txt", dir_name, LOGGER);
+    std::fstream file = open_file(file_name, dir_name, LOGGER);
 
     if (!file.is_open()) return -1;
 
@@ -125,6 +126,89 @@ int logTrajectory(
 
     file.close();
     return 0;
+}
+
+void transformJointStatesToPose(
+   const std::string home_dir_path,
+   const std::string input_file_name,
+   const std::string output_file_name,
+   const std::string PLANNING_GROUP,
+   const moveit::planning_interface::MoveGroupInterface& move_group
+) {
+
+  std::fstream input_file(home_dir_path+"/"+input_file_name, std::ios::in);
+  if (!input_file.is_open()) {
+      RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger"), "Could not open input file");
+      return;
+  }
+
+  std::fstream output_file(home_dir_path+"/"+output_file_name, std::ios::out);
+  if (!output_file.is_open()) {
+      RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger"), "Could not open output file");
+      return;
+  }
+
+  // create robot state
+  moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(move_group.getRobotModel()));
+  const moveit::core::JointModelGroup* joint_model_group = move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+  std::string endEffectorLink = move_group.getEndEffectorLink();
+  std::vector<double> joint_states;
+
+  std::string line;
+  std::getline(input_file, line);
+  std::istringstream iss(line);
+  std::vector<std::string> headers(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
+
+  // Reorder the headers
+  std::vector<std::string> ordered_headers = {"joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6", "timestamp[ms]"};
+  for (const auto& header : ordered_headers) {
+      output_file << header << " ";
+  }
+  output_file << std::endl;
+
+  // Reorder the data and compute pose
+  while (std::getline(input_file, line)) {
+      std::istringstream iss(line);
+      std::vector<double> data(std::istream_iterator<double>{iss}, std::istream_iterator<double>());
+      for (const auto& header : ordered_headers) {
+          auto it = std::find(headers.begin(), headers.end(), header);
+          
+          if (it != headers.end()) {
+            int index = std::distance(headers.begin(), it);
+            joint_states.push_back(data[index]); // joint states + timestamp
+          }
+      }
+
+
+      std::vector<double> js;
+      for (auto it = joint_states.begin(); it != joint_states.end() - 1; ++it) {
+        // Process the current element pointed to by the iterator (*it)
+        js.push_back(*it);
+      }
+      robot_state->setJointGroupActivePositions(joint_model_group, js);
+      robot_state->updateLinkTransforms();
+      const Eigen::Isometry3d& end_effector_state = robot_state->getFrameTransform(endEffectorLink);
+      geometry_msgs::msg::Pose end_effector_pose =  tf2::toMsg(end_effector_state);
+
+      tf2::Quaternion q(
+              end_effector_pose.orientation.x,
+              end_effector_pose.orientation.y,
+              end_effector_pose.orientation.z,
+              end_effector_pose.orientation.w);
+      tf2::Matrix3x3 m(q);
+      tf2Scalar roll, pitch, yaw;
+      m.getRPY(roll, pitch, yaw);
+
+      // Log position and Euler angles of end effector
+      output_file << end_effector_state.translation().x() << " "
+        << std::fixed << std::setprecision(16)<< end_effector_state.translation().y() << " "
+        << std::fixed << std::setprecision(16)<< end_effector_state.translation().z() << " "
+        << std::fixed << std::setprecision(16)<< roll << " "
+        << std::fixed << std::setprecision(16)<< pitch << " "
+        << std::fixed << std::setprecision(16)<< yaw << " ";
+      output_file << joint_states.back() << std::endl;
+      joint_states.clear(); 
+  }
 }
 
 
