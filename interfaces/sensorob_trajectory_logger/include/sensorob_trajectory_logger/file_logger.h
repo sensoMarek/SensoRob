@@ -12,20 +12,12 @@
 #include <ctime>
 #include <sys/stat.h>
 #include <algorithm>
+#include <cstdlib>
 
 #include "sensorob_trajectory_logger/logger.h"
 
 namespace file_logger {
 
-struct trajectory_attributes
-{
-    double tool_distance = -1;
-    double joint_distance = -1;
-    double planning_time = -1;
-    double trajectory_time = -1;
-    int number_of_points = -1;
-    std::string dir_name = "";
-};
 
 int logTrajectory(
     moveit::planning_interface::MoveGroupInterface& move_group, 
@@ -42,6 +34,18 @@ void transformJointStatesToPose(
    const std::string output_file_name,
    const std::string PLANNING_GROUP,
    const moveit::planning_interface::MoveGroupInterface& move_group
+);
+
+void computeError(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2
+);
+
+void visualizeTrajectory(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2
 );
 
 

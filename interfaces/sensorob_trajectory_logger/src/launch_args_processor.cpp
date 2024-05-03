@@ -5,7 +5,8 @@ void process_launch_args(
     const rclcpp::Logger& LOGGER,
     double& desired_frequency,
     std::string& planner_id,
-    std::string& planning_pipeline_id)
+    std::string& planning_pipeline_id,
+    int& mode)
 {
   
     // planner_id
@@ -43,4 +44,12 @@ void process_launch_args(
         clog("Desired frequency must be greater than 0.0. Using default value: " + std::to_string(desired_frequency), LOGGER, WARN);
     }
     else { clog("Desired frequency: " + std::to_string(desired_frequency), LOGGER);}
+
+    mode = move_group_node->get_parameter("mode").get_value<int>();
+    if ((mode != 1) && (mode!=2)) {
+        mode = 1;
+        clog("Mode must be 1 or 2. Using default value: " + std::to_string(mode), LOGGER, WARN);
+    }
+    else { clog("Mode: " + std::to_string(mode), LOGGER);
+    }
 }

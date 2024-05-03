@@ -119,7 +119,7 @@ int logTrajectory(
         for (uint i=0; i<6; i++) {
             file << std::fixed << std::setprecision(16)<< plan.trajectory_.joint_trajectory.points[j].positions[i] << " ";
             if (i==(6-1)) {
-                file << plan.trajectory_.joint_trajectory.points[j].time_from_start.sec + plan.trajectory_.joint_trajectory.points[j].time_from_start.nanosec/1e6 << std::endl;
+                file << plan.trajectory_.joint_trajectory.points[j].time_from_start.sec*1000+ plan.trajectory_.joint_trajectory.points[j].time_from_start.nanosec/1e6 << std::endl;
             }    
         }
     }
@@ -152,7 +152,7 @@ void transformJointStatesToPose(
   moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(move_group.getRobotModel()));
   const moveit::core::JointModelGroup* joint_model_group = move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
   std::string endEffectorLink = move_group.getEndEffectorLink();
-  std::vector<double> joint_states;
+  std::vector<double> loaded_vector;
 
   std::string line;
   std::getline(input_file, line);
@@ -161,10 +161,11 @@ void transformJointStatesToPose(
 
   // Reorder the headers
   std::vector<std::string> ordered_headers = {"joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6", "timestamp[ms]"};
-  for (const auto& header : ordered_headers) {
-      output_file << header << " ";
-  }
-  output_file << std::endl;
+  // std::vector<std::string> new_header = {"X", "Y", "Z", "roll", "pitch", "yaw", "timestamp[ms]"};
+  // for (const auto& header : ordered_headers) {
+  //     output_file << header << " ";
+  // }
+  // output_file << std::endl;
 
   // Reorder the data and compute pose
   while (std::getline(input_file, line)) {
@@ -175,17 +176,18 @@ void transformJointStatesToPose(
           
           if (it != headers.end()) {
             int index = std::distance(headers.begin(), it);
-            joint_states.push_back(data[index]); // joint states + timestamp
+            loaded_vector.push_back(data[index]); // joint states + timestamp
           }
       }
 
 
-      std::vector<double> js;
-      for (auto it = joint_states.begin(); it != joint_states.end() - 1; ++it) {
+      std::vector<double> joint_states;
+      for (auto it = loaded_vector.begin(); it != loaded_vector.end() - 1; ++it) {
         // Process the current element pointed to by the iterator (*it)
-        js.push_back(*it);
+        joint_states.push_back(*it);
       }
-      robot_state->setJointGroupActivePositions(joint_model_group, js);
+
+      robot_state->setJointGroupActivePositions(joint_model_group, joint_states);
       robot_state->updateLinkTransforms();
       const Eigen::Isometry3d& end_effector_state = robot_state->getFrameTransform(endEffectorLink);
       geometry_msgs::msg::Pose end_effector_pose =  tf2::toMsg(end_effector_state);
@@ -200,15 +202,95 @@ void transformJointStatesToPose(
       m.getRPY(roll, pitch, yaw);
 
       // Log position and Euler angles of end effector
-      output_file << end_effector_state.translation().x() << " "
-        << std::fixed << std::setprecision(16)<< end_effector_state.translation().y() << " "
-        << std::fixed << std::setprecision(16)<< end_effector_state.translation().z() << " "
-        << std::fixed << std::setprecision(16)<< roll << " "
-        << std::fixed << std::setprecision(16)<< pitch << " "
-        << std::fixed << std::setprecision(16)<< yaw << " ";
-      output_file << joint_states.back() << std::endl;
-      joint_states.clear(); 
+      output_file << std::fixed << std::setprecision(16) << end_effector_state.translation().x() << " "
+        << std::fixed << std::setprecision(16) << end_effector_state.translation().y() << " "
+        << std::fixed << std::setprecision(16) << end_effector_state.translation().z() << " "
+        << std::fixed << std::setprecision(16) << roll << " "
+        << std::fixed << std::setprecision(16) << pitch << " "
+        << std::fixed << std::setprecision(16) << yaw << " ";
+      output_file  << std::fixed << std::setprecision(0)<< loaded_vector.back() << std::endl;
+      loaded_vector.clear(); 
   }
+}
+
+void computeError(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2
+) {
+
+  std::fstream file1(home_dir_path+"/"+input_file_name1, std::ios::in);
+  if (!file1.is_open()) {
+      RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger"), "Could not open file1");
+      return;
+  }
+
+  std::fstream file2(home_dir_path+"/"+input_file_name2, std::ios::in);
+  if (!file2.is_open()) {
+      RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger"), "Could not open file2");
+      return;
+  }
+
+  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "Computing errors...");
+  std::vector<double> errors = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  std::vector<std::string> header = {"X [m]      ", "Y [m]      ", "Z [m]      ", "Roll [rad] ", "Pitch [rad]", "Yaw [rad]  ", "Timestamp [ms]"};
+  std::vector<double> max_errors = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // max errors for each column
+
+  std::string line1, line2;
+  while (std::getline(file1, line1)) {
+      std::istringstream iss1(line1);
+      std::vector<double> data1(std::istream_iterator<double>{iss1}, std::istream_iterator<double>());
+
+      double min_diff = std::numeric_limits<double>::max();
+      std::vector<double> closest_data2;
+
+      // Reset file2 to the beginning
+      file2.clear();
+      file2.seekg(0, std::ios::beg);
+
+      while (std::getline(file2, line2)) {
+          std::istringstream iss2(line2);
+          std::vector<double> data2(std::istream_iterator<double>{iss2}, std::istream_iterator<double>());
+
+          // std::cout << "Comparing with point: " << data2.back() << std::endl;
+          double diff = std::abs(data1.back() - data2.back());
+          if (diff < min_diff) {
+              min_diff = diff;
+              closest_data2 = data2;
+          }
+      }
+
+      // RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "Closest point: %f", closest_data2.back());
+      // Compute and print the absolute errors
+      for (size_t i = 0; i < data1.size() - 1; ++i) {
+        double error = std::pow((data1[i] - closest_data2[i]), 2);
+        errors[i] += error;
+        if (error > max_errors[i]) {
+          max_errors[i] = error;
+        }
+      }
+  }
+
+  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "Computing errors... done"); 
+
+  // Compute the root mean square error
+  for (size_t i = 0; i < errors.size(); ++i) {
+    errors[i] = std::sqrt(errors[i]);
+    RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "%s: root mean square error: %.4f, max error: %.4f", header[i].c_str(), errors[i], std::sqrt(max_errors[i]));
+  }
+
+}
+
+void visualizeTrajectory(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2
+) {
+  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "Visualizing trajectory...");
+  std::string current_dir_name(get_current_dir_name());
+  current_dir_name += "/src/SensoRob/interfaces/sensorob_trajectory_logger/src/trajectory_visualizer/";
+  std::string command = "python3 " + current_dir_name + "trajectory_visualizer.py " + home_dir_path + " " + input_file_name1 + " " + input_file_name2;
+  std::system(command.c_str());
 }
 
 

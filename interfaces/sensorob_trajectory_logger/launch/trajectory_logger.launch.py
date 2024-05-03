@@ -28,6 +28,11 @@ def generate_launch_description():
         DeclareLaunchArgument('desired_frequency',
                               default_value='100.0',
                               description='(double) The desired frequency of the trajectory logger node'))
+    
+    ld.add_action(
+        DeclareLaunchArgument('mode',
+                              default_value='1',
+                              description='(int) 1 - joint space planning, 2 - cartesian path'))
 
     ld.add_action(
         Node(
@@ -41,7 +46,8 @@ def generate_launch_description():
                 moveit_config.robot_description_kinematics,
                 {"use_sim_time": LaunchConfiguration("using_fake_robot")},
                 {"planner_id": LaunchConfiguration("planner_id")},
-                {"desired_frequency": LaunchConfiguration("desired_frequency")}
+                {"desired_frequency": LaunchConfiguration("desired_frequency")},
+                {"mode": LaunchConfiguration("mode")}
             ],
         )
     )

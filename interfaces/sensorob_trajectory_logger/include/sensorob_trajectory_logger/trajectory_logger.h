@@ -34,14 +34,15 @@ std::vector<moveit_msgs::msg::CollisionObject> objects;
 std::vector<std::string> object_ids;
 std::vector<std::string> environment_object_ids;
 int result;
+int mode;
+moveit_msgs::msg::RobotTrajectory trajectory;
+moveit::core::MoveItErrorCode success = moveit::core::MoveItErrorCode::FAILURE;
+moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 static const std::string PLANNING_GROUP = "sensorob_group";
 
-// joint value targets
-std::vector<double> jointValueTarget1 = {1.7453, 0.9250, -0.1222, -0.3491,  0.5760, -1.2566};
-std::vector<double> jointValueTarget2 = {0,      1.2915, -1.0123,       0, -0.7156,  1.4661};
-
-std::vector<double> jointValueTargetA = {-0.5585, 1.0996, -1.2915, -0.7156, -0.9425, 0.5236};
-std::vector<double> jointValueTargetB = {0.0, 0.0, -0.2, 0.0, 0.0, 0.2};
+std::vector<double> jointValueTargetHome = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // home position
+std::vector<double> jointValueTargetA = {0.76185090, 0.481911, -1.156589, 1.4889827, -0.765009,1.2892323};
+std::vector<double> jointValueTargetB = {0.0, 0.0, -1.0, 0.0, 0.0, 1.0};
 
 void addObjectsToScene(
     moveit::planning_interface::PlanningSceneInterface& planning_scene, 

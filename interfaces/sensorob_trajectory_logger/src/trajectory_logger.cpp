@@ -153,6 +153,20 @@ private:
   }
 };
 
+int moveRobotToStartState(moveit::planning_interface::MoveGroupInterface& move_group, std::vector<double> jointValueTarget) {
+    move_group.setStartStateToCurrentState();
+    move_group.setJointValueTarget(jointValueTarget);
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    moveit::core::MoveItErrorCode success = move_group.plan(my_plan);
+    if (success != moveit::core::MoveItErrorCode::SUCCESS) {
+        RCLCPP_ERROR(LOGGER, "Planning failed!");
+        rclcpp::shutdown();
+        return -1;
+    }
+    move_group.execute(my_plan);
+    return 0;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -174,6 +188,10 @@ int main(int argc, char** argv)
     moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(move_group.getRobotModel()));
     robot_state->setToDefaultValues();
 
+    move_group.setMaxAccelerationScalingFactor(1.0);
+    move_group.setMaxVelocityScalingFactor(1.0);
+
+
     // Visualization
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "world",
@@ -187,7 +205,8 @@ int main(int argc, char** argv)
         LOGGER,
         desired_frequency,
         planner_id,
-        planning_pipeline_id
+        planning_pipeline_id,
+        mode
     );
 
     move_group.setPlannerId(planner_id);
@@ -213,29 +232,81 @@ int main(int argc, char** argv)
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' to start");
 
-    // Set the joint target
-    move_group.setStartStateToCurrentState();
-    move_group.setJointValueTarget(jointValueTargetB);
 
-     // Define the plan object
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Plan the motion
-    moveit::core::MoveItErrorCode success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
-    if (success) {
+    if (mode == 1) { // Joint space planning
+      // Set the joint target
+      moveRobotToStartState(move_group, jointValueTargetHome);
+      move_group.setStartStateToCurrentState();
+      move_group.setJointValueTarget(jointValueTargetB);
+
+      // Plan the motion
+      success = move_group.plan(my_plan);
+
+    } else // Cartesian space planning
+    {
+      moveRobotToStartState(move_group, jointValueTargetA);
+      robot_state->setJointGroupPositions("sensorob_group", jointValueTargetA);
+      move_group.setStartState(*robot_state);
+      const Eigen::Affine3d &end_effector_state = robot_state->getGlobalLinkTransform(move_group.getEndEffectorLink());
+      Eigen::Quaterniond quaternion(end_effector_state.rotation());
+
+      geometry_msgs::msg::Pose pose1;
+      pose1.position.x =  end_effector_state.translation().x();
+      pose1.position.y =  end_effector_state.translation().y();
+      pose1.position.z =  end_effector_state.translation().z();
+      pose1.orientation.x = quaternion.x();
+      pose1.orientation.y = quaternion.y();
+      pose1.orientation.z = quaternion.z();
+      pose1.orientation.w = quaternion.w();
+
+      std::vector<geometry_msgs::msg::Pose> waypoints;
+      waypoints.push_back(pose1);
+
+      pose1.position.x += 0.3;
+      waypoints.push_back(pose1);  // when looking on robot to the left, the robot moves to the right
+
+      pose1.position.z += 0.2;
+      waypoints.push_back(pose1);  // the robot moves up
+      
+      const double jump_threshold = 0.0;
+      const double eef_step = 0.001;
+      bool avoid_collisions = false;
+      double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory, avoid_collisions);
+      if (fraction == 1.0) {
+          // RCLCPP_INFO(LOGGER, "Path computed successfully. Moving the robot.");
+          success = moveit::core::MoveItErrorCode::SUCCESS;
+      } else {
+          RCLCPP_ERROR(LOGGER, "Path computation failed with fraction: %.2f", fraction);
+          rclcpp::shutdown();
+          return -1;
+      }
+
+      RCLCPP_INFO(LOGGER, "Cartesian path -  %.2f%% achieved", fraction * 100.0);
+    }
+    
+  
+    if (success==moveit::core::MoveItErrorCode::SUCCESS) {
         // Set flag to start logging before execution
         joint_state_listener.setLogJointStates(true);
+
         // Execute the planned trajectory
-        move_group.setMaxAccelerationScalingFactor(1.0);
-        move_group.setMaxVelocityScalingFactor(1.0);
-        move_group.execute(my_plan);
+        if (mode == 1) {
+          move_group.execute(my_plan);  
+        } else {
+          move_group.execute(trajectory);
+          my_plan.trajectory_ = trajectory;  
+        }
+
+        // Add a delay before stopping logging
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
         // Reset flag to stop logging after execution
-        joint_state_listener.setLogJointStates(false);
+        joint_state_listener.setLogJointStates(false); 
 
         RCLCPP_INFO(rclcpp::get_logger("joint_state_listener"), "Number of joint states logged: %d", joint_state_listener.getNumberOfLoggedJointStates());
-
         file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, "planned_joint_states.txt", LOGGER);
         // joint_state_thread.join();
     } else {
@@ -248,10 +319,15 @@ int main(int argc, char** argv)
     file_logger::transformJointStatesToPose(home_dir_path, "planned_joint_states.txt", "planned_poses.txt", PLANNING_GROUP, move_group);
     file_logger::transformJointStatesToPose(home_dir_path, "executed_joint_states.txt", "executed_poses.txt", PLANNING_GROUP, move_group);
 
+    // compute the error in eef pose
+    file_logger::computeError(home_dir_path, "planned_poses.txt", "executed_poses.txt");
+
+    // visualize the trajectory
+    file_logger::visualizeTrajectory(home_dir_path, "planned_poses.txt", "executed_poses.txt");
 
 
-    visual_tools.trigger();
-    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
+    // visual_tools.trigger();
+    // visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
 
     rclcpp::shutdown();
     return 0;
