@@ -46,12 +46,12 @@ The `config.yaml` file contains the following parameters:
 
 
 `movement_mode` 0 - joint space, 1 - cartesian space \
-`desired_frequency` Hz - how often the robot state is logged
+`desired_frequency` Hz - how often the robot state is logged\
 `planner_id` [ RRTConnect, RRTstar, RRT, TRRT, EST, LBTRRT, BiEST, STRIDE, BiTRRT, PRM, PRMstar, LazyPRMstar, FMT, PDST, STRIDE, BiEST, STRIDE, BiTRRT, STOMP, CHOMP, pilz-PTP, pilz-CIRC, pilz-LIN]\
-`max_velocity_scaling_factor`
-`max_acceleration_scaling_factor`
-`joint_value_target_1`  joint start position
-`joint_value_target_2` # joint end position for movement_mode: 0
+`max_velocity_scaling_factor`\
+`max_acceleration_scaling_factor`\
+`joint_value_target_1`  joint start position\
+`joint_value_target_2` # joint end position for movement_mode: 0\
 `waypoints` xyz list of wps for movement_mode: 1
  
 Example of config file:
