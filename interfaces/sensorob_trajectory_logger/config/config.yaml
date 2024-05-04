@@ -1,0 +1,14 @@
+movement_mode: 1  # 0 - joint space, 1 - cartesian space
+desired_frequency: 100 # Hz - how often the robot state is logged
+planner_id: RRTConnect # RRTConnect, RRTstar, RRT, TRRT, EST, LBTRRT, BiEST, STRIDE, BiTRRT, PRM, PRMstar, LazyPRMstar, FMT, PDST, STRIDE, BiEST, STRIDE, BiTRRT, STOMP, CHOMP, pilz-PTP, pilz-CIRC, pilz-LIN]
+max_velocity_scaling_factor: 0.6
+max_acceleration_scaling_factor: 0.6
+
+# joint_value_target_1: [0.0, 0.0, -1.57, 0.0, 0.0, 0.0]  # joint start position
+joint_value_target_1: [0.8998244, 0.764909, -1.07867, 1.35929, -0.92911, 1.227445]
+joint_value_target_2: [0.0, 0.0, 1.4, 0.0, 0.0, 1.50]  # joint end position for movement_mode: 0
+
+waypoints:  # xyz for movement_mode: 1
+  - [0.6, 0.0, 0.0]  #x + 0.6m
+  - [0.0, 0.0, 0.1]  #y - 0.1m
+
