@@ -28,12 +28,6 @@ def generate_launch_description():
                               default_value='True',
                               description='If False, forward kinematics will be not computed')
     )
-    ld.add_action(
-        DeclareLaunchArgument("logs_folder_path",
-                              default_value='/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik',
-                              description='The path to the log folder in your PC, '
-                                          'where files will be stored when performing IK test')
-    )
 
     ld.add_action(
         DeclareLaunchArgument('use_sim_time',
@@ -55,7 +49,6 @@ def generate_launch_description():
         {"num_of_joint_samples": LaunchConfiguration("num_of_joint_samples")},
         {"computeFK": LaunchConfiguration("computeFK")},
         {"computeIK": LaunchConfiguration("computeIK")},
-        {"logs_folder_path": LaunchConfiguration("logs_folder_path")},
         {"timeout": LaunchConfiguration("timeout")}
     ]
 

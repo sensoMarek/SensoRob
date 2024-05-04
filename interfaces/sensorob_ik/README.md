@@ -96,9 +96,6 @@ This number will represent how many total samples will be used for IK test given
         If False, forward kinematics will be not computed
         (default: 'True')
 
-    'logs_folder_path':
-        The path to the log folder in your PC, where files will be stored when performing IK test
-        (default: '/home/jakub/ros2_ws/src/SensoRob/sensorob_logs/ik')
 ```
 
 During the test there are prints (hints) in second terminal where ik_interface was launched about progress.

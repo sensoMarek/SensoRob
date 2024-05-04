@@ -18,6 +18,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 include_directories(
         include
@@ -49,7 +50,8 @@ add_executable(${EXECUTABLE_1_NAME}
         src/ik_interface/fk.cpp
         src/ik.cpp
         src/viz.cpp
-        src/logger.cpp)
+        src/logger.cpp
+        src/file_logger.cpp)
 ament_target_dependencies(${EXECUTABLE_1_NAME} ${DEPENDENCIES})
 install(TARGETS ${EXECUTABLE_1_NAME}
         DESTINATION lib/${PROJECT_NAME})
@@ -66,7 +68,8 @@ add_executable(${EXECUTABLE_2_NAME}
         src/ik_interface_random/fk.cpp
         src/ik.cpp
         src/viz.cpp
-        src/logger.cpp)
+        src/logger.cpp
+        src/file_logger.cpp)
 ament_target_dependencies(${EXECUTABLE_2_NAME} ${DEPENDENCIES})
 install(TARGETS ${EXECUTABLE_2_NAME}
         DESTINATION lib/${PROJECT_NAME})

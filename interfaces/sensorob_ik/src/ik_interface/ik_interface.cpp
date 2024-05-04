@@ -3,7 +3,7 @@
 //
 #include "sensorob_ik/ik_interface.h"
 
-static const rclcpp::Logger LOGGER = rclcpp::get_logger("ik_interface");
+rclcpp::Logger LOGGER = rclcpp::get_logger("ik_interface");
 
 int main(int argc, char** argv)
 {
@@ -22,12 +22,17 @@ int main(int argc, char** argv)
     int num_of_joint_samples = move_group_node->get_parameter("num_of_joint_samples").get_value<int>();
     bool computeIK = move_group_node->get_parameter("computeIK").get_value<bool>();
     bool computeFK = move_group_node->get_parameter("computeFK").get_value<bool>();
-    std::string  logs_folder_path = move_group_node->get_parameter("logs_folder_path").get_value<std::string>();
     double solver_timeout = move_group_node->get_parameter("timeout").get_value<double>();
 
     if (!computeFK){
         num_of_joint_samples = -1; // in this state we dont know ho many samples are in the file
     }
+
+    
+    std::string current_dir_name(get_current_dir_name());
+    const std::string main_dir_name = file_logger::create_new_dir("src/SensoRob/sensorob_logs", current_dir_name, LOGGER);
+    std::string logs_folder_path = file_logger::create_new_dir("ik_log_"+file_logger::get_current_time(), main_dir_name, LOGGER);
+    RCLCPP_INFO(LOGGER, "Logs will be saved in %s", logs_folder_path.c_str());
 
     static const std::string PLANNING_GROUP = "sensorob_group";
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
