@@ -26,10 +26,9 @@ std::string create_new_dir(const std::string name, const std::string path, rclcp
     if (access(dir_name.c_str(), F_OK) == -1) {
         // Create the directory
         if (mkdir(dir_name.c_str(), 0777) == 0) {
-            // clog("Directory " + dir_name + " created successfully", LOGGER);
             return dir_name;
         } else {
-            clog("Failed to create directory " + dir_name, LOGGER, ERROR);
+            RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger.file_logger"), "Failed to create directory %s", dir_name.c_str());
         }
     } 
     // else {
@@ -48,11 +47,9 @@ std::fstream open_file(
     {
     std::fstream file(dir_name + "/" + file_name, std::ios::out);
     if (!file.is_open()) {
-        clog("File " + dir_name+"/"+file_name + " is not successfully opened, no logging!!", LOGGER, ERROR);
+        RCLCPP_ERROR(rclcpp::get_logger("trajectory_logger.file_logger"),"Failed to open file %s", file_name.c_str());
     } 
-    // else {
-    //     clog("File " + file_name + " opened", LOGGER);
-    // }
+
 
     return file;
 }
@@ -252,7 +249,6 @@ void computeError(
           std::istringstream iss2(line2);
           std::vector<double> data2(std::istream_iterator<double>{iss2}, std::istream_iterator<double>());
 
-          // std::cout << "Comparing with point: " << data2.back() << std::endl;
           double diff = std::abs(data1.back() - data2.back());
           if (diff < min_diff) {
               min_diff = diff;

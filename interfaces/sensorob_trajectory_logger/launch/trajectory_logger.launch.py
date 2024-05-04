@@ -12,27 +12,11 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-
-    ld.add_action(
-        DeclareLaunchArgument('planner_id',
-                              default_value='RRTConnect',
-                              description='(string) [RRTConnect, RRTstar, RRT, TRRT, EST, LBTRRT, BiEST, STRIDE, BiTRRT, PRM, PRMstar, LazyPRMstar, FMT, PDST, STRIDE, BiEST, STRIDE, BiTRRT, STOMP, CHOMP, pilz-PTP, pilz-CIRC, pilz-LIN]\nID of the planner to be used for planning')
-    )
-
     ld.add_action(
         DeclareLaunchArgument('using_fake_robot',
                               default_value='True',
                               description='(boolean) [True, False]\nWhether the robot is real or simulated'))
     
-    ld.add_action(
-        DeclareLaunchArgument('desired_frequency',
-                              default_value='100.0',
-                              description='(double) The desired frequency of the trajectory logger node'))
-    
-    ld.add_action(
-        DeclareLaunchArgument('mode',
-                              default_value='1',
-                              description='(int) 1 - joint space planning, 2 - cartesian path'))
 
     ld.add_action(
         Node(
@@ -44,10 +28,7 @@ def generate_launch_description():
                 moveit_config.robot_description,
                 moveit_config.robot_description_semantic,
                 moveit_config.robot_description_kinematics,
-                {"use_sim_time": LaunchConfiguration("using_fake_robot")},
-                {"planner_id": LaunchConfiguration("planner_id")},
-                {"desired_frequency": LaunchConfiguration("desired_frequency")},
-                {"mode": LaunchConfiguration("mode")}
+                {"use_sim_time": LaunchConfiguration("using_fake_robot")}
             ],
         )
     )

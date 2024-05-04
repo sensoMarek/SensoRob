@@ -14,8 +14,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "sensorob_trajectory_logger/logger.h"
-
 namespace file_logger {
 
 

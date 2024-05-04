@@ -18,7 +18,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-
+find_package(yaml-cpp REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 include_directories(
   include
@@ -28,10 +29,8 @@ include_directories(
 # trajectory_logger
 add_executable(trajectory_logger
   src/trajectory_logger.cpp
-  src/logger.cpp
   src/obstacles.cpp
   src/file_logger.cpp
-  src/launch_args_processor.cpp
 )
 
 target_include_directories(trajectory_logger PUBLIC
@@ -55,11 +54,13 @@ ament_target_dependencies(
   "diagnostic_msgs"
   "tf2_ros"
   "tf2_geometry_msgs"
+  "yaml-cpp"
+  "ament_index_cpp"
 )
 
 
 
-install(DIRECTORY launch
+install(DIRECTORY launch config
         DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,7 +1,7 @@
 /*Jakub Ivan BP 2022*/
 
-#ifndef SENSOROB_PLANNER_GLOBAL_DIMENSIONS_H
-#define SENSOROB_PLANNER_GLOBAL_DIMENSIONS_H
+#ifndef SENSOROB_TRAJECTORY_LOGGER_GLOBAL_DIMENSIONS_H
+#define SENSOROB_TRAJECTORY_LOGGER_GLOBAL_DIMENSIONS_H
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -56,4 +56,4 @@ static const double obstacle3_position[3] = {
 };
 
 }
-#endif //SENSOROB_PLANNER_GLOBAL_DIMENSIONS_H
+#endif //SENSOROB_TRAJECTORY_LOGGER_GLOBAL_DIMENSIONS_H

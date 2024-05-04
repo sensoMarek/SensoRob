@@ -153,20 +153,6 @@ private:
   }
 };
 
-int moveRobotToStartState(moveit::planning_interface::MoveGroupInterface& move_group, std::vector<double> jointValueTarget) {
-    move_group.setStartStateToCurrentState();
-    move_group.setJointValueTarget(jointValueTarget);
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-    moveit::core::MoveItErrorCode success = move_group.plan(my_plan);
-    if (success != moveit::core::MoveItErrorCode::SUCCESS) {
-        RCLCPP_ERROR(LOGGER, "Planning failed!");
-        rclcpp::shutdown();
-        return -1;
-    }
-    move_group.execute(my_plan);
-    return 0;
-}
-
 
 int main(int argc, char** argv)
 {
@@ -183,14 +169,16 @@ int main(int argc, char** argv)
     executor.add_node(joint_state_listener.node_);
     std::thread([&executor]() { executor.spin(); }).detach();
 
+    // Load the configuration data from config file
+    loadConfigData();
+
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
     moveit::planning_interface::PlanningSceneInterface planning_scene;
     moveit::core::RobotStatePtr robot_state(new moveit::core::RobotState(move_group.getRobotModel()));
     robot_state->setToDefaultValues();
 
-    move_group.setMaxAccelerationScalingFactor(1.0);
-    move_group.setMaxVelocityScalingFactor(1.0);
-
+    move_group.setMaxAccelerationScalingFactor(max_acceleration_scaling_factor);
+    move_group.setMaxVelocityScalingFactor(max_velocity_scaling_factor);
 
     // Visualization
     namespace rvt = rviz_visual_tools;
@@ -199,15 +187,6 @@ int main(int argc, char** argv)
                                                         move_group.getRobotModel());
     visual_tools.deleteAllMarkers();
     visual_tools.loadRemoteControl();
-
-    process_launch_args(
-        move_group_node, 
-        LOGGER,
-        desired_frequency,
-        planner_id,
-        planning_pipeline_id,
-        mode
-    );
 
     move_group.setPlannerId(planner_id);
     move_group.setPlanningPipelineId(planning_pipeline_id);
@@ -218,63 +197,63 @@ int main(int argc, char** argv)
     }
 
     joint_state_listener.setDesiredFrequency(desired_frequency);
-    
 
-    // logging
-    std::string home_dir_path;
-    clog("Creating subdirectory in 'src/SensoRob/sensorob_logs'", LOGGER);
-    std::string current_dir_name(get_current_dir_name());
-    const std::string main_dir_name = file_logger::create_new_dir("src/SensoRob/sensorob_logs", current_dir_name, LOGGER);
-    home_dir_path = file_logger::create_new_dir("trajectory_log_"+file_logger::get_current_time(), main_dir_name, LOGGER);
-    joint_state_listener.openFile(home_dir_path, "executed_joint_states.txt");
 
     // Start the demo
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' to start");
 
+    // logging
+    std::string home_dir_path;
+    std::string current_dir_name(get_current_dir_name());
+    const std::string main_dir_name = file_logger::create_new_dir("src/SensoRob/sensorob_logs", current_dir_name, LOGGER);
+    home_dir_path = file_logger::create_new_dir("trajectory_log_"+file_logger::get_current_time(), main_dir_name, LOGGER);
+    joint_state_listener.openFile(home_dir_path, "executed_joint_states.txt");
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Add objects to the scene
+    if (!obstacles::create_environment(move_group.getPlanningFrame(), objects)) {
+        RCLCPP_INFO(LOGGER, "Environment created successfully");
+    } else {
+        RCLCPP_ERROR(LOGGER, "Error creating environment");
+        rclcpp::shutdown();
+        return -1;
+    }
 
+    for (auto object : objects) {
+      std::vector<moveit_msgs::msg::CollisionObject> vector_col;
+      vector_col.push_back(object);
+      planning_scene.addCollisionObjects(vector_col);
+      environment_object_ids.push_back(object.id);
+      sleep(1);       
+    }
+    sleep(1);
 
-    if (mode == 1) { // Joint space planning
+    // Move the robot to the start state
+    moveRobotToStartState(move_group, jointValueTarget1);
+
+    if (movement_mode == MovementMode::JOINT_SPACE) { // Joint space planning
       // Set the joint target
-      moveRobotToStartState(move_group, jointValueTargetHome);
       move_group.setStartStateToCurrentState();
-      move_group.setJointValueTarget(jointValueTargetB);
+      move_group.setJointValueTarget(jointValueTarget2);
 
       // Plan the motion
       success = move_group.plan(my_plan);
 
     } else // Cartesian space planning
     {
-      moveRobotToStartState(move_group, jointValueTargetA);
-      robot_state->setJointGroupPositions("sensorob_group", jointValueTargetA);
+      robot_state->setJointGroupPositions("sensorob_group", jointValueTarget1);
       move_group.setStartState(*robot_state);
       const Eigen::Affine3d &end_effector_state = robot_state->getGlobalLinkTransform(move_group.getEndEffectorLink());
-      Eigen::Quaterniond quaternion(end_effector_state.rotation());
 
-      geometry_msgs::msg::Pose pose1;
-      pose1.position.x =  end_effector_state.translation().x();
-      pose1.position.y =  end_effector_state.translation().y();
-      pose1.position.z =  end_effector_state.translation().z();
-      pose1.orientation.x = quaternion.x();
-      pose1.orientation.y = quaternion.y();
-      pose1.orientation.z = quaternion.z();
-      pose1.orientation.w = quaternion.w();
+      std::vector<geometry_msgs::msg::Pose> wps;
 
-      std::vector<geometry_msgs::msg::Pose> waypoints;
-      waypoints.push_back(pose1);
+      createPathFromWaypoints(wps, end_effector_state);
+      RCLCPP_INFO(LOGGER, "Created path from waypoints");
 
-      pose1.position.x += 0.3;
-      waypoints.push_back(pose1);  // when looking on robot to the left, the robot moves to the right
-
-      pose1.position.z += 0.2;
-      waypoints.push_back(pose1);  // the robot moves up
-      
       const double jump_threshold = 0.0;
       const double eef_step = 0.001;
       bool avoid_collisions = false;
-      double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory, avoid_collisions);
+      double fraction = move_group.computeCartesianPath(wps, eef_step, jump_threshold, trajectory, avoid_collisions);
       if (fraction == 1.0) {
           // RCLCPP_INFO(LOGGER, "Path computed successfully. Moving the robot.");
           success = moveit::core::MoveItErrorCode::SUCCESS;
@@ -293,7 +272,7 @@ int main(int argc, char** argv)
         joint_state_listener.setLogJointStates(true);
 
         // Execute the planned trajectory
-        if (mode == 1) {
+        if (movement_mode == MovementMode::JOINT_SPACE) {
           move_group.execute(my_plan);  
         } else {
           move_group.execute(trajectory);
@@ -328,7 +307,239 @@ int main(int argc, char** argv)
 
     // visual_tools.trigger();
     // visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to finish ");
+    planning_scene.removeCollisionObjects(environment_object_ids);
+      RCLCPP_INFO(LOGGER, "Environment cleared successfully");
+
 
     rclcpp::shutdown();
     return 0;
 }
+
+void createPathFromWaypoints(std::vector<geometry_msgs::msg::Pose>& wps, const Eigen::Affine3d &end_effector_state) {
+
+  Eigen::Quaterniond quaternion(end_effector_state.rotation());
+
+  geometry_msgs::msg::Pose pose1;
+  pose1.position.x =  end_effector_state.translation().x();
+  pose1.position.y =  end_effector_state.translation().y();
+  pose1.position.z =  end_effector_state.translation().z();
+  pose1.orientation.x = quaternion.x();
+  pose1.orientation.y = quaternion.y();
+  pose1.orientation.z = quaternion.z();
+  pose1.orientation.w = quaternion.w();
+
+  wps.push_back(pose1);
+  geometry_msgs::msg::Pose pose = pose1;
+
+  for (const auto& wp : waypoints) {
+      pose.position.x += wp.coordinates[0];
+      pose.position.y += wp.coordinates[1];
+      pose.position.z += wp.coordinates[2];
+      wps.push_back(pose);
+  }
+
+}
+
+int moveRobotToStartState(moveit::planning_interface::MoveGroupInterface& move_group, std::vector<double> jointValueTarget) {
+    move_group.setStartStateToCurrentState();
+    move_group.setJointValueTarget(jointValueTarget);
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    moveit::core::MoveItErrorCode success = move_group.plan(my_plan);
+    if (success != moveit::core::MoveItErrorCode::SUCCESS) {
+        RCLCPP_ERROR(LOGGER, "Planning failed!");
+        rclcpp::shutdown();
+        return -1;
+    }
+    move_group.execute(my_plan);
+    return 0;
+}
+
+int loadConfigData() {
+
+  rclcpp::Logger LOADER_LOGGER = rclcpp::get_logger(".config_loader");
+  // Load the joint values from the config file
+  std::string config_file_path = ament_index_cpp::get_package_share_directory("sensorob_trajectory_logger") + "/config/config.yaml";
+  YAML::Node config = YAML::LoadFile(config_file_path);
+
+    // movement mode
+  if (!config["movement_mode"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'movement_mode' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  movement_mode = config["movement_mode"].as<int>();
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded movement_mode: %d", movement_mode);
+
+  // desired frequency
+  if (!config["desired_frequency"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'desired_frequency' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  desired_frequency = config["desired_frequency"].as<int>();
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded desired_frequency: %d", desired_frequency);
+
+
+
+  // planner id
+  if (!config["planner_id"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'planner_id' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  std::string planner_id_ = config["planner_id"].as<std::string>();
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded planner_id: %s", planner_id_.c_str());
+
+  // check if the planner id is valid
+  std::vector<std::string> ompl_planner_ids = {"RRTConnect", "RRT", "RRTstar", "TRRT", "EST", "LBTRRT", "BiEST", "STRIDE", "BiTRRT", "PRM", "PRMstar", "LazyPRMstar", "PDST", "STRIDE", "BiEST", "STRIDE", "BiTRRT"};
+  std::vector<std::string> stomp_planner_ids = {"STOMP"};
+  std::vector<std::string> chomp_planner_ids = {"CHOMP"};
+  std::vector<std::string> pilz_planner_ids = {"PTP", "CIRC", "LIN"};
+
+  if (std::find(ompl_planner_ids.begin(), ompl_planner_ids.end(), planner_id_) != ompl_planner_ids.end()) {
+      planner_id = planner_id_;
+      planning_pipeline_id = "";  // "ompl"; does not work
+  } else if (std::find(stomp_planner_ids.begin(), stomp_planner_ids.end(), planner_id_) != stomp_planner_ids.end()) {
+      planner_id = planner_id_;
+      planning_pipeline_id = "stomp";
+  } else if (std::find(chomp_planner_ids.begin(), chomp_planner_ids.end(), planner_id_) != chomp_planner_ids.end()) {
+      planner_id = planner_id_;
+      planning_pipeline_id = "chomp";
+  } else if (std::find(pilz_planner_ids.begin(), pilz_planner_ids.end(), planner_id_) != pilz_planner_ids.end()) {
+      planner_id = planner_id_;
+      planning_pipeline_id = "pilz";
+  } else {
+      planner_id = "RRTConnect";
+      planning_pipeline_id = "ompl";
+      RCLCPP_WARN(LOADER_LOGGER, "Cannot find planning configuration for group 'sensorob_group' using planner %s . Will use defaults instead.", planner_id.c_str());
+  }
+
+  std::string pp_id = !planning_pipeline_id.compare("")?"ompl":planning_pipeline_id;
+  RCLCPP_INFO(LOADER_LOGGER, "Planner id: %s, planning pipeline id: %s", planner_id.c_str(), pp_id.c_str());
+
+
+  // max velocity scaling factor
+  if (!config["max_velocity_scaling_factor"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'max_velocity_scaling_factor' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  max_velocity_scaling_factor = config["max_velocity_scaling_factor"].as<double>();
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded max_velocity_scaling_factor: %.2f", max_velocity_scaling_factor);
+
+  // max acceleration scaling factor
+  if (!config["max_acceleration_scaling_factor"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'max_acceleration_scaling_factor' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  max_acceleration_scaling_factor = config["max_acceleration_scaling_factor"].as<double>();
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded max_acceleration_scaling_factor: %.2f", max_acceleration_scaling_factor);
+
+  // joint value target 1
+  if (!config["joint_value_target_1"]) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'joint_value_target_1' not found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+  jointValueTarget1 = config["joint_value_target_1"].as<std::vector<double>>();
+
+  if (jointValueTarget1.size() != 6) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'joint_value_target_1' should contain 6 values");
+    rclcpp::shutdown();
+    return -1; 
+  }
+
+  std::stringstream ss; ss << "Loaded joint value target 1: ";
+  for (const auto& value : jointValueTarget1) {
+    ss << value << " ";
+  }
+  RCLCPP_INFO_STREAM(LOADER_LOGGER, ss.str());
+
+  // joint value target 2
+  if (!config["joint_value_target_2"]) {
+    if (movement_mode == MovementMode::JOINT_SPACE) {
+      RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'joint_value_target_2' not found in config.yaml");
+      rclcpp::shutdown();
+      return -1;
+    } else {
+      RCLCPP_WARN(LOADER_LOGGER, "No joint value target 2 found in config.yaml.");
+      return 0;
+    }
+  }
+
+  jointValueTarget2 = config["joint_value_target_2"].as<std::vector<double>>();
+  
+  if (jointValueTarget2.size() != 6) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'joint_value_target_2' should contain 6 values");
+    rclcpp::shutdown();
+    return -1; 
+  }
+
+  std::stringstream ss2; ss2 << "Loaded joint value target 2: ";
+  for (const auto& value : jointValueTarget2) {
+    ss2 << value << " ";
+  }
+  RCLCPP_INFO_STREAM(LOADER_LOGGER, ss2.str());
+
+  // Load the waypoints from the config file
+  if (!config["waypoints"]) {
+    
+    if (movement_mode == MovementMode::CARTESIAN_SPACE) {
+      RCLCPP_ERROR(LOADER_LOGGER,"Error: Key 'waypoints' not found in config.yaml");
+      rclcpp::shutdown();
+      return -1; 
+    } else {
+      RCLCPP_WARN(LOADER_LOGGER, "No waypoints found in config.yaml.");
+      return 0;
+    }
+  }
+    // Access the "waypoints" node
+  const YAML::Node& waypoint_list = config["waypoints"];
+
+  // Loop through each waypoint in the list
+  int iter = 0;
+  std::string wp_prefix = "wp";
+  for (const auto& waypoint_node : waypoint_list) {
+    // Create a vector to store the current waypoint's coordinates
+    Waypoint current_waypoint;
+
+    // Access the list of coordinates for the current waypoint
+    const YAML::Node& coordinates_node = waypoint_node;
+    // Check if the current waypoint contains exactly 3 coordinates
+    if (coordinates_node.size() != 3) {
+      RCLCPP_ERROR(LOADER_LOGGER,"Error: Each waypoint should contain 3 coordinates");
+      rclcpp::shutdown();
+      return -1; 
+    }
+
+    // Loop through each coordinate and add it to the current_waypoint vector
+    for (const auto& coordinate : coordinates_node) {
+      current_waypoint.coordinates.push_back(coordinate.as<double>());
+    }
+
+    current_waypoint.name = wp_prefix + std::to_string(iter++);
+
+    // Add the current waypoint (inner vector) to the waypoints (outer vector)
+    waypoints.push_back(current_waypoint);
+  }
+
+  if (waypoint_list.size() == 0) {
+    RCLCPP_ERROR(LOADER_LOGGER,"Error: No waypoints found in config.yaml");
+    rclcpp::shutdown();
+    return -1; 
+  }
+
+  // Print the loaded waypoints (optional)
+  RCLCPP_INFO(LOADER_LOGGER, "Loaded waypoints:");
+  for (size_t i = 0; i < waypoints.size(); ++i) {
+    RCLCPP_INFO(LOADER_LOGGER, "%s: ", waypoints[i].name.c_str());
+    for (size_t j = 0; j < waypoints[i].coordinates.size(); ++j) {
+      RCLCPP_INFO(LOADER_LOGGER, "  %.2f", waypoints[i].coordinates[j]);
+    }
+  }
+
+  return 0;
+  }
+
+
