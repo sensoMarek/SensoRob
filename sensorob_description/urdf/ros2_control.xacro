@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+<xacro:property name="jf" value="${xacro.load_yaml('$(find sensorob_description)/config/joint_parameters.yaml')}"/>
 
     <xacro:if value="$(arg sim_mode)">
         <ros2_control name="GazeboSystem" type="system">
@@ -14,10 +15,10 @@
                 <!--                <param name="min">-10</param>-->
                 <!--                <param name="max">10</param>-->
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_1']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_1']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>
@@ -25,10 +26,10 @@
                 <command_interface name="position"/>
                 <command_interface name="effort"/>
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_2']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_2']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>
@@ -36,10 +37,10 @@
                 <command_interface name="position"/>
                 <command_interface name="effort"/>
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_3']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_3']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>
@@ -47,10 +48,10 @@
                 <command_interface name="position"/>
                 <command_interface name="effort"/>
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_4']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_4']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>
@@ -58,10 +59,10 @@
                 <command_interface name="position"/>
                 <command_interface name="effort"/>
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_5']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_5']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>
@@ -69,10 +70,10 @@
                 <command_interface name="position"/>
                 <command_interface name="effort"/>
                 <state_interface name="position">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_6']['init_pos']}</param>
                 </state_interface>
                 <state_interface name="velocity">
-                    <param name="initial_value">0.0</param>
+                    <param name="initial_value">${jf['joint_6']['init_vel']}</param>
                 </state_interface>
                 <state_interface name="effort"/>
             </joint>

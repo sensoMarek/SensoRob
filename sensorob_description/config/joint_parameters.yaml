@@ -1,0 +1,74 @@
+# data from https://www.sensodrive.de/products/torque-technology-senso-joint.php#:~:text=requirements%20if%20necessary.-,Technical%20data,-Technical%20data%20SensoJoint
+# upper [rad]
+# lower [rad]
+# velocity [rad/s]
+# effort [Nm]
+# dumping [Nms/rad]
+# friction [Nm]
+
+# drive 5012 52Nm, 16/min-1
+joint_1:
+  upper: 0.78539816339  # pi/4
+  lower: -0.78539816339  # -pi/4
+  velocity: 1.6755
+  effort: 52
+  dumping: 0.001
+  friction: 0.001
+  init_pos: 0.0
+  init_vel: 0.0
+
+# drive 5012 52Nm, 16/min-1
+joint_2:
+  upper: 1.0471975512  # pi/3
+  lower: -1.0471975512  # -pi/3
+  velocity: 1.6755
+  effort: 52
+  dumping: 0.001
+  friction: 0.001
+  init_pos: 0.0
+  init_vel: 0.0
+
+# drive 4010 24Nm, 19/min-1
+joint_3:
+  upper: 1.0471975512  # pi/3
+  lower: -1.0471975512  # -pi/3
+  velocity: 1.989
+  effort: 24
+  dumping: 0.001
+  friction: 0.001
+  init_pos: 0.0
+  init_vel: 0.0
+
+# drive 3008 7.8Nm, 24/min-1
+joint_4:
+  upper: 1.57079632679  # pi/2
+  lower: -1.57079632679  # -pi/2
+  velocity: 2.5133
+  effort: 7.8
+  dumping: 0.0135
+  friction: 0.002
+  init_pos: 0.0
+  init_vel: 0.0
+
+# drive 3008 7.8Nm, 24/min-1
+joint_5:
+  upper: 1.57079632679  # pi/2
+  lower: -1.57079632679  # -pi/2
+  velocity: 2.5133
+  effort: 7.8
+  dumping: 0.0135
+  friction: 0.002
+  init_pos: 0.0
+  init_vel: 0.0
+
+# drive 3008 7.8Nm, 24/min-1
+joint_6:
+  upper: 3.13999986611  # 0.99*pi
+  lower: -3.13999986611  # -0.99*pi
+  velocity: 2.5133
+  effort: 7.8
+  dumping: 0.0135
+  friction: 0.002
+  init_pos: 0.0
+  init_vel: 0.0
+  
