@@ -165,7 +165,7 @@
     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="link_1"/>
-    <axis xyz="0.0 -0.0 1.0"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
     <limit upper="${jf['joint_1']['upper']}" lower="${jf['joint_1']['lower']}" effort="${jf['joint_1']['effort']}" velocity="${jf['joint_1']['velocity']}"/> 
     <dynamics damping="${jf['joint_1']['dumping']}" friction="${jf['joint_1']['friction']}"/>  
   </joint>
@@ -175,7 +175,7 @@
     <origin xyz="-0.101407 0.0 0.117" rpy="0 0 0"/>
     <parent link="link_1"/>
     <child link="link_2"/>
-    <axis xyz="-1.0 0.0 -0.0"/>
+    <axis xyz="1.0 0.0 -0.0"/>
     <limit upper="${jf['joint_2']['upper']}" lower="${jf['joint_2']['lower']}" effort="${jf['joint_2']['effort']}" velocity="${jf['joint_2']['velocity']}"/> 
     <dynamics damping="${jf['joint_2']['dumping']}" friction="${jf['joint_2']['friction']}"/>  
   </joint>
@@ -184,7 +184,7 @@
     <origin xyz="0.031561 0.0 0.425001" rpy="0 0 0"/>
     <parent link="link_2"/>
     <child link="link_3"/>
-    <axis xyz="1.0 0.0 0.0"/>
+    <axis xyz="-1.0 0.0 0.0"/>
     <limit upper="${jf['joint_3']['upper']}" lower="${jf['joint_3']['lower']}" effort="${jf['joint_3']['effort']}" velocity="${jf['joint_3']['velocity']}"/> 
     <dynamics damping="${jf['joint_3']['dumping']}" friction="${jf['joint_3']['friction']}"/>  
   </joint>
@@ -193,7 +193,7 @@
     <origin xyz="0.0374 0.0 0.248625" rpy="0 0 0"/>
     <parent link="link_3"/>
     <child link="link_4"/>
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
     <limit upper="${jf['joint_4']['upper']}" lower="${jf['joint_4']['lower']}" effort="${jf['joint_4']['effort']}" velocity="${jf['joint_4']['velocity']}"/> 
     <dynamics damping="${jf['joint_4']['dumping']}" friction="${jf['joint_4']['friction']}"/>  
   </joint>
@@ -202,7 +202,7 @@
     <origin xyz="-0.02768 0.0 0.143625" rpy="0 0 0"/>
     <parent link="link_4"/>
     <child link="link_5"/>
-    <axis xyz="-1.0 -0.0 0.0"/>
+    <axis xyz="1.0 -0.0 0.0"/>
     <limit upper="${jf['joint_5']['upper']}" lower="${jf['joint_5']['lower']}" effort="${jf['joint_5']['effort']}" velocity="${jf['joint_5']['velocity']}"/> 
     <dynamics damping="${jf['joint_5']['dumping']}" friction="${jf['joint_5']['friction']}"/>  
   </joint>
@@ -211,7 +211,7 @@
     <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="0.0 -0.0 1.0"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
     <limit upper="${jf['joint_6']['upper']}" lower="${jf['joint_6']['lower']}" effort="${jf['joint_6']['effort']}" velocity="${jf['joint_6']['velocity']}"/> 
     <dynamics damping="${jf['joint_6']['dumping']}" friction="${jf['joint_6']['friction']}"/>  
   </joint>
