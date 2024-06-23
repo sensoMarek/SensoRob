@@ -100,7 +100,7 @@
                 <ec_module name="senso_joint_1">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">2</param>
+                    <param name="position">0</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_1.yaml</param>
@@ -115,7 +115,7 @@
                 <ec_module name="senso_joint_2">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">3</param>
+                    <param name="position">1</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_2.yaml</param>
@@ -130,7 +130,7 @@
                 <ec_module name="senso_joint_3">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">0</param>
+                    <param name="position">2</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_3.yaml</param>
@@ -145,7 +145,7 @@
                 <ec_module name="senso_joint_4">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">4</param>
+                    <param name="position">3</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_4.yaml</param>
@@ -160,7 +160,7 @@
                 <ec_module name="senso_joint_5">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">5</param>
+                    <param name="position">4</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_5.yaml</param>
@@ -175,7 +175,7 @@
                 <ec_module name="senso_joint_6">
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
-                    <param name="position">1</param>
+                    <param name="position">5</param>
                     <param name="mode_of_operation">8</param>
                     <param name="position_offset">-${pi}</param>
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_6.yaml</param>

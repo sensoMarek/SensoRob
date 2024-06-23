@@ -23,6 +23,7 @@ int logTrajectory(
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
     const std::string dir_name,
     const std::string file_name,
+    const std::string mode,
     rclcpp::Logger& LOGGER
 );
 
@@ -44,6 +45,13 @@ void visualizeTrajectory(
    const std::string home_dir_path,
    const std::string input_file_name1,
    const std::string input_file_name2
+);
+
+void visualizeJointStates(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2,
+   const std::string title
 );
 
 
