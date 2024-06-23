@@ -102,6 +102,7 @@ int logTrajectory(
     const moveit::planning_interface::MoveGroupInterface::Plan& plan,
     const std::string dir_name,
     const std::string file_name,
+    const std::string mode,
     rclcpp::Logger& LOGGER) 
 {
     std::fstream file = open_file(file_name, dir_name, LOGGER);
@@ -114,7 +115,13 @@ int logTrajectory(
 
         // pos
         for (uint i=0; i<6; i++) {
-            file << std::fixed << std::setprecision(16)<< plan.trajectory_.joint_trajectory.points[j].positions[i] << " ";
+            double data = 0;
+            if (!mode.compare("position")) {
+                data = plan.trajectory_.joint_trajectory.points[j].positions[i];
+            } else if (!mode.compare("velocity")) {
+                data = plan.trajectory_.joint_trajectory.points[j].velocities[i];   
+            }
+            file << std::fixed << std::setprecision(16)<< data << " ";
             if (i==(6-1)) {
                 file << plan.trajectory_.joint_trajectory.points[j].time_from_start.sec*1000+ plan.trajectory_.joint_trajectory.points[j].time_from_start.nanosec/1e6 << std::endl;
             }    
@@ -282,10 +289,24 @@ void visualizeTrajectory(
    const std::string input_file_name1,
    const std::string input_file_name2
 ) {
-  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger"), "Visualizing trajectory...");
+  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger.trajectory_visualizator"), "Visualizing trajectory...");
   std::string current_dir_name(get_current_dir_name());
-  current_dir_name += "/src/SensoRob/interfaces/sensorob_trajectory_logger/src/trajectory_visualizer/";
+  current_dir_name += "/src/SensoRob/interfaces/sensorob_trajectory_logger/src/python_visualizer/";
   std::string command = "python3 " + current_dir_name + "trajectory_visualizer.py " + home_dir_path + " " + input_file_name1 + " " + input_file_name2;
+  std::system(command.c_str());
+}
+
+void visualizeJointStates(
+   const std::string home_dir_path,
+   const std::string input_file_name1,
+   const std::string input_file_name2,
+   const std::string title
+) {
+  RCLCPP_INFO(rclcpp::get_logger("trajectory_logger.joint_states_visualizator"), "Visualizing joint states...");
+  std::string current_dir_name(get_current_dir_name());
+  current_dir_name += "/src/SensoRob/interfaces/sensorob_trajectory_logger/src/python_visualizer/";
+  
+  std::string command = "python3 " + current_dir_name + "joint_states_visualizer.py " + title + " " + home_dir_path + " " + input_file_name1 + " " + input_file_name2;
   std::system(command.c_str());
 }
 

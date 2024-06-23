@@ -3,6 +3,7 @@
 
   <xacro:include filename="materials.xacro" />
   <xacro:include filename="sensorob.gazebo" />
+  <xacro:property name="jf" value="${xacro.load_yaml('$(find sensorob_description)/config/joint_parameters.yaml')}"/>
 
   <link name="world">
   </link>
@@ -160,59 +161,59 @@
     <child link="base_link"/>
   </joint>
 
-<!-- data from https://www.sensodrive.de/products/torque-technology-senso-joint.php#:~:text=requirements%20if%20necessary.-,Technical%20data,-Technical%20data%20SensoJoint -->
   <joint name="joint_1" type="revolute">
     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="link_1"/>
-    <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit upper="${jf['joint_1']['upper']}" lower="${jf['joint_1']['lower']}" effort="${jf['joint_1']['effort']}" velocity="${jf['joint_1']['velocity']}"/> 
+    <dynamics damping="${jf['joint_1']['dumping']}" friction="${jf['joint_1']['friction']}"/>  
   </joint>
+
 
   <joint name="joint_2" type="revolute">
     <origin xyz="-0.101407 0.0 0.117" rpy="0 0 0"/>
     <parent link="link_1"/>
     <child link="link_2"/>
-    <axis xyz="-1.0 0.0 -0.0"/>
-    <limit upper="${pi/2}" lower="${-pi/2}" effort="52" velocity="1.6755"/> <!--drive 5012 52Nm, 16/min-1 -->
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="1.0 0.0 -0.0"/>
+    <limit upper="${jf['joint_2']['upper']}" lower="${jf['joint_2']['lower']}" effort="${jf['joint_2']['effort']}" velocity="${jf['joint_2']['velocity']}"/> 
+    <dynamics damping="${jf['joint_2']['dumping']}" friction="${jf['joint_2']['friction']}"/>  
   </joint>
 
   <joint name="joint_3" type="revolute">
     <origin xyz="0.031561 0.0 0.425001" rpy="0 0 0"/>
     <parent link="link_2"/>
     <child link="link_3"/>
-    <axis xyz="1.0 0.0 0.0"/>
-    <limit upper="${2*pi/3}" lower="${-2*pi/3}" effort="24" velocity="1.9896"/> <!--drive 4010 24Nm, 19/min-1 -->
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="-1.0 0.0 0.0"/>
+    <limit upper="${jf['joint_3']['upper']}" lower="${jf['joint_3']['lower']}" effort="${jf['joint_3']['effort']}" velocity="${jf['joint_3']['velocity']}"/> 
+    <dynamics damping="${jf['joint_3']['dumping']}" friction="${jf['joint_3']['friction']}"/>  
   </joint>
 
   <joint name="joint_4" type="revolute">
     <origin xyz="0.0374 0.0 0.248625" rpy="0 0 0"/>
     <parent link="link_3"/>
     <child link="link_4"/>
-    <axis xyz="0.0 0.0 1.0"/>
-    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 -->
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="0.0 0.0 -1.0"/>
+    <limit upper="${jf['joint_4']['upper']}" lower="${jf['joint_4']['lower']}" effort="${jf['joint_4']['effort']}" velocity="${jf['joint_4']['velocity']}"/> 
+    <dynamics damping="${jf['joint_4']['dumping']}" friction="${jf['joint_4']['friction']}"/>  
   </joint>
 
   <joint name="joint_5" type="revolute">
     <origin xyz="-0.02768 0.0 0.143625" rpy="0 0 0"/>
     <parent link="link_4"/>
     <child link="link_5"/>
-    <axis xyz="-1.0 -0.0 0.0"/>
-    <limit upper="${pi/2}" lower="${-pi/2}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="1.0 -0.0 0.0"/>
+    <limit upper="${jf['joint_5']['upper']}" lower="${jf['joint_5']['lower']}" effort="${jf['joint_5']['effort']}" velocity="${jf['joint_5']['velocity']}"/> 
+    <dynamics damping="${jf['joint_5']['dumping']}" friction="${jf['joint_5']['friction']}"/>  
   </joint>
 
   <joint name="joint_6" type="revolute">
     <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="0.0 -0.0 1.0"/>
-    <limit upper="${0.999493*pi}" lower="${-0.999493*pi}" effort="7.8" velocity="2.5133"/> <!--drive 3008 7.8Nm, 24/min-1 --> 
-    <dynamics damping="1.0" friction="0.5"/>  <!-- damping  [Nms/rad], friction [Nm]-->
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit upper="${jf['joint_6']['upper']}" lower="${jf['joint_6']['lower']}" effort="${jf['joint_6']['effort']}" velocity="${jf['joint_6']['velocity']}"/> 
+    <dynamics damping="${jf['joint_6']['dumping']}" friction="${jf['joint_6']['friction']}"/>  
   </joint>
 
 </robot>

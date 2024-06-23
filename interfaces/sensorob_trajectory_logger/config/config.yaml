@@ -1,4 +1,4 @@
-movement_mode: 1  # 0 - joint space, 1 - cartesian space
+movement_mode: 0  # 0 - joint space, 1 - cartesian space
 desired_frequency: 100 # Hz - how often the robot state is logged
 planner_id: RRTConnect # RRTConnect, RRTstar, RRT, TRRT, EST, LBTRRT, BiEST, STRIDE, BiTRRT, PRM, PRMstar, LazyPRMstar, FMT, PDST, STRIDE, BiEST, STRIDE, BiTRRT, STOMP, CHOMP, pilz-PTP, pilz-CIRC, pilz-LIN]
 max_velocity_scaling_factor: 0.6

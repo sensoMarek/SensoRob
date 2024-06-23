@@ -33,11 +33,14 @@ public:
     log_joint_states = log;
   }
 
-  void openFile(std::string path, std::string file_name)
+  void openFiles(std::string path, std::string file_name, std::string file_vel_name)
   {
     home_dir_path = path;
     file = file_logger::open_file(file_name, home_dir_path, LOGGER);
+    file_vel = file_logger::open_file(file_vel_name, home_dir_path, LOGGER);
   }
+
+  bool filesOpened() { return (file.is_open() && file_vel.is_open()); }
 
   uint getNumberOfLoggedJointStates()
   {
@@ -64,6 +67,7 @@ private:
   bool log_joint_states = false;
   std::string home_dir_path;
   std::fstream file;
+  std::fstream file_vel;
   bool header_written = false;
   uint joint_states_counter = 0;
   std::chrono::steady_clock::time_point start_time;
@@ -126,30 +130,42 @@ private:
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
 
     // Write header to file
-    if (!header_written && file.is_open()) {
-        for (const auto& state : actual_joint_states.name) {
-            file << state << " ";
+    std::vector<std::string> ordered_names = {"joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"};
+    if (!header_written) {
+        for (const auto& name : ordered_names) {
+            file << name << " ";
+            file_vel << name << " ";
         }
         file << "timestamp[ms]" << std::endl;
+        file_vel << "timestamp[ms]" << std::endl;
         header_written = true;
     }
 
-    // Log joint states to file here
-    std::stringstream ss;
-    for (const auto& state : actual_joint_states.name) {
-      auto it = std::find(actual_joint_states.name.begin(), actual_joint_states.name.end(), state);
-      if (it != actual_joint_states.name.end()) {
-        int index = std::distance(actual_joint_states.name.begin(), it);
-        ss << std::fixed << std::setprecision(16) << actual_joint_states.position[index] << " ";
-      }
+      // Log joint states to file here
+  std::stringstream ss;
+  std::stringstream ss_vel;
+  
+  for (const auto& state : ordered_names) {
+    auto it = std::find(actual_joint_states.name.begin(), actual_joint_states.name.end(), state);
+    if (it != actual_joint_states.name.end()) {
+      int index = std::distance(actual_joint_states.name.begin(), it);
+      ss << std::fixed << std::setprecision(16) << actual_joint_states.position[index] << " ";
+      ss_vel << std::fixed << std::setprecision(16) << actual_joint_states.velocity[index] << " ";
     }
+  }
 
     // Add duration to a stringstream
     ss << duration << std::endl; 
+    ss_vel << duration << std::endl; 
     
+    // vrite to files
     if (file.is_open()) {
         file << ss.str();
     }
+    if (file_vel.is_open()) {
+      file_vel << ss_vel.str();
+    }
+
   }
 };
 
@@ -208,7 +224,12 @@ int main(int argc, char** argv)
     std::string current_dir_name(get_current_dir_name());
     const std::string main_dir_name = file_logger::create_new_dir("src/SensoRob/sensorob_logs", current_dir_name, LOGGER);
     home_dir_path = file_logger::create_new_dir("trajectory_log_"+file_logger::get_current_time(), main_dir_name, LOGGER);
-    joint_state_listener.openFile(home_dir_path, "executed_joint_states.txt");
+
+    joint_state_listener.openFiles(home_dir_path, "executed_joint_states.txt", "executed_joint_states_vel.txt");
+    if (!joint_state_listener.filesOpened()) {
+      rclcpp::shutdown();
+      return -1;
+    }
 
     // Add objects to the scene
     if (!obstacles::create_environment(move_group.getPlanningFrame(), objects)) {
@@ -286,7 +307,8 @@ int main(int argc, char** argv)
         joint_state_listener.setLogJointStates(false); 
 
         RCLCPP_INFO(rclcpp::get_logger("joint_state_listener"), "Number of joint states logged: %d", joint_state_listener.getNumberOfLoggedJointStates());
-        file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, "planned_joint_states.txt", LOGGER);
+        file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, "planned_joint_states.txt", "position",LOGGER);
+        file_logger::logTrajectory(move_group, PLANNING_GROUP, my_plan, home_dir_path, "planned_joint_states_vel.txt", "velocity",LOGGER);
         // joint_state_thread.join();
     } else {
         RCLCPP_ERROR(rclcpp::get_logger(""), "Planning failed!");
@@ -303,6 +325,10 @@ int main(int argc, char** argv)
 
     // visualize the trajectory
     file_logger::visualizeTrajectory(home_dir_path, "planned_poses.txt", "executed_poses.txt");
+
+    // visualize the joint states
+    file_logger::visualizeJointStates(home_dir_path, "planned_joint_states.txt", "executed_joint_states.txt", "Position");
+    file_logger::visualizeJointStates(home_dir_path, "planned_joint_states_vel.txt", "executed_joint_states_vel.txt", "Velocity");
 
 
     // visual_tools.trigger();
