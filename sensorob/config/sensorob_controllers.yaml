@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 1000  # Hz
+    update_rate: 500  # Hz
 #    use_time_sim: true
 
     position_controller:
@@ -87,13 +87,17 @@ sensorob_group_controller:
       - joint_5
       - joint_6
 
-    state_publish_rate: 1000.0 
-    action_monitor_rate: 1000.0
+    state_publish_rate: 500.0 
+    action_monitor_rate: 500.0
     allow_nonzero_velocity_at_trajectory_end: false
+    allow_partial_joints_goal: true
+    allow_integration_in_goal_trajectories: false
+    cmd_timeout: 0.1
 
-    interface_name: position
+    # interface_name: position
     command_interfaces:
       - position
+      - velocity
     state_interfaces:
       - position
       - velocity
@@ -116,5 +120,5 @@ sensorob_group_controller:
         trajectory: 0.15              
         goal: 0.005
       joint_6:
-        trajectory: 0.15               
-        goal: 0.005
+        trajectory: 0.30              
+        goal: 0.05
