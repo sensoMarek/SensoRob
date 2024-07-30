@@ -1,5 +1,5 @@
 vendor_id: 0x0000063a
-product_id: 0x005b9e89
+product_id: 0x005b9fad
 assign_activate: 0x20f3  # DC Synch register
 auto_fault_reset: true  # true = automatic fault reset, false = fault reset on rising edge command interface "reset_fault"
 auto_state_transitions: true
@@ -20,7 +20,7 @@ tpdo:  # TxPDO = transmit PDO Mapping
       - {index: 0x6064, sub_index: 0, type: int32, state_interface: position, factor: 0.0000119842249054}  # Position actual value (encoder) *2pi/2^19
       - {index: 0x606c, sub_index: 0, type: int32, state_interface: velocity, factor: 0.000104719755120}  # Velocity actual value mRPM * 2pi/1000/60
       # - {index: 0x6077, sub_index: 0, type: int16, state_interface: effort, factor: 0.0078}  # Torque actual value The units are per thousands of rated torque /1000*7.8
-      - {index: 0x27F0, sub_index: 1, type: int16, state_interface: effort, factor: 0.0078}  # Torque actual value The units are per thousands of rated torque /1000*7.8
+      - {index: 0x27F0, sub_index: 1, type: int16, state_interface: effort, factor: 0.022}  # Torque actual value The units are per thousands of rated torque /1000*22
       - {index: 0x6061, sub_index: 0, type: int8, default: -108}  # Mode of operation display
 
 sm:
