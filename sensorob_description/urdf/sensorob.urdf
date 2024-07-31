@@ -196,7 +196,7 @@
     </collision>
   </link>
   <joint name="world_link_joint" type="fixed">
-    <origin xyz="-0.065 0.0 0.1328" rpy="0 0 0"/>
+     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
@@ -205,7 +205,7 @@
     <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="link_1"/>
-    <axis xyz="0.0 -0.0 1.0"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
     <limit upper="3.141592653589793" lower="-3.141592653589793" effort="500" velocity="6"/> <!-- +-pi -->
   </joint>
 
@@ -213,7 +213,7 @@
     <origin xyz="-0.101407 0.0 0.117" rpy="0 0 0"/>
     <parent link="link_1"/>
     <child link="link_2"/>
-    <axis xyz="-1.0 0.0 -0.0"/>
+    <axis xyz="1.0 0.0 -0.0"/>
     <limit upper="1.570796327" lower="-1.570796327" effort="500" velocity="6"/> <!-- +-pi/2 -->
   </joint>
 
@@ -221,7 +221,7 @@
     <origin xyz="0.031561 0.0 0.425001" rpy="0 0 0"/>
     <parent link="link_2"/>
     <child link="link_3"/>
-    <axis xyz="1.0 0.0 0.0"/>
+    <axis xyz="-1.0 0.0 0.0"/>
     <limit upper="2.094395102" lower="-2.094395102" effort="300" velocity="7"/> <!-- +-2pi/3-->
   </joint>
 
@@ -229,7 +229,7 @@
     <origin xyz="0.0374 0.0 0.248625" rpy="0 0 0"/>
     <parent link="link_3"/>
     <child link="link_4"/>
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
     <limit upper="3.141592653589793" lower="-3.141592653589793" effort="200" velocity="8"/> <!-- +-pi -->
   </joint>
 
@@ -237,7 +237,7 @@
     <origin xyz="-0.02768 0.0 0.143625" rpy="0 0 0"/>
     <parent link="link_4"/>
     <child link="link_5"/>
-    <axis xyz="-1.0 -0.0 0.0"/>
+    <axis xyz="1.0 -0.0 0.0"/>
     <limit upper="1.570796327" lower="-1.570796327" effort="200" velocity="8"/> <!-- +-pi/2 -->
   </joint>
 
@@ -245,8 +245,8 @@
     <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
     <parent link="link_5"/>
     <child link="link_6"/>
-    <axis xyz="0.0 -0.0 11.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit upper="3.121592653589793" lower="-3.121592653589793" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
   </joint>
   <ros2_control name="GazeboSystem" type="system">
     <hardware>

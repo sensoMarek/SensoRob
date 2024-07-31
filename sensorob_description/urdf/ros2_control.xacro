@@ -99,7 +99,6 @@
                     <param name="alias">0</param>
                     <param name="position">0</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_1_advanced.yaml</param>
                 </ec_module>
             </joint>
@@ -115,7 +114,6 @@
                     <param name="alias">0</param>
                     <param name="position">1</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_2_advanced.yaml</param>
                 </ec_module>
             </joint>
@@ -131,7 +129,6 @@
                     <param name="alias">0</param>
                     <param name="position">2</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_3_advanced.yaml</param>
                 </ec_module>
             </joint>
@@ -147,7 +144,6 @@
                     <param name="alias">0</param>
                     <param name="position">3</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_4_advanced.yaml</param>
                 </ec_module>
             </joint>
@@ -163,7 +159,6 @@
                     <param name="alias">0</param>
                     <param name="position">4</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_5_advanced.yaml</param>
                 </ec_module>
             </joint>
@@ -179,7 +174,6 @@
                     <param name="alias">0</param>
                     <param name="position">5</param>
                     <param name="mode_of_operation">-108</param>
-                    <!-- <param name="position_offset">-${0}</param> -->
                     <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_6_advanced.yaml</param>
                 </ec_module>
             </joint>
