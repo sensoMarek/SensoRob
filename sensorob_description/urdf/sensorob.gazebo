@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<xacro:property name="body_color" value="Gazebo/White" />
+
+
+<gazebo reference="base_link">
+  <material>Gazebo/White</material>
+  <selfCollide>true</selfCollide>
+  <gravity>true</gravity>
+</gazebo>
+
+<gazebo reference="link_1">
+  <material>${body_color}</material>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+<gazebo reference="link_2">
+  <material>${body_color}</material>>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+<gazebo reference="link_3">
+  <material>${body_color}</material>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+<gazebo reference="link_4">
+  <material>${body_color}</material>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+<gazebo reference="link_5">
+  <material>${body_color}</material>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+<gazebo reference="link_6">
+  <material>${body_color}</material>
+  <selfCollide>true</selfCollide>
+</gazebo>
+
+</robot>

@@ -1,0 +1,219 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="materials.xacro" />
+  <xacro:include filename="sensorob.gazebo" />
+  <xacro:property name="jf" value="${xacro.load_yaml('$(find sensorob_description)/config/joint_parameters.yaml')}"/>
+
+  <link name="world">
+  </link>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0684293395086911 0.0009438578686822592 -0.026799613448182283" rpy="0 0 0"/>
+      <mass value="3.0"/>
+      <inertia ixx="0.00951" iyy="0.008318" izz="0.007035" ixy="1e-05" iyz="-2.2e-05" ixz="2.3e-05"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_1">
+    <inertial>
+      <origin xyz="-0.019055565879577983 0.00028607059109358383 0.0917034573021166" rpy="0 0 0"/>
+      <mass value="3.0"/>
+      <inertia ixx="0.006709" iyy="0.007067" izz="0.005681" ixy="-7e-05" iyz="-1.2e-05" ixz="0.000853"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.06828 -0.001091 -0.070444" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_2">
+    <inertial>
+      <origin xyz="-0.04019415358244136 -0.0010759815082800456 0.24369077827545405" rpy="0 0 0"/>
+      <mass value="4.9"/>
+      <inertia ixx="0.125698" iyy="0.115802" izz="0.018463" ixy="-8.3e-05" iyz="-6.5e-05" ixz="-0.001156"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.033127 -0.001091 -0.187444" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_3">
+    <inertial>
+      <origin xyz="0.03693926470328392 0.0001460307076859913 0.13201293251123314" rpy="0 0 0"/>
+      <mass value="1.9"/>
+      <inertia ixx="0.007232" iyy="0.006989" izz="0.001398" ixy="7e-06" iyz="6e-06" ixz="-7.5e-05"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.001566 -0.001091 -0.612445" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_4">
+    <inertial>
+      <origin xyz="0.037181058344095096 0.0001800805076532456 0.11081132606474708" rpy="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.004084" iyy="0.004612" izz="0.002169" ixy="-1e-06" iyz="-1.3e-05" ixz="-0.000638"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.035834 -0.001091 -0.86107" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_5">
+    <inertial>
+      <origin xyz="-0.015451790870986186 -0.0004790673243593754 0.11721977365766034" rpy="0 0 0"/>
+      <mass value="1.85"/>
+      <inertia ixx="0.006037" iyy="0.005961" izz="0.001491" ixy="9e-06" iyz="5e-06" ixz="-0.000401"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.008154 -0.001091 -1.004695" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.008154 -0.001091 -1.004695" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="link_6">
+    <inertial>
+      <origin xyz="-3.0878998574747005e-07 -8.994784084226382e-13 0.005353824436650445" rpy="0 0 0"/>
+      <mass value="0.04766984698965481"/>
+      <inertia ixx="9e-06" iyy="9e-06" izz="1.7e-05" ixy="-0.0" iyz="-0.0" ixz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.002846 -0.001091 -1.226445" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.002846 -0.001091 -1.226445" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find sensorob_description)/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="world_link_joint" type="fixed">
+    <origin xyz="-0.065 0.0 0.1328" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <joint name="joint_1" type="revolute">
+    <origin xyz="0.06828 0.001091 0.070444" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit upper="${jf['joint_1']['upper']}" lower="${jf['joint_1']['lower']}" effort="${jf['joint_1']['effort']}" velocity="${jf['joint_1']['velocity']}"/> 
+    <dynamics damping="${jf['joint_1']['dumping']}" friction="${jf['joint_1']['friction']}"/>  
+  </joint>
+
+
+  <joint name="joint_2" type="revolute">
+    <origin xyz="-0.101407 0.0 0.117" rpy="0 0 0"/>
+    <parent link="link_1"/>
+    <child link="link_2"/>
+    <axis xyz="1.0 0.0 -0.0"/>
+    <limit upper="${jf['joint_2']['upper']}" lower="${jf['joint_2']['lower']}" effort="${jf['joint_2']['effort']}" velocity="${jf['joint_2']['velocity']}"/> 
+    <dynamics damping="${jf['joint_2']['dumping']}" friction="${jf['joint_2']['friction']}"/>  
+  </joint>
+
+  <joint name="joint_3" type="revolute">
+    <origin xyz="0.031561 0.0 0.425001" rpy="0 0 0"/>
+    <parent link="link_2"/>
+    <child link="link_3"/>
+    <axis xyz="-1.0 0.0 0.0"/>
+    <limit upper="${jf['joint_3']['upper']}" lower="${jf['joint_3']['lower']}" effort="${jf['joint_3']['effort']}" velocity="${jf['joint_3']['velocity']}"/> 
+    <dynamics damping="${jf['joint_3']['dumping']}" friction="${jf['joint_3']['friction']}"/>  
+  </joint>
+
+  <joint name="joint_4" type="revolute">
+    <origin xyz="0.0374 0.0 0.248625" rpy="0 0 0"/>
+    <parent link="link_3"/>
+    <child link="link_4"/>
+    <axis xyz="0.0 0.0 -1.0"/>
+    <limit upper="${jf['joint_4']['upper']}" lower="${jf['joint_4']['lower']}" effort="${jf['joint_4']['effort']}" velocity="${jf['joint_4']['velocity']}"/> 
+    <dynamics damping="${jf['joint_4']['dumping']}" friction="${jf['joint_4']['friction']}"/>  
+  </joint>
+
+  <joint name="joint_5" type="revolute">
+    <origin xyz="-0.02768 0.0 0.143625" rpy="0 0 0"/>
+    <parent link="link_4"/>
+    <child link="link_5"/>
+    <axis xyz="1.0 -0.0 0.0"/>
+    <limit upper="${jf['joint_5']['upper']}" lower="${jf['joint_5']['lower']}" effort="${jf['joint_5']['effort']}" velocity="${jf['joint_5']['velocity']}"/> 
+    <dynamics damping="${jf['joint_5']['dumping']}" friction="${jf['joint_5']['friction']}"/>  
+  </joint>
+
+  <joint name="joint_6" type="revolute">
+    <origin xyz="-0.011 0.0 0.22175" rpy="0 0 0"/>
+    <parent link="link_5"/>
+    <child link="link_6"/>
+    <axis xyz="0.0 -0.0 -1.0"/>
+    <limit upper="${jf['joint_6']['upper']}" lower="${jf['joint_6']['lower']}" effort="${jf['joint_6']['effort']}" velocity="${jf['joint_6']['velocity']}"/> 
+    <dynamics damping="${jf['joint_6']['dumping']}" friction="${jf['joint_6']['friction']}"/>  
+  </joint>
+
+</robot>
