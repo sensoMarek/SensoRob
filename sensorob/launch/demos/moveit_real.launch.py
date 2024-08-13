@@ -55,8 +55,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         rsp,
-        controller_spawner,
         ros2_control_node,
+        controller_spawner,
         moveit,
         rviz
     ])

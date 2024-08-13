@@ -89,11 +89,8 @@
             </hardware>
             <joint name="joint_1">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
-                <!--            <command_interface name="velocity"/>-->
-                <!--            <command_interface name="effort"/>-->
-                <!--                <param name="min">-10</param>-->
-                <!--                <param name="max">10</param>-->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
                 <state_interface name="effort"/>
@@ -101,13 +98,13 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">0</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_1.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_1_advanced.yaml</param>
                 </ec_module>
             </joint>
             <joint name="joint_2">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
@@ -116,13 +113,13 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">1</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_2.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_2_advanced.yaml</param>
                 </ec_module>
             </joint>
             <joint name="joint_3">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
@@ -131,13 +128,13 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">2</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_3.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_3_advanced.yaml</param>
                 </ec_module>
             </joint>
             <joint name="joint_4">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
@@ -146,13 +143,13 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">3</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_4.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_4_advanced.yaml</param>
                 </ec_module>
             </joint>
             <joint name="joint_5">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
@@ -161,13 +158,13 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">4</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_5.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_5_advanced.yaml</param>
                 </ec_module>
             </joint>
             <joint name="joint_6">
                 <command_interface name="position"/>
+                <command_interface name="velocity"/>
                 <command_interface name="effort"/>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
@@ -176,9 +173,8 @@
                     <plugin>ethercat_generic_plugins/EcSensoDrive</plugin>
                     <param name="alias">0</param>
                     <param name="position">5</param>
-                    <param name="mode_of_operation">8</param>
-                    <param name="position_offset">-${pi}</param>
-                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_6.yaml</param>
+                    <param name="mode_of_operation">-108</param>
+                    <param name="slave_config">$(find sensorob)/config/joints_driver_config/senso_joint_6_advanced.yaml</param>
                 </ec_module>
             </joint>
         </ros2_control>

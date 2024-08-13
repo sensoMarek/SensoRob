@@ -1,5 +1,5 @@
 vendor_id: 0x0000063a
-product_id: 0x005b9e89
+product_id: 0x005b9e96
 assign_activate: 0x20f3  # DC Synch register
 auto_fault_reset: true  # true = automatic fault reset, false = fault reset on rising edge command interface "reset_fault"
 auto_state_transitions: true
@@ -7,20 +7,22 @@ rpdo:  # RxPDO = receive PDO Mapping
   - index: 0x1600
     channels:
       - {index: 0x6040, sub_index: 0, type: uint16, default: 0}  # Control word
-      - {index: 0x607a, sub_index: 0, type: int32, command_interface: position, default: .nan, factor: 83443.0268038}  # Target position *2^19/2pi
-      - {index: 0x60ff, sub_index: 0, type: int32, command_interface: velocity, default: 0, factor: 9549.29658551}  # Target velocity *1000*60/2pi
-      - {index: 0x6071, sub_index: 0, type: int16, default: 0}  # Target torque
-      - {index: 0x607c, sub_index: 0, type: int32, default: -262000}  # Offset position pi: 262144, pi/2: 131072
+      - {index: 0x277A, sub_index: 0, type: int32, command_interface: position, default: .nan, factor: 83443.0268038}  # Target position *2^19/2pi
+      - {index: 0x27FF, sub_index: 0, type: int32, command_interface: velocity, default: .nan, factor: 9549.29658551}  # Target velocity *1000*60/2pi
+      # - {index: 0x2771, sub_index: 0, type: int16, command_interface: effort, default: .nan}  # Target torque
+      - {index: 0x607c, sub_index: 0, type: int32, default: 0}  # Offset position pi: 262144, pi/2: 131072
       - {index: 0x60b2, sub_index: 0, type: int16, default: 0}  # Offset torque
-      - {index: 0x6060, sub_index: 0, type: int8, default: 8}  # Mode of operation
+      - {index: 0x6060, sub_index: 0, type: int8, default: -108}  # Mode of operation
 tpdo:  # TxPDO = transmit PDO Mapping
   - index: 0x1a00
     channels:
       - {index: 0x6041, sub_index: 0, type: uint16}  # Status word
       - {index: 0x6064, sub_index: 0, type: int32, state_interface: position, factor: 0.0000119842249054}  # Position actual value (encoder) *2pi/2^19
       - {index: 0x606c, sub_index: 0, type: int32, state_interface: velocity, factor: 0.000104719755120}  # Velocity actual value mRPM * 2pi/1000/60
-      - {index: 0x6077, sub_index: 0, type: int16, state_interface: effort, factor: 0.0052}  # Torque actual value The units are per thousands of rated torque /1000*52
-      - {index: 0x6061, sub_index: 0, type: int8, default: 0}  # Mode of operation display
+      # - {index: 0x6077, sub_index: 0, type: int16, state_interface: effort, factor: 0.0078}  # Torque actual value The units are per thousands of rated torque /1000*7.8
+      - {index: 0x27F0, sub_index: 1, type: int16, state_interface: effort, factor: 0.052}  # Torque actual value The units are per thousands of rated torque /1000*7.8
+      - {index: 0x6061, sub_index: 0, type: int8, default: -108}  # Mode of operation display
+
 sm:
   - {index: 0, type: output, pdo: ~, watchdog: disable}
   - {index: 1, type: input, pdo: ~, watchdog: disable}

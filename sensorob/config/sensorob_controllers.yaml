@@ -89,11 +89,16 @@ sensorob_group_controller:
 
     state_publish_rate: 1000.0 
     action_monitor_rate: 1000.0
+    update_rate: 1000
     allow_nonzero_velocity_at_trajectory_end: false
+    allow_partial_joints_goal: true
+    allow_integration_in_goal_trajectories: false
+    cmd_timeout: 20.0
 
-    interface_name: position
+    # interface_name: position
     command_interfaces:
       - position
+      - velocity
     state_interfaces:
       - position
       - velocity
@@ -116,5 +121,5 @@ sensorob_group_controller:
         trajectory: 0.15              
         goal: 0.005
       joint_6:
-        trajectory: 0.15               
-        goal: 0.005
+        trajectory: 0.20              
+        goal: 0.03
