@@ -93,7 +93,7 @@ sensorob_group_controller:
     allow_nonzero_velocity_at_trajectory_end: false
     allow_partial_joints_goal: true
     allow_integration_in_goal_trajectories: false
-    cmd_timeout: 20.0
+    cmd_timeout: 30.0
 
     # interface_name: position
     command_interfaces:
