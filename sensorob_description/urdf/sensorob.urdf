@@ -206,7 +206,7 @@
     <parent link="base_link"/>
     <child link="link_1"/>
     <axis xyz="0.0 -0.0 -1.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="500" velocity="6"/> <!-- +-pi -->
+    <limit upper="1.05" lower="-1.05" effort="500" velocity="0.65"/> 
   </joint>
 
   <joint name="joint_2" type="revolute">
@@ -214,7 +214,7 @@
     <parent link="link_1"/>
     <child link="link_2"/>
     <axis xyz="1.0 0.0 -0.0"/>
-    <limit upper="1.570796327" lower="-1.570796327" effort="500" velocity="6"/> <!-- +-pi/2 -->
+    <limit upper="1.22" lower="-1.22" effort="500" velocity="0.65"/> 
   </joint>
 
   <joint name="joint_3" type="revolute">
@@ -222,7 +222,7 @@
     <parent link="link_2"/>
     <child link="link_3"/>
     <axis xyz="-1.0 0.0 0.0"/>
-    <limit upper="2.094395102" lower="-2.094395102" effort="300" velocity="7"/> <!-- +-2pi/3-->
+    <limit upper="1.3" lower="-1.3" effort="300" velocity="0.8"/> 
   </joint>
 
   <joint name="joint_4" type="revolute">
@@ -230,7 +230,7 @@
     <parent link="link_3"/>
     <child link="link_4"/>
     <axis xyz="0.0 0.0 -1.0"/>
-    <limit upper="3.141592653589793" lower="-3.141592653589793" effort="200" velocity="8"/> <!-- +-pi -->
+    <limit upper="1.57" lower="-1.57" effort="200" velocity="1"/>
   </joint>
 
   <joint name="joint_5" type="revolute">
@@ -238,7 +238,7 @@
     <parent link="link_4"/>
     <child link="link_5"/>
     <axis xyz="1.0 -0.0 0.0"/>
-    <limit upper="1.570796327" lower="-1.570796327" effort="200" velocity="8"/> <!-- +-pi/2 -->
+    <limit upper="1.570796327" lower="-1.570796327" effort="200" velocity="1"/> 
   </joint>
 
   <joint name="joint_6" type="revolute">
@@ -246,7 +246,7 @@
     <parent link="link_5"/>
     <child link="link_6"/>
     <axis xyz="0.0 -0.0 -1.0"/>
-    <limit upper="3.121592653589793" lower="-3.121592653589793" effort="200" velocity="10"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
+    <limit upper="3.121592653589793" lower="-3.121592653589793" effort="200" velocity="1"/> <!-- +-pi (cannot be higher because of an absolut encoder without flash disk)-->
   </joint>
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
