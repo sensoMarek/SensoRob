@@ -52,6 +52,7 @@ Code is separated accordingly:
 
 ## Setup and install
 
+### DEVELOPMENT
 0. Use Linux 22.04 (we recommend RT Kernel)
 
     Developed on:
@@ -67,6 +68,21 @@ Code is separated accordingly:
     
     All packages should build within 30mins
 5. Install EtherLab when working with the real robot (see [ethercat install readme](ethercat_driver_ros2/INSTALL.md))
+
+
+### DOCKER
+#### Linux (22, 20):
+1. `sudo apt-get update`
+2. Compile and start ethercat using provided [script](compile_and_start_ethercat.sh) 
+3. Install docker 
+4. Launch docker container using command
+```bash
+docker run -it --rm --network host --privileged -e DISPLAY=$DISPLAY -v /lib/modules:/lib/modules  -v /tmp/.X11-unix:/tmp/.X11-unix -v /usr/src/linux-headers-$(uname -r):/usr/src/linux-headers-$(uname -r) jakubivan5/sensorob_ros2:1.2 bash
+```
+
+#### Windows (10, 11):
+1. Install VM Virtual Box with Linux Ubuntu 22 and allocate enough resources (in order to run simulation)
+2. Continue by [Linux](#linux-22-20) section above
 
 
 ## Usage
