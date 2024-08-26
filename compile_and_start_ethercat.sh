@@ -2,27 +2,29 @@
 
 # Function to remove previously installed EtherCAT
 remove_ethercat() {
+    echo "Removing previously installed EtherCAT..."
     if [ -d "/usr/local/etherlab" ]; then
         rm -rf /usr/local/etherlab
     fi
     if [ -L "/usr/bin/ethercat" ]; then
-        rm /usr/bin/ethercat
+        rm -f /usr/bin/ethercat
     fi
     if [ -L "/etc/init.d/ethercat" ]; then
-        rm /etc/init.d/ethercat
+        rm -f /etc/init.d/ethercat
     fi
     if [ -f "/etc/sysconfig/ethercat" ]; then
-        rm /etc/sysconfig/ethercat
+        rm -f /etc/sysconfig/ethercat
     fi
     if [ -f "/etc/udev/rules.d/99-EtherCAT.rules" ]; then
-        rm /etc/udev/rules.d/99-EtherCAT.rules
+        rm -f /etc/udev/rules.d/99-EtherCAT.rules
     fi
 }
 
 # Function to clone and compile Etherlab
 compile_etherlab() {
+    echo "Compiling Etherlab..."
     git clone https://gitlab.com/etherlab.org/ethercat.git /ethercat
-    cd /ethercat
+    cd /ethercat || exit
     git checkout stable-1.5
     ./bootstrap
     ./configure --prefix=/usr/local/etherlab --disable-8139too --disable-eoe --enable-generic --with-linux-dir=/usr/src/linux-headers-$(uname -r)
@@ -42,13 +44,24 @@ compile_etherlab() {
 
 # Function to configure the network adapter for EtherCAT
 configure_ethercat() {
+    echo "Configuring EtherCAT network adapter..."
     MAC_ADDRESS=$(ifconfig | grep -A 1 'enp' | grep ether | awk '{print $2}')
-    echo -e "MASTER0_DEVICE=\"$MAC_ADDRESS\"\nDEVICE_MODULES=\"generic\"" > /etc/sysconfig/ethercat
+    if [ -n "$MAC_ADDRESS" ]; then
+        echo -e "MASTER0_DEVICE=\"$MAC_ADDRESS\"\nDEVICE_MODULES=\"generic\"" > /etc/sysconfig/ethercat
+    else
+        echo "No suitable network interface found for EtherCAT. Exiting."
+        exit 1
+    fi
 }
 
 # Function to start the EtherCAT master
 start_ethercat() {
+    echo "Starting EtherCAT master..."
     /etc/init.d/ethercat start
+
+    # Set permissions for /dev/EtherCAT0
+    echo "Setting permissions for /dev/EtherCAT0..."
+    sudo chmod 777 /dev/EtherCAT0
 }
 
 # Main script execution

@@ -1,0 +1,118 @@
+# Step 1: Use Ubuntu 22.04 as the base image
+# This sets the base image to Ubuntu 22.04, which is the OS environment in which all subsequent commands will run.
+FROM ubuntu:22.04
+
+# Step 2: Set up environment variables
+# Setting the DEBIAN_FRONTEND to noninteractive prevents the installation process from asking interactive questions.
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Step 3: Update the package list and install necessary dependencies
+# This updates the package list and installs essential packages like curl, gnupg2, lsb-release, build-essential, cmake, git, and python3-pip.
+RUN apt-get update --fix-missing && apt-get install -y \
+    curl \
+    gnupg2 \
+    lsb-release \
+    build-essential \
+    cmake \
+    git \
+    python3-pip
+
+# Step 4: Add the ROS 2 repository and install ROS 2 Humble
+# This adds the ROS 2 repository to the system, updates the package list, and installs ROS 2 Humble along with other ROS-related packages.
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
+    sh -c 'echo "deb [trusted=yes] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list' && \
+    apt-get update --fix-missing && apt-get install -y \
+    ros-humble-desktop-full \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    python3-vcstool
+
+# Step 5: Install additional necessary dependencies
+# This installs a comprehensive list of additional dependencies required for ROS 2 development, such as specific ROS packages, development tools, and libraries.
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg2 \
+    lsb-release \
+    build-essential \
+    cmake \
+    git \
+    python3-pip \
+    libnlopt-dev \
+    ros-humble-eigen3-cmake-module \
+    ros-humble-eigenpy \
+    ros-humble-eigen-stl-containers \
+    ros-humble-generate-parameter-library \
+    ros-humble-geometric-shapes \
+    ros-humble-moveit-msgs \
+    ros-humble-srdfdom \
+    ros-humble-hardware-interface \
+    autoconf \
+    libtool \
+    pkg-config \
+    make \
+    autoconf \
+    automake \
+    build-essential \
+    net-tools \
+    linux-headers-$(uname -r) \
+    gcc-12 \
+    g++-12 \
+    kmod \
+    nlohmann-json3-dev \
+    freeglut3-dev \
+    gedit \
+    ros-humble-ruckig \
+    ros-humble-stomp \
+    ros-humble-controller-manager-msgs \
+    ros-humble-warehouse-ros \
+    ros-humble-ros-testing \
+    ros-humble-ompl \
+    ros-humble-moveit-resources-fanuc-description \
+    ros-humble-moveit-resources-fanuc-moveit-config \
+    ros-humble-moveit-resources-panda-description \
+    ros-humble-moveit-resources-panda-moveit-config \
+    ros-humble-control-toolbox \
+    ros-humble-moveit-visual-tools \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-gazebo-ros2-control \
+    ros-humble-launch-param-builder
+
+# Step 6: Set gcc-12 as the default compiler
+# This command sets gcc-12 and g++-12 as the default compilers for gcc and g++ respectively.
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+
+# Step 7: Clone the EtherCAT repository and build it
+# This clones the EtherCAT repository, checks out the stable-1.5 branch, configures the build with specific options, and installs it.
+RUN git clone https://gitlab.com/etherlab.org/ethercat.git /ethercat && \
+    cd /ethercat && \
+    git checkout stable-1.5 && \
+    ./bootstrap && \
+    ./configure --prefix=/usr/local/etherlab --disable-8139too --disable-eoe --enable-generic --with-linux-dir=/usr/src/linux-headers-$(uname -r) && \
+    make all modules && \
+    make modules_install install && \
+    depmod
+
+# Step 8: Initialize rosdep and update it
+# This initializes the rosdep tool, fixes permissions if needed, and updates the rosdep database, which is required for managing ROS dependencies.
+RUN rosdep init && sudo rosdep fix-permissions && rosdep update
+
+# Step 9: Source the ROS 2 setup script
+# This changes the shell to bash, adds ROS 2 setup scripts to the .bashrc for automatic sourcing, and manually sources the .bashrc.
+SHELL ["/bin/bash", "-c"]
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+RUN echo "source /root/ros2_ws/install/setup.bash" >> /root/.bashrc || true
+RUN source /root/.bashrc
+
+# Step 10: Create the ROS 2 workspace and clone the GitHub repository
+# This creates the directory structure for the ROS 2 workspace and clones a specific repository into the source directory of the workspace.
+RUN mkdir -p /root/ros2_ws/src
+WORKDIR /root/ros2_ws/src
+RUN git clone --recurse-submodules https://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@github.com/sensoMarek/SensoRob.git
+
+# Step 11: Build the ROS 2 workspace
+# This navigates to the root of the ROS 2 workspace, sources the ROS 2 setup script, and builds the workspace using colcon.
+WORKDIR /root/ros2_ws/
+RUN source /opt/ros/humble/setup.bash && \
+    colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=/root/ros2_ws/install
