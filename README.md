@@ -67,7 +67,7 @@ Code is separated accordingly:
 4. Run `colcon build --symlink-install`
     
     All packages should build within 30mins
-5. Install EtherLab when working with the real robot (see [ethercat install readme](ethercat_driver_ros2/INSTALL.md))
+5. Install EtherLab when working with the real robot (see [ethercat install readme](https://github.com/Jakubivan/ethercat_driver_ros2/blob/7bec83dfd954a353cfdd459991b35f5ccec4b7b6/INSTALL.md))
 
 
 ### DOCKER
@@ -75,17 +75,18 @@ Code is separated accordingly:
 1. `sudo apt-get update`
 2. Compile and start ethercat using provided [script](compile_and_start_ethercat.sh) 
 3. Install docker 
-4. Launch docker container using command
+4. Launch docker container using command (see [DockerHub repository](https://hub.docker.com/repository/docker/jakubivan5/sensorob_ros2/general) for the newest image tag)
 ```bash
-docker run -it --rm --network host --privileged -e DISPLAY=$DISPLAY -v /lib/modules:/lib/modules  -v /tmp/.X11-unix:/tmp/.X11-unix -v /usr/src/linux-headers-$(uname -r):/usr/src/linux-headers-$(uname -r) jakubivan5/sensorob_ros2:1.2 bash
+sudo docker run -it --rm --network host --privileged -e DISPLAY=$DISPLAY -v /lib/modules:/lib/modules  -v /tmp/.X11-unix:/tmp/.X11-unix -v /usr/src/linux-headers-$(uname -r):/usr/src/linux-headers-$(uname -r) jakubivan5/sensorob_ros2:1.2 bash
 ```
 
 #### Windows (10, 11):
-1. Install VM Virtual Box with Linux Ubuntu 22 and allocate enough resources (in order to run simulation)
-2. Continue by [Linux](#linux-22-20) section above
+1. Proceed by [Virtual Box VM Installation Guide](README-INSTALL.md)
 
 
 ## Usage
+
+If working with the real robot, crutial file is [ros2_contorl.xacro](/sensorob_description/urdf/ros2_control.xacro) described also in the [Readme.md](/sensorob_description/README.md). Helpfull when working with only selected slaves.
 
 Launch one of the systems (see [sensorob package](sensorob/README.md))
 
