@@ -104,6 +104,7 @@ SHELL ["/bin/bash", "-c"]
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 RUN echo "source /root/ros2_ws/install/setup.bash" >> /root/.bashrc || true
 RUN source /root/.bashrc
+RUN export LC_NUMERIC="en_US.UTF-8"
 
 # Step 10: Create the ROS 2 workspace and clone the GitHub repository
 # This creates the directory structure for the ROS 2 workspace and clones a specific repository into the source directory of the workspace.
