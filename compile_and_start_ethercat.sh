@@ -44,12 +44,44 @@ compile_etherlab() {
 
 # Function to configure the network adapter for EtherCAT
 configure_ethercat() {
-    echo "Configuring EtherCAT network adapter..."
-    MAC_ADDRESS=$(ifconfig | grep -A 1 'enp' | grep ether | awk '{print $2}')
-    if [ -n "$MAC_ADDRESS" ]; then
-        echo -e "MASTER0_DEVICE=\"$MAC_ADDRESS\"\nDEVICE_MODULES=\"generic\"" > /etc/sysconfig/ethercat
+    echo "Searching for a physical network adapter for EtherCAT..."
+    
+    # Find the first physical network interface that isn't loopback
+    INTERFACE_NAME=""
+    for iface in /sys/class/net/*; do
+        # Get the base name of the interface (e.g., "eno1")
+        iface_name=$(basename "$iface")
+        
+        # Skip the loopback interface
+        if [ "$iface_name" = "lo" ]; then
+            continue
+        fi
+        
+        # Check if it's a physical device by seeing if the 'device' symlink exists
+        # Virtual devices (bridges, tunnels, etc.) will not have this.
+        if [ -d "$iface/device" ]; then
+            INTERFACE_NAME="$iface_name"
+            break # Found one, so we stop
+        fi
+    done
+
+    if [ -n "$INTERFACE_NAME" ]; then
+        # Read the MAC address directly from the file system
+        MAC_ADDRESS=$(cat "/sys/class/net/$INTERFACE_NAME/address")
+        
+        if [ -n "$MAC_ADDRESS" ]; then
+            echo "Found interface: $INTERFACE_NAME with MAC: $MAC_ADDRESS"
+            echo "Configuring /etc/sysconfig/ethercat..."
+            # Use printf for safer, more predictable output
+            printf "MASTER0_DEVICE=\"%s\"\nDEVICE_MODULES=\"generic\"\n" "$MAC_ADDRESS" > /etc/sysconfig/ethercat
+            # To test without writing to the system file, uncomment the line below
+            # printf "MASTER0_DEVICE=\"%s\"\nDEVICE_MODULES=\"generic\"\n" "$MAC_ADDRESS"
+        else
+            echo "Could not read MAC address for interface $INTERFACE_NAME. Exiting."
+            exit 1
+        fi
     else
-        echo "No suitable network interface found for EtherCAT. Exiting."
+        echo "No suitable physical network interface found for EtherCAT. Exiting."
         exit 1
     fi
 }
