@@ -8,9 +8,9 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         name="joint_state_broadcaster_node",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=["joint_state_broadcaster", "-c", "/controller_manager"],
     )
-
+    #
     # position_controller = Node(
     #     package="controller_manager",
     #     executable="spawner",

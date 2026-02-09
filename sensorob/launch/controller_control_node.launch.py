@@ -10,10 +10,12 @@ def generate_launch_description():
     package_name = 'sensorob'
     sim_mode = LaunchConfiguration('sim_mode')
 
-    robot_description_file = os.path.join(get_package_share_directory('sensorob_description'), 'urdf', "sensorob.urdf.xacro")
+    robot_description_file = os.path.join(
+        get_package_share_directory('sensorob_description'), 'urdf', 'sensorob.urdf.xacro')
     robot_description = Command(['xacro ', robot_description_file, ' sim_mode:=', sim_mode])
 
-    controller_params_file = os.path.join(get_package_share_directory(package_name), 'config', 'sensorob_controllers.yaml')
+    controller_params_file = os.path.join(
+        get_package_share_directory(package_name), 'config', 'sensorob_controllers.yaml')
 
     ros2_control_node = Node(
         package="controller_manager",

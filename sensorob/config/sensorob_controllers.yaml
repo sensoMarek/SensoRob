@@ -1,7 +1,6 @@
 controller_manager:
   ros__parameters:
     update_rate: 1000  # Hz
-#    use_time_sim: true
 
     position_controller:
       type: position_controllers/JointGroupPositionController
@@ -95,31 +94,28 @@ sensorob_group_controller:
     allow_integration_in_goal_trajectories: false
     cmd_timeout: 30.0
 
-    # interface_name: position
     command_interfaces:
       - position
-      - velocity
     state_interfaces:
       - position
-      - velocity
 
     constraints:
       stopped_velocity_tolerance: 0.02 # Override default
       joint_1:
-        trajectory: 0.15              
-        goal: 0.005
+        trajectory: 0.6              
+        goal: 0.01
       joint_2:
-        trajectory: 0.15              
-        goal: 0.005
+        trajectory: 0.6              
+        goal: 0.01
       joint_3:
-        trajectory: 0.15               
-        goal: 0.005
+        trajectory: 0.6             
+        goal: 0.01
       joint_4:
-        trajectory: 0.15               
-        goal: 0.005
+        trajectory: 0.6               
+        goal: 0.015
       joint_5:
-        trajectory: 0.15              
-        goal: 0.005
+        trajectory: 0.6              
+        goal: 0.015
       joint_6:
-        trajectory: 0.20              
-        goal: 0.03
+        trajectory: 0.6             
+        goal: 0.05

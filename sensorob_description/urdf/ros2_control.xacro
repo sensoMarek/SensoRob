@@ -5,83 +5,43 @@
     <xacro:if value="$(arg sim_mode)">
        <ros2_control name="IsaacSimSystem" type="system">
             <hardware>
-                <plugin>fake_components/GenericSystem</plugin>  <!-- THE FIX -->
+                <plugin>isaac_hw_interface/IsaacHWInterface</plugin>
             </hardware>
             <joint name="joint_1">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
-                <!--            <command_interface name="velocity"/>-->
-                <!--            <command_interface name="effort"/>-->
-                <!--                <param name="min">-10</param>-->
-                <!--                <param name="max">10</param>-->
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_1']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_1']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
             <joint name="joint_2">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_2']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_2']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
             <joint name="joint_3">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_3']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_3']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
             <joint name="joint_4">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_4']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_4']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
             <joint name="joint_5">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_5']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_5']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
             <joint name="joint_6">
                 <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="effort"/>
                 <state_interface name="position">
                     <param name="initial_value">${jf['joint_6']['init_pos']}</param>
                 </state_interface>
-                <state_interface name="velocity">
-                    <param name="initial_value">${jf['joint_6']['init_vel']}</param>
-                </state_interface>
-                <state_interface name="effort"/>
             </joint>
         </ros2_control>
     </xacro:if>
