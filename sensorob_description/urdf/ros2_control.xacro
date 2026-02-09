@@ -3,9 +3,9 @@
 <xacro:property name="jf" value="${xacro.load_yaml('$(find sensorob_description)/config/joint_parameters.yaml')}"/>
 
     <xacro:if value="$(arg sim_mode)">
-        <ros2_control name="GazeboSystem" type="system">
+       <ros2_control name="IsaacSimSystem" type="system">
             <hardware>
-                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                <plugin>fake_components/GenericSystem</plugin>  <!-- THE FIX -->
             </hardware>
             <joint name="joint_1">
                 <command_interface name="position"/>
