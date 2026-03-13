@@ -10,6 +10,8 @@ def generate_rviz2_launch():
     # Launch optional arguments
     sim_mode = LaunchConfiguration('sim_mode')
     rviz_config_file = LaunchConfiguration('rviz_config_file')
+    
+    # Generate moveit configs
     moveit_config = MoveItConfigsBuilder("sensorob", package_name="sensorob_moveit_config").to_moveit_configs()
 
     return Node(package='rviz2',
@@ -17,10 +19,11 @@ def generate_rviz2_launch():
                 name='rviz2',
                 output='log',
                 arguments=['-d', rviz_config_file],
-                parameters=[moveit_config.planning_pipelines,
-                            moveit_config.robot_description_kinematics,
-                            {"use_sim_time": sim_mode}]
-                )
+                parameters=[
+                    moveit_config.to_dict(), # <--- THIS PASSES EVERYTHING (URDF, SRDF, Kinematics, etc.)
+                    {"use_sim_time": sim_mode}
+                ]
+               )
 
 
 def generate_launch_description():
